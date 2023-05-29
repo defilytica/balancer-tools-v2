@@ -117,6 +117,63 @@ export type AmpUpdate_OrderBy =
   | "endTimestamp"
   | "id"
   | "poolId"
+  | "poolId__address"
+  | "poolId__alpha"
+  | "poolId__amp"
+  | "poolId__baseToken"
+  | "poolId__beta"
+  | "poolId__c"
+  | "poolId__createTime"
+  | "poolId__dSq"
+  | "poolId__delta"
+  | "poolId__epsilon"
+  | "poolId__expiryTime"
+  | "poolId__factory"
+  | "poolId__holdersCount"
+  | "poolId__id"
+  | "poolId__isInRecoveryMode"
+  | "poolId__isPaused"
+  | "poolId__lambda"
+  | "poolId__lastPostJoinExitInvariant"
+  | "poolId__lowerTarget"
+  | "poolId__mainIndex"
+  | "poolId__managementFee"
+  | "poolId__name"
+  | "poolId__oracleEnabled"
+  | "poolId__owner"
+  | "poolId__poolType"
+  | "poolId__poolTypeVersion"
+  | "poolId__principalToken"
+  | "poolId__protocolAumFeeCache"
+  | "poolId__protocolId"
+  | "poolId__protocolSwapFeeCache"
+  | "poolId__protocolYieldFeeCache"
+  | "poolId__root3Alpha"
+  | "poolId__s"
+  | "poolId__sqrtAlpha"
+  | "poolId__sqrtBeta"
+  | "poolId__strategyType"
+  | "poolId__swapEnabled"
+  | "poolId__swapFee"
+  | "poolId__swapsCount"
+  | "poolId__symbol"
+  | "poolId__tauAlphaX"
+  | "poolId__tauAlphaY"
+  | "poolId__tauBetaX"
+  | "poolId__tauBetaY"
+  | "poolId__totalLiquidity"
+  | "poolId__totalShares"
+  | "poolId__totalSwapFee"
+  | "poolId__totalSwapVolume"
+  | "poolId__totalWeight"
+  | "poolId__tx"
+  | "poolId__u"
+  | "poolId__unitSeconds"
+  | "poolId__upperTarget"
+  | "poolId__v"
+  | "poolId__w"
+  | "poolId__wrappedIndex"
+  | "poolId__z"
   | "scheduledTimestamp"
   | "startAmp"
   | "startTimestamp";
@@ -244,7 +301,13 @@ export type BalancerSnapshot_OrderBy =
   | "totalSwapCount"
   | "totalSwapFee"
   | "totalSwapVolume"
-  | "vault";
+  | "vault"
+  | "vault__id"
+  | "vault__poolCount"
+  | "vault__totalLiquidity"
+  | "vault__totalSwapCount"
+  | "vault__totalSwapFee"
+  | "vault__totalSwapVolume";
 
 export interface Balancer_Filter {
   /** Filter for the block changed event. */
@@ -546,6 +609,424 @@ export type Block_OrderBy =
   | "transactionsRoot"
   | "unclesHash";
 
+export type Chain = "Arbitrum" | "Gnosis" | "Optimism" | "Polygon";
+
+export interface Gauge {
+  __typename: "Gauge";
+  /**  Timestamp at which Balancer DAO added the gauge to GaugeController [seconds]  */
+  addedTimestamp: Scalars["Int"];
+  /**  Address of the gauge  */
+  address: Scalars["Bytes"];
+  /**  Equal to: <gaugeAddress>-<typeID>  */
+  id: Scalars["ID"];
+  /**  Reference to LiquidityGauge  */
+  liquidityGauge?: Maybe<LiquidityGauge>;
+  /**  Reference to RootGauge  */
+  rootGauge?: Maybe<RootGauge>;
+  /**  Type of the gauge  */
+  type: GaugeType;
+}
+
+export interface GaugeFactory {
+  __typename: "GaugeFactory";
+  /**  List of gauges created through the factory  */
+  gauges?: Maybe<Array<LiquidityGauge>>;
+  /**  Factory contract address  */
+  id: Scalars["ID"];
+  /**  Number of gauges created through the factory  */
+  numGauges: Scalars["Int"];
+}
+
+export interface GaugeFactoryGaugesArgs {
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<LiquidityGauge_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<LiquidityGauge_Filter>;
+}
+
+export interface GaugeFactory_Filter {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<GaugeFactory_Filter>>>;
+  gauges_?: InputMaybe<LiquidityGauge_Filter>;
+  id?: InputMaybe<Scalars["ID"]>;
+  id_gt?: InputMaybe<Scalars["ID"]>;
+  id_gte?: InputMaybe<Scalars["ID"]>;
+  id_in?: InputMaybe<Array<Scalars["ID"]>>;
+  id_lt?: InputMaybe<Scalars["ID"]>;
+  id_lte?: InputMaybe<Scalars["ID"]>;
+  id_not?: InputMaybe<Scalars["ID"]>;
+  id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
+  numGauges?: InputMaybe<Scalars["Int"]>;
+  numGauges_gt?: InputMaybe<Scalars["Int"]>;
+  numGauges_gte?: InputMaybe<Scalars["Int"]>;
+  numGauges_in?: InputMaybe<Array<Scalars["Int"]>>;
+  numGauges_lt?: InputMaybe<Scalars["Int"]>;
+  numGauges_lte?: InputMaybe<Scalars["Int"]>;
+  numGauges_not?: InputMaybe<Scalars["Int"]>;
+  numGauges_not_in?: InputMaybe<Array<Scalars["Int"]>>;
+  or?: InputMaybe<Array<InputMaybe<GaugeFactory_Filter>>>;
+}
+
+export type GaugeFactory_OrderBy = "gauges" | "id" | "numGauges";
+
+export interface GaugeShare {
+  __typename: "GaugeShare";
+  /**  User's balance of gauge deposit tokens  */
+  balance: Scalars["BigDecimal"];
+  /**  Reference to LiquidityGauge entity  */
+  gauge: LiquidityGauge;
+  /**  Equal to: <userAddress>-<gaugeAddress>  */
+  id: Scalars["ID"];
+  /**  Reference to User entity  */
+  user: User;
+}
+
+export interface GaugeShare_Filter {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<GaugeShare_Filter>>>;
+  balance?: InputMaybe<Scalars["BigDecimal"]>;
+  balance_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  balance_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  balance_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  balance_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  balance_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  balance_not?: InputMaybe<Scalars["BigDecimal"]>;
+  balance_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  gauge?: InputMaybe<Scalars["String"]>;
+  gauge_?: InputMaybe<LiquidityGauge_Filter>;
+  gauge_contains?: InputMaybe<Scalars["String"]>;
+  gauge_contains_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_ends_with?: InputMaybe<Scalars["String"]>;
+  gauge_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_gt?: InputMaybe<Scalars["String"]>;
+  gauge_gte?: InputMaybe<Scalars["String"]>;
+  gauge_in?: InputMaybe<Array<Scalars["String"]>>;
+  gauge_lt?: InputMaybe<Scalars["String"]>;
+  gauge_lte?: InputMaybe<Scalars["String"]>;
+  gauge_not?: InputMaybe<Scalars["String"]>;
+  gauge_not_contains?: InputMaybe<Scalars["String"]>;
+  gauge_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_not_ends_with?: InputMaybe<Scalars["String"]>;
+  gauge_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  gauge_not_starts_with?: InputMaybe<Scalars["String"]>;
+  gauge_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_starts_with?: InputMaybe<Scalars["String"]>;
+  gauge_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars["ID"]>;
+  id_gt?: InputMaybe<Scalars["ID"]>;
+  id_gte?: InputMaybe<Scalars["ID"]>;
+  id_in?: InputMaybe<Array<Scalars["ID"]>>;
+  id_lt?: InputMaybe<Scalars["ID"]>;
+  id_lte?: InputMaybe<Scalars["ID"]>;
+  id_not?: InputMaybe<Scalars["ID"]>;
+  id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
+  or?: InputMaybe<Array<InputMaybe<GaugeShare_Filter>>>;
+  user?: InputMaybe<Scalars["String"]>;
+  user_?: InputMaybe<User_Filter>;
+  user_contains?: InputMaybe<Scalars["String"]>;
+  user_contains_nocase?: InputMaybe<Scalars["String"]>;
+  user_ends_with?: InputMaybe<Scalars["String"]>;
+  user_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  user_gt?: InputMaybe<Scalars["String"]>;
+  user_gte?: InputMaybe<Scalars["String"]>;
+  user_in?: InputMaybe<Array<Scalars["String"]>>;
+  user_lt?: InputMaybe<Scalars["String"]>;
+  user_lte?: InputMaybe<Scalars["String"]>;
+  user_not?: InputMaybe<Scalars["String"]>;
+  user_not_contains?: InputMaybe<Scalars["String"]>;
+  user_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  user_not_ends_with?: InputMaybe<Scalars["String"]>;
+  user_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  user_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  user_not_starts_with?: InputMaybe<Scalars["String"]>;
+  user_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  user_starts_with?: InputMaybe<Scalars["String"]>;
+  user_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+}
+
+export type GaugeShare_OrderBy =
+  | "balance"
+  | "gauge"
+  | "gauge__id"
+  | "gauge__isKilled"
+  | "gauge__isPreferentialGauge"
+  | "gauge__poolAddress"
+  | "gauge__poolId"
+  | "gauge__relativeWeightCap"
+  | "gauge__streamer"
+  | "gauge__symbol"
+  | "gauge__totalSupply"
+  | "id"
+  | "user"
+  | "user__id";
+
+export interface GaugeType {
+  __typename: "GaugeType";
+  /**  Type ID  */
+  id: Scalars["ID"];
+  /**  Name of the type - empty string if call reverts  */
+  name: Scalars["String"];
+}
+
+export interface GaugeType_Filter {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<GaugeType_Filter>>>;
+  id?: InputMaybe<Scalars["ID"]>;
+  id_gt?: InputMaybe<Scalars["ID"]>;
+  id_gte?: InputMaybe<Scalars["ID"]>;
+  id_in?: InputMaybe<Array<Scalars["ID"]>>;
+  id_lt?: InputMaybe<Scalars["ID"]>;
+  id_lte?: InputMaybe<Scalars["ID"]>;
+  id_not?: InputMaybe<Scalars["ID"]>;
+  id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
+  name?: InputMaybe<Scalars["String"]>;
+  name_contains?: InputMaybe<Scalars["String"]>;
+  name_contains_nocase?: InputMaybe<Scalars["String"]>;
+  name_ends_with?: InputMaybe<Scalars["String"]>;
+  name_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  name_gt?: InputMaybe<Scalars["String"]>;
+  name_gte?: InputMaybe<Scalars["String"]>;
+  name_in?: InputMaybe<Array<Scalars["String"]>>;
+  name_lt?: InputMaybe<Scalars["String"]>;
+  name_lte?: InputMaybe<Scalars["String"]>;
+  name_not?: InputMaybe<Scalars["String"]>;
+  name_not_contains?: InputMaybe<Scalars["String"]>;
+  name_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  name_not_ends_with?: InputMaybe<Scalars["String"]>;
+  name_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  name_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  name_not_starts_with?: InputMaybe<Scalars["String"]>;
+  name_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  name_starts_with?: InputMaybe<Scalars["String"]>;
+  name_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  or?: InputMaybe<Array<InputMaybe<GaugeType_Filter>>>;
+}
+
+export type GaugeType_OrderBy = "id" | "name";
+
+export interface GaugeVote {
+  __typename: "GaugeVote";
+  /**  Reference to Gauge entity  */
+  gauge: Gauge;
+  /**  Equal to: <userAddress>-<gaugeAddress>  */
+  id: Scalars["ID"];
+  /**  Timestamp at which user voted [seconds]  */
+  timestamp?: Maybe<Scalars["BigInt"]>;
+  /**  Reference to User entity  */
+  user: User;
+  /**  Weight of veBAL power user has used to vote  */
+  weight?: Maybe<Scalars["BigDecimal"]>;
+}
+
+export interface GaugeVote_Filter {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<GaugeVote_Filter>>>;
+  gauge?: InputMaybe<Scalars["String"]>;
+  gauge_?: InputMaybe<Gauge_Filter>;
+  gauge_contains?: InputMaybe<Scalars["String"]>;
+  gauge_contains_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_ends_with?: InputMaybe<Scalars["String"]>;
+  gauge_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_gt?: InputMaybe<Scalars["String"]>;
+  gauge_gte?: InputMaybe<Scalars["String"]>;
+  gauge_in?: InputMaybe<Array<Scalars["String"]>>;
+  gauge_lt?: InputMaybe<Scalars["String"]>;
+  gauge_lte?: InputMaybe<Scalars["String"]>;
+  gauge_not?: InputMaybe<Scalars["String"]>;
+  gauge_not_contains?: InputMaybe<Scalars["String"]>;
+  gauge_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_not_ends_with?: InputMaybe<Scalars["String"]>;
+  gauge_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  gauge_not_starts_with?: InputMaybe<Scalars["String"]>;
+  gauge_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_starts_with?: InputMaybe<Scalars["String"]>;
+  gauge_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars["ID"]>;
+  id_gt?: InputMaybe<Scalars["ID"]>;
+  id_gte?: InputMaybe<Scalars["ID"]>;
+  id_in?: InputMaybe<Array<Scalars["ID"]>>;
+  id_lt?: InputMaybe<Scalars["ID"]>;
+  id_lte?: InputMaybe<Scalars["ID"]>;
+  id_not?: InputMaybe<Scalars["ID"]>;
+  id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
+  or?: InputMaybe<Array<InputMaybe<GaugeVote_Filter>>>;
+  timestamp?: InputMaybe<Scalars["BigInt"]>;
+  timestamp_gt?: InputMaybe<Scalars["BigInt"]>;
+  timestamp_gte?: InputMaybe<Scalars["BigInt"]>;
+  timestamp_in?: InputMaybe<Array<Scalars["BigInt"]>>;
+  timestamp_lt?: InputMaybe<Scalars["BigInt"]>;
+  timestamp_lte?: InputMaybe<Scalars["BigInt"]>;
+  timestamp_not?: InputMaybe<Scalars["BigInt"]>;
+  timestamp_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
+  user?: InputMaybe<Scalars["String"]>;
+  user_?: InputMaybe<User_Filter>;
+  user_contains?: InputMaybe<Scalars["String"]>;
+  user_contains_nocase?: InputMaybe<Scalars["String"]>;
+  user_ends_with?: InputMaybe<Scalars["String"]>;
+  user_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  user_gt?: InputMaybe<Scalars["String"]>;
+  user_gte?: InputMaybe<Scalars["String"]>;
+  user_in?: InputMaybe<Array<Scalars["String"]>>;
+  user_lt?: InputMaybe<Scalars["String"]>;
+  user_lte?: InputMaybe<Scalars["String"]>;
+  user_not?: InputMaybe<Scalars["String"]>;
+  user_not_contains?: InputMaybe<Scalars["String"]>;
+  user_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  user_not_ends_with?: InputMaybe<Scalars["String"]>;
+  user_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  user_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  user_not_starts_with?: InputMaybe<Scalars["String"]>;
+  user_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  user_starts_with?: InputMaybe<Scalars["String"]>;
+  user_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  weight?: InputMaybe<Scalars["BigDecimal"]>;
+  weight_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  weight_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  weight_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  weight_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  weight_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  weight_not?: InputMaybe<Scalars["BigDecimal"]>;
+  weight_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+}
+
+export type GaugeVote_OrderBy =
+  | "gauge"
+  | "gauge__addedTimestamp"
+  | "gauge__address"
+  | "gauge__id"
+  | "id"
+  | "timestamp"
+  | "user"
+  | "user__id"
+  | "weight";
+
+export interface Gauge_Filter {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  addedTimestamp?: InputMaybe<Scalars["Int"]>;
+  addedTimestamp_gt?: InputMaybe<Scalars["Int"]>;
+  addedTimestamp_gte?: InputMaybe<Scalars["Int"]>;
+  addedTimestamp_in?: InputMaybe<Array<Scalars["Int"]>>;
+  addedTimestamp_lt?: InputMaybe<Scalars["Int"]>;
+  addedTimestamp_lte?: InputMaybe<Scalars["Int"]>;
+  addedTimestamp_not?: InputMaybe<Scalars["Int"]>;
+  addedTimestamp_not_in?: InputMaybe<Array<Scalars["Int"]>>;
+  address?: InputMaybe<Scalars["Bytes"]>;
+  address_contains?: InputMaybe<Scalars["Bytes"]>;
+  address_gt?: InputMaybe<Scalars["Bytes"]>;
+  address_gte?: InputMaybe<Scalars["Bytes"]>;
+  address_in?: InputMaybe<Array<Scalars["Bytes"]>>;
+  address_lt?: InputMaybe<Scalars["Bytes"]>;
+  address_lte?: InputMaybe<Scalars["Bytes"]>;
+  address_not?: InputMaybe<Scalars["Bytes"]>;
+  address_not_contains?: InputMaybe<Scalars["Bytes"]>;
+  address_not_in?: InputMaybe<Array<Scalars["Bytes"]>>;
+  and?: InputMaybe<Array<InputMaybe<Gauge_Filter>>>;
+  id?: InputMaybe<Scalars["ID"]>;
+  id_gt?: InputMaybe<Scalars["ID"]>;
+  id_gte?: InputMaybe<Scalars["ID"]>;
+  id_in?: InputMaybe<Array<Scalars["ID"]>>;
+  id_lt?: InputMaybe<Scalars["ID"]>;
+  id_lte?: InputMaybe<Scalars["ID"]>;
+  id_not?: InputMaybe<Scalars["ID"]>;
+  id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
+  liquidityGauge?: InputMaybe<Scalars["String"]>;
+  liquidityGauge_?: InputMaybe<LiquidityGauge_Filter>;
+  liquidityGauge_contains?: InputMaybe<Scalars["String"]>;
+  liquidityGauge_contains_nocase?: InputMaybe<Scalars["String"]>;
+  liquidityGauge_ends_with?: InputMaybe<Scalars["String"]>;
+  liquidityGauge_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  liquidityGauge_gt?: InputMaybe<Scalars["String"]>;
+  liquidityGauge_gte?: InputMaybe<Scalars["String"]>;
+  liquidityGauge_in?: InputMaybe<Array<Scalars["String"]>>;
+  liquidityGauge_lt?: InputMaybe<Scalars["String"]>;
+  liquidityGauge_lte?: InputMaybe<Scalars["String"]>;
+  liquidityGauge_not?: InputMaybe<Scalars["String"]>;
+  liquidityGauge_not_contains?: InputMaybe<Scalars["String"]>;
+  liquidityGauge_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  liquidityGauge_not_ends_with?: InputMaybe<Scalars["String"]>;
+  liquidityGauge_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  liquidityGauge_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  liquidityGauge_not_starts_with?: InputMaybe<Scalars["String"]>;
+  liquidityGauge_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  liquidityGauge_starts_with?: InputMaybe<Scalars["String"]>;
+  liquidityGauge_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  or?: InputMaybe<Array<InputMaybe<Gauge_Filter>>>;
+  rootGauge?: InputMaybe<Scalars["String"]>;
+  rootGauge_?: InputMaybe<RootGauge_Filter>;
+  rootGauge_contains?: InputMaybe<Scalars["String"]>;
+  rootGauge_contains_nocase?: InputMaybe<Scalars["String"]>;
+  rootGauge_ends_with?: InputMaybe<Scalars["String"]>;
+  rootGauge_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  rootGauge_gt?: InputMaybe<Scalars["String"]>;
+  rootGauge_gte?: InputMaybe<Scalars["String"]>;
+  rootGauge_in?: InputMaybe<Array<Scalars["String"]>>;
+  rootGauge_lt?: InputMaybe<Scalars["String"]>;
+  rootGauge_lte?: InputMaybe<Scalars["String"]>;
+  rootGauge_not?: InputMaybe<Scalars["String"]>;
+  rootGauge_not_contains?: InputMaybe<Scalars["String"]>;
+  rootGauge_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  rootGauge_not_ends_with?: InputMaybe<Scalars["String"]>;
+  rootGauge_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  rootGauge_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  rootGauge_not_starts_with?: InputMaybe<Scalars["String"]>;
+  rootGauge_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  rootGauge_starts_with?: InputMaybe<Scalars["String"]>;
+  rootGauge_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  type?: InputMaybe<Scalars["String"]>;
+  type_?: InputMaybe<GaugeType_Filter>;
+  type_contains?: InputMaybe<Scalars["String"]>;
+  type_contains_nocase?: InputMaybe<Scalars["String"]>;
+  type_ends_with?: InputMaybe<Scalars["String"]>;
+  type_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  type_gt?: InputMaybe<Scalars["String"]>;
+  type_gte?: InputMaybe<Scalars["String"]>;
+  type_in?: InputMaybe<Array<Scalars["String"]>>;
+  type_lt?: InputMaybe<Scalars["String"]>;
+  type_lte?: InputMaybe<Scalars["String"]>;
+  type_not?: InputMaybe<Scalars["String"]>;
+  type_not_contains?: InputMaybe<Scalars["String"]>;
+  type_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  type_not_ends_with?: InputMaybe<Scalars["String"]>;
+  type_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  type_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  type_not_starts_with?: InputMaybe<Scalars["String"]>;
+  type_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  type_starts_with?: InputMaybe<Scalars["String"]>;
+  type_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+}
+
+export type Gauge_OrderBy =
+  | "addedTimestamp"
+  | "address"
+  | "id"
+  | "liquidityGauge"
+  | "liquidityGauge__id"
+  | "liquidityGauge__isKilled"
+  | "liquidityGauge__isPreferentialGauge"
+  | "liquidityGauge__poolAddress"
+  | "liquidityGauge__poolId"
+  | "liquidityGauge__relativeWeightCap"
+  | "liquidityGauge__streamer"
+  | "liquidityGauge__symbol"
+  | "liquidityGauge__totalSupply"
+  | "rootGauge"
+  | "rootGauge__chain"
+  | "rootGauge__id"
+  | "rootGauge__isKilled"
+  | "rootGauge__recipient"
+  | "rootGauge__relativeWeightCap"
+  | "type"
+  | "type__id"
+  | "type__name";
+
 export interface GradualWeightUpdate {
   __typename: "GradualWeightUpdate";
   endTimestamp: Scalars["BigInt"];
@@ -634,6 +1115,63 @@ export type GradualWeightUpdate_OrderBy =
   | "endWeights"
   | "id"
   | "poolId"
+  | "poolId__address"
+  | "poolId__alpha"
+  | "poolId__amp"
+  | "poolId__baseToken"
+  | "poolId__beta"
+  | "poolId__c"
+  | "poolId__createTime"
+  | "poolId__dSq"
+  | "poolId__delta"
+  | "poolId__epsilon"
+  | "poolId__expiryTime"
+  | "poolId__factory"
+  | "poolId__holdersCount"
+  | "poolId__id"
+  | "poolId__isInRecoveryMode"
+  | "poolId__isPaused"
+  | "poolId__lambda"
+  | "poolId__lastPostJoinExitInvariant"
+  | "poolId__lowerTarget"
+  | "poolId__mainIndex"
+  | "poolId__managementFee"
+  | "poolId__name"
+  | "poolId__oracleEnabled"
+  | "poolId__owner"
+  | "poolId__poolType"
+  | "poolId__poolTypeVersion"
+  | "poolId__principalToken"
+  | "poolId__protocolAumFeeCache"
+  | "poolId__protocolId"
+  | "poolId__protocolSwapFeeCache"
+  | "poolId__protocolYieldFeeCache"
+  | "poolId__root3Alpha"
+  | "poolId__s"
+  | "poolId__sqrtAlpha"
+  | "poolId__sqrtBeta"
+  | "poolId__strategyType"
+  | "poolId__swapEnabled"
+  | "poolId__swapFee"
+  | "poolId__swapsCount"
+  | "poolId__symbol"
+  | "poolId__tauAlphaX"
+  | "poolId__tauAlphaY"
+  | "poolId__tauBetaX"
+  | "poolId__tauBetaY"
+  | "poolId__totalLiquidity"
+  | "poolId__totalShares"
+  | "poolId__totalSwapFee"
+  | "poolId__totalSwapVolume"
+  | "poolId__totalWeight"
+  | "poolId__tx"
+  | "poolId__u"
+  | "poolId__unitSeconds"
+  | "poolId__upperTarget"
+  | "poolId__v"
+  | "poolId__w"
+  | "poolId__wrappedIndex"
+  | "poolId__z"
   | "scheduledTimestamp"
   | "startTimestamp"
   | "startWeights";
@@ -760,11 +1298,69 @@ export type JoinExit_OrderBy =
   | "amounts"
   | "id"
   | "pool"
+  | "pool__address"
+  | "pool__alpha"
+  | "pool__amp"
+  | "pool__baseToken"
+  | "pool__beta"
+  | "pool__c"
+  | "pool__createTime"
+  | "pool__dSq"
+  | "pool__delta"
+  | "pool__epsilon"
+  | "pool__expiryTime"
+  | "pool__factory"
+  | "pool__holdersCount"
+  | "pool__id"
+  | "pool__isInRecoveryMode"
+  | "pool__isPaused"
+  | "pool__lambda"
+  | "pool__lastPostJoinExitInvariant"
+  | "pool__lowerTarget"
+  | "pool__mainIndex"
+  | "pool__managementFee"
+  | "pool__name"
+  | "pool__oracleEnabled"
+  | "pool__owner"
+  | "pool__poolType"
+  | "pool__poolTypeVersion"
+  | "pool__principalToken"
+  | "pool__protocolAumFeeCache"
+  | "pool__protocolId"
+  | "pool__protocolSwapFeeCache"
+  | "pool__protocolYieldFeeCache"
+  | "pool__root3Alpha"
+  | "pool__s"
+  | "pool__sqrtAlpha"
+  | "pool__sqrtBeta"
+  | "pool__strategyType"
+  | "pool__swapEnabled"
+  | "pool__swapFee"
+  | "pool__swapsCount"
+  | "pool__symbol"
+  | "pool__tauAlphaX"
+  | "pool__tauAlphaY"
+  | "pool__tauBetaX"
+  | "pool__tauBetaY"
+  | "pool__totalLiquidity"
+  | "pool__totalShares"
+  | "pool__totalSwapFee"
+  | "pool__totalSwapVolume"
+  | "pool__totalWeight"
+  | "pool__tx"
+  | "pool__u"
+  | "pool__unitSeconds"
+  | "pool__upperTarget"
+  | "pool__v"
+  | "pool__w"
+  | "pool__wrappedIndex"
+  | "pool__z"
   | "sender"
   | "timestamp"
   | "tx"
   | "type"
   | "user"
+  | "user__id"
   | "valueUSD";
 
 export interface LatestPrice {
@@ -854,8 +1450,382 @@ export type LatestPrice_OrderBy =
   | "block"
   | "id"
   | "poolId"
+  | "poolId__address"
+  | "poolId__alpha"
+  | "poolId__amp"
+  | "poolId__baseToken"
+  | "poolId__beta"
+  | "poolId__c"
+  | "poolId__createTime"
+  | "poolId__dSq"
+  | "poolId__delta"
+  | "poolId__epsilon"
+  | "poolId__expiryTime"
+  | "poolId__factory"
+  | "poolId__holdersCount"
+  | "poolId__id"
+  | "poolId__isInRecoveryMode"
+  | "poolId__isPaused"
+  | "poolId__lambda"
+  | "poolId__lastPostJoinExitInvariant"
+  | "poolId__lowerTarget"
+  | "poolId__mainIndex"
+  | "poolId__managementFee"
+  | "poolId__name"
+  | "poolId__oracleEnabled"
+  | "poolId__owner"
+  | "poolId__poolType"
+  | "poolId__poolTypeVersion"
+  | "poolId__principalToken"
+  | "poolId__protocolAumFeeCache"
+  | "poolId__protocolId"
+  | "poolId__protocolSwapFeeCache"
+  | "poolId__protocolYieldFeeCache"
+  | "poolId__root3Alpha"
+  | "poolId__s"
+  | "poolId__sqrtAlpha"
+  | "poolId__sqrtBeta"
+  | "poolId__strategyType"
+  | "poolId__swapEnabled"
+  | "poolId__swapFee"
+  | "poolId__swapsCount"
+  | "poolId__symbol"
+  | "poolId__tauAlphaX"
+  | "poolId__tauAlphaY"
+  | "poolId__tauBetaX"
+  | "poolId__tauBetaY"
+  | "poolId__totalLiquidity"
+  | "poolId__totalShares"
+  | "poolId__totalSwapFee"
+  | "poolId__totalSwapVolume"
+  | "poolId__totalWeight"
+  | "poolId__tx"
+  | "poolId__u"
+  | "poolId__unitSeconds"
+  | "poolId__upperTarget"
+  | "poolId__v"
+  | "poolId__w"
+  | "poolId__wrappedIndex"
+  | "poolId__z"
   | "price"
   | "pricingAsset";
+
+export interface LiquidityGauge {
+  __typename: "LiquidityGauge";
+  /**  Factory contract address  */
+  factory: GaugeFactory;
+  /**  Reference to Gauge entity - created when LiquidityGauge is added to GaugeController */
+  gauge?: Maybe<Gauge>;
+  /**  LiquidityGauge contract address  */
+  id: Scalars["ID"];
+  /**  Whether Balancer DAO killed the gauge  */
+  isKilled: Scalars["Boolean"];
+  /**  Whether the LiquidityGauge is the most recent added to GaugeController  */
+  isPreferentialGauge: Scalars["Boolean"];
+  /**  Reference to Pool entity  */
+  pool?: Maybe<Pool>;
+  /**  Address of the pool (lp_token of the gauge)  */
+  poolAddress: Scalars["Bytes"];
+  /**  Pool ID if lp_token is a Balancer pool; null otherwise  */
+  poolId?: Maybe<Scalars["Bytes"]>;
+  /**  Relative weight cap of the gauge (0.01 = 1%) - V2 factories only  */
+  relativeWeightCap?: Maybe<Scalars["BigDecimal"]>;
+  /**  List of reward tokens depositted in the gauge - ChildChainLiquidityGauge only  */
+  rewardTokensList?: Maybe<Array<Scalars["Bytes"]>>;
+  /**  List of user shares  */
+  shares?: Maybe<Array<GaugeShare>>;
+  /**  Address of the contract that streams reward tokens to the gauge - ChildChainLiquidityGauge only  */
+  streamer?: Maybe<Scalars["Bytes"]>;
+  /**  ERC20 token symbol  */
+  symbol: Scalars["String"];
+  /**  List of reward tokens depositted in the gauge  */
+  tokens?: Maybe<Array<RewardToken>>;
+  /**  Total of BPTs users have staked in the LiquidityGauge  */
+  totalSupply: Scalars["BigDecimal"];
+}
+
+export interface LiquidityGaugeSharesArgs {
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<GaugeShare_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<GaugeShare_Filter>;
+}
+
+export interface LiquidityGaugeTokensArgs {
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<RewardToken_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<RewardToken_Filter>;
+}
+
+export interface LiquidityGauge_Filter {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<LiquidityGauge_Filter>>>;
+  factory?: InputMaybe<Scalars["String"]>;
+  factory_?: InputMaybe<GaugeFactory_Filter>;
+  factory_contains?: InputMaybe<Scalars["String"]>;
+  factory_contains_nocase?: InputMaybe<Scalars["String"]>;
+  factory_ends_with?: InputMaybe<Scalars["String"]>;
+  factory_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  factory_gt?: InputMaybe<Scalars["String"]>;
+  factory_gte?: InputMaybe<Scalars["String"]>;
+  factory_in?: InputMaybe<Array<Scalars["String"]>>;
+  factory_lt?: InputMaybe<Scalars["String"]>;
+  factory_lte?: InputMaybe<Scalars["String"]>;
+  factory_not?: InputMaybe<Scalars["String"]>;
+  factory_not_contains?: InputMaybe<Scalars["String"]>;
+  factory_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  factory_not_ends_with?: InputMaybe<Scalars["String"]>;
+  factory_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  factory_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  factory_not_starts_with?: InputMaybe<Scalars["String"]>;
+  factory_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  factory_starts_with?: InputMaybe<Scalars["String"]>;
+  factory_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge?: InputMaybe<Scalars["String"]>;
+  gauge_?: InputMaybe<Gauge_Filter>;
+  gauge_contains?: InputMaybe<Scalars["String"]>;
+  gauge_contains_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_ends_with?: InputMaybe<Scalars["String"]>;
+  gauge_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_gt?: InputMaybe<Scalars["String"]>;
+  gauge_gte?: InputMaybe<Scalars["String"]>;
+  gauge_in?: InputMaybe<Array<Scalars["String"]>>;
+  gauge_lt?: InputMaybe<Scalars["String"]>;
+  gauge_lte?: InputMaybe<Scalars["String"]>;
+  gauge_not?: InputMaybe<Scalars["String"]>;
+  gauge_not_contains?: InputMaybe<Scalars["String"]>;
+  gauge_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_not_ends_with?: InputMaybe<Scalars["String"]>;
+  gauge_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  gauge_not_starts_with?: InputMaybe<Scalars["String"]>;
+  gauge_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_starts_with?: InputMaybe<Scalars["String"]>;
+  gauge_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars["ID"]>;
+  id_gt?: InputMaybe<Scalars["ID"]>;
+  id_gte?: InputMaybe<Scalars["ID"]>;
+  id_in?: InputMaybe<Array<Scalars["ID"]>>;
+  id_lt?: InputMaybe<Scalars["ID"]>;
+  id_lte?: InputMaybe<Scalars["ID"]>;
+  id_not?: InputMaybe<Scalars["ID"]>;
+  id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
+  isKilled?: InputMaybe<Scalars["Boolean"]>;
+  isKilled_in?: InputMaybe<Array<Scalars["Boolean"]>>;
+  isKilled_not?: InputMaybe<Scalars["Boolean"]>;
+  isKilled_not_in?: InputMaybe<Array<Scalars["Boolean"]>>;
+  isPreferentialGauge?: InputMaybe<Scalars["Boolean"]>;
+  isPreferentialGauge_in?: InputMaybe<Array<Scalars["Boolean"]>>;
+  isPreferentialGauge_not?: InputMaybe<Scalars["Boolean"]>;
+  isPreferentialGauge_not_in?: InputMaybe<Array<Scalars["Boolean"]>>;
+  or?: InputMaybe<Array<InputMaybe<LiquidityGauge_Filter>>>;
+  pool?: InputMaybe<Scalars["String"]>;
+  poolAddress?: InputMaybe<Scalars["Bytes"]>;
+  poolAddress_contains?: InputMaybe<Scalars["Bytes"]>;
+  poolAddress_gt?: InputMaybe<Scalars["Bytes"]>;
+  poolAddress_gte?: InputMaybe<Scalars["Bytes"]>;
+  poolAddress_in?: InputMaybe<Array<Scalars["Bytes"]>>;
+  poolAddress_lt?: InputMaybe<Scalars["Bytes"]>;
+  poolAddress_lte?: InputMaybe<Scalars["Bytes"]>;
+  poolAddress_not?: InputMaybe<Scalars["Bytes"]>;
+  poolAddress_not_contains?: InputMaybe<Scalars["Bytes"]>;
+  poolAddress_not_in?: InputMaybe<Array<Scalars["Bytes"]>>;
+  poolId?: InputMaybe<Scalars["Bytes"]>;
+  poolId_contains?: InputMaybe<Scalars["Bytes"]>;
+  poolId_gt?: InputMaybe<Scalars["Bytes"]>;
+  poolId_gte?: InputMaybe<Scalars["Bytes"]>;
+  poolId_in?: InputMaybe<Array<Scalars["Bytes"]>>;
+  poolId_lt?: InputMaybe<Scalars["Bytes"]>;
+  poolId_lte?: InputMaybe<Scalars["Bytes"]>;
+  poolId_not?: InputMaybe<Scalars["Bytes"]>;
+  poolId_not_contains?: InputMaybe<Scalars["Bytes"]>;
+  poolId_not_in?: InputMaybe<Array<Scalars["Bytes"]>>;
+  pool_?: InputMaybe<Pool_Filter>;
+  pool_contains?: InputMaybe<Scalars["String"]>;
+  pool_contains_nocase?: InputMaybe<Scalars["String"]>;
+  pool_ends_with?: InputMaybe<Scalars["String"]>;
+  pool_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  pool_gt?: InputMaybe<Scalars["String"]>;
+  pool_gte?: InputMaybe<Scalars["String"]>;
+  pool_in?: InputMaybe<Array<Scalars["String"]>>;
+  pool_lt?: InputMaybe<Scalars["String"]>;
+  pool_lte?: InputMaybe<Scalars["String"]>;
+  pool_not?: InputMaybe<Scalars["String"]>;
+  pool_not_contains?: InputMaybe<Scalars["String"]>;
+  pool_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  pool_not_ends_with?: InputMaybe<Scalars["String"]>;
+  pool_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  pool_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  pool_not_starts_with?: InputMaybe<Scalars["String"]>;
+  pool_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  pool_starts_with?: InputMaybe<Scalars["String"]>;
+  pool_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  relativeWeightCap?: InputMaybe<Scalars["BigDecimal"]>;
+  relativeWeightCap_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  relativeWeightCap_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  relativeWeightCap_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  relativeWeightCap_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  relativeWeightCap_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  relativeWeightCap_not?: InputMaybe<Scalars["BigDecimal"]>;
+  relativeWeightCap_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  rewardTokensList?: InputMaybe<Array<Scalars["Bytes"]>>;
+  rewardTokensList_contains?: InputMaybe<Array<Scalars["Bytes"]>>;
+  rewardTokensList_contains_nocase?: InputMaybe<Array<Scalars["Bytes"]>>;
+  rewardTokensList_not?: InputMaybe<Array<Scalars["Bytes"]>>;
+  rewardTokensList_not_contains?: InputMaybe<Array<Scalars["Bytes"]>>;
+  rewardTokensList_not_contains_nocase?: InputMaybe<Array<Scalars["Bytes"]>>;
+  shares_?: InputMaybe<GaugeShare_Filter>;
+  streamer?: InputMaybe<Scalars["Bytes"]>;
+  streamer_contains?: InputMaybe<Scalars["Bytes"]>;
+  streamer_gt?: InputMaybe<Scalars["Bytes"]>;
+  streamer_gte?: InputMaybe<Scalars["Bytes"]>;
+  streamer_in?: InputMaybe<Array<Scalars["Bytes"]>>;
+  streamer_lt?: InputMaybe<Scalars["Bytes"]>;
+  streamer_lte?: InputMaybe<Scalars["Bytes"]>;
+  streamer_not?: InputMaybe<Scalars["Bytes"]>;
+  streamer_not_contains?: InputMaybe<Scalars["Bytes"]>;
+  streamer_not_in?: InputMaybe<Array<Scalars["Bytes"]>>;
+  symbol?: InputMaybe<Scalars["String"]>;
+  symbol_contains?: InputMaybe<Scalars["String"]>;
+  symbol_contains_nocase?: InputMaybe<Scalars["String"]>;
+  symbol_ends_with?: InputMaybe<Scalars["String"]>;
+  symbol_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  symbol_gt?: InputMaybe<Scalars["String"]>;
+  symbol_gte?: InputMaybe<Scalars["String"]>;
+  symbol_in?: InputMaybe<Array<Scalars["String"]>>;
+  symbol_lt?: InputMaybe<Scalars["String"]>;
+  symbol_lte?: InputMaybe<Scalars["String"]>;
+  symbol_not?: InputMaybe<Scalars["String"]>;
+  symbol_not_contains?: InputMaybe<Scalars["String"]>;
+  symbol_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  symbol_not_ends_with?: InputMaybe<Scalars["String"]>;
+  symbol_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  symbol_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  symbol_not_starts_with?: InputMaybe<Scalars["String"]>;
+  symbol_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  symbol_starts_with?: InputMaybe<Scalars["String"]>;
+  symbol_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  tokens_?: InputMaybe<RewardToken_Filter>;
+  totalSupply?: InputMaybe<Scalars["BigDecimal"]>;
+  totalSupply_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  totalSupply_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  totalSupply_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  totalSupply_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  totalSupply_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  totalSupply_not?: InputMaybe<Scalars["BigDecimal"]>;
+  totalSupply_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+}
+
+export type LiquidityGauge_OrderBy =
+  | "factory"
+  | "factory__id"
+  | "factory__numGauges"
+  | "gauge"
+  | "gauge__addedTimestamp"
+  | "gauge__address"
+  | "gauge__id"
+  | "id"
+  | "isKilled"
+  | "isPreferentialGauge"
+  | "pool"
+  | "poolAddress"
+  | "poolId"
+  | "pool__address"
+  | "pool__id"
+  | "pool__poolId"
+  | "relativeWeightCap"
+  | "rewardTokensList"
+  | "shares"
+  | "streamer"
+  | "symbol"
+  | "tokens"
+  | "totalSupply";
+
+export interface LockSnapshot {
+  __typename: "LockSnapshot";
+  /**  veBAL balance at the moment user locks  */
+  bias: Scalars["BigDecimal"];
+  /**  Equal to <userAddress>-<timestamp>  */
+  id: Scalars["ID"];
+  /**  veBAL decay rate (per second)  */
+  slope: Scalars["BigDecimal"];
+  /**  Timestamp at which the snapshot was taken [seconds]  */
+  timestamp: Scalars["Int"];
+  /**  Reference to User entity  */
+  user: User;
+}
+
+export interface LockSnapshot_Filter {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<LockSnapshot_Filter>>>;
+  bias?: InputMaybe<Scalars["BigDecimal"]>;
+  bias_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  bias_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  bias_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  bias_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  bias_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  bias_not?: InputMaybe<Scalars["BigDecimal"]>;
+  bias_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  id?: InputMaybe<Scalars["ID"]>;
+  id_gt?: InputMaybe<Scalars["ID"]>;
+  id_gte?: InputMaybe<Scalars["ID"]>;
+  id_in?: InputMaybe<Array<Scalars["ID"]>>;
+  id_lt?: InputMaybe<Scalars["ID"]>;
+  id_lte?: InputMaybe<Scalars["ID"]>;
+  id_not?: InputMaybe<Scalars["ID"]>;
+  id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
+  or?: InputMaybe<Array<InputMaybe<LockSnapshot_Filter>>>;
+  slope?: InputMaybe<Scalars["BigDecimal"]>;
+  slope_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  slope_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  slope_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  slope_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  slope_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  slope_not?: InputMaybe<Scalars["BigDecimal"]>;
+  slope_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  timestamp?: InputMaybe<Scalars["Int"]>;
+  timestamp_gt?: InputMaybe<Scalars["Int"]>;
+  timestamp_gte?: InputMaybe<Scalars["Int"]>;
+  timestamp_in?: InputMaybe<Array<Scalars["Int"]>>;
+  timestamp_lt?: InputMaybe<Scalars["Int"]>;
+  timestamp_lte?: InputMaybe<Scalars["Int"]>;
+  timestamp_not?: InputMaybe<Scalars["Int"]>;
+  timestamp_not_in?: InputMaybe<Array<Scalars["Int"]>>;
+  user?: InputMaybe<Scalars["String"]>;
+  user_?: InputMaybe<User_Filter>;
+  user_contains?: InputMaybe<Scalars["String"]>;
+  user_contains_nocase?: InputMaybe<Scalars["String"]>;
+  user_ends_with?: InputMaybe<Scalars["String"]>;
+  user_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  user_gt?: InputMaybe<Scalars["String"]>;
+  user_gte?: InputMaybe<Scalars["String"]>;
+  user_in?: InputMaybe<Array<Scalars["String"]>>;
+  user_lt?: InputMaybe<Scalars["String"]>;
+  user_lte?: InputMaybe<Scalars["String"]>;
+  user_not?: InputMaybe<Scalars["String"]>;
+  user_not_contains?: InputMaybe<Scalars["String"]>;
+  user_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  user_not_ends_with?: InputMaybe<Scalars["String"]>;
+  user_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  user_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  user_not_starts_with?: InputMaybe<Scalars["String"]>;
+  user_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  user_starts_with?: InputMaybe<Scalars["String"]>;
+  user_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+}
+
+export type LockSnapshot_OrderBy =
+  | "bias"
+  | "id"
+  | "slope"
+  | "timestamp"
+  | "user"
+  | "user__id";
 
 export interface ManagementOperation {
   __typename: "ManagementOperation";
@@ -936,8 +1906,143 @@ export type ManagementOperation_OrderBy =
   | "id"
   | "managedDelta"
   | "poolTokenId"
+  | "poolTokenId__address"
+  | "poolTokenId__assetManager"
+  | "poolTokenId__balance"
+  | "poolTokenId__cashBalance"
+  | "poolTokenId__decimals"
+  | "poolTokenId__id"
+  | "poolTokenId__index"
+  | "poolTokenId__isExemptFromYieldProtocolFee"
+  | "poolTokenId__managedBalance"
+  | "poolTokenId__name"
+  | "poolTokenId__oldPriceRate"
+  | "poolTokenId__priceRate"
+  | "poolTokenId__symbol"
+  | "poolTokenId__weight"
   | "timestamp"
   | "type";
+
+export interface OmniVotingEscrowLock {
+  __typename: "OmniVotingEscrowLock";
+  /**  veBAL balance at the moment user locks  */
+  bias: Scalars["BigDecimal"];
+  /**  Chain where the lock was bridged to  */
+  dstChainId: Scalars["Int"];
+  /**  Equal to: <userAdress>-<omniVotingEscrow>  */
+  id: Scalars["ID"];
+  /**  User on the local chain (reference to User entity)  */
+  localUser: User;
+  /**  User address on the remote chain  */
+  remoteUser: Scalars["Bytes"];
+  /**  veBAL decay rate (per second)  */
+  slope: Scalars["BigDecimal"];
+  /**  Reference to VotingEscrow entity  */
+  votingEscrowID: VotingEscrow;
+}
+
+export interface OmniVotingEscrowLock_Filter {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<OmniVotingEscrowLock_Filter>>>;
+  bias?: InputMaybe<Scalars["BigDecimal"]>;
+  bias_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  bias_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  bias_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  bias_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  bias_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  bias_not?: InputMaybe<Scalars["BigDecimal"]>;
+  bias_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  dstChainId?: InputMaybe<Scalars["Int"]>;
+  dstChainId_gt?: InputMaybe<Scalars["Int"]>;
+  dstChainId_gte?: InputMaybe<Scalars["Int"]>;
+  dstChainId_in?: InputMaybe<Array<Scalars["Int"]>>;
+  dstChainId_lt?: InputMaybe<Scalars["Int"]>;
+  dstChainId_lte?: InputMaybe<Scalars["Int"]>;
+  dstChainId_not?: InputMaybe<Scalars["Int"]>;
+  dstChainId_not_in?: InputMaybe<Array<Scalars["Int"]>>;
+  id?: InputMaybe<Scalars["ID"]>;
+  id_gt?: InputMaybe<Scalars["ID"]>;
+  id_gte?: InputMaybe<Scalars["ID"]>;
+  id_in?: InputMaybe<Array<Scalars["ID"]>>;
+  id_lt?: InputMaybe<Scalars["ID"]>;
+  id_lte?: InputMaybe<Scalars["ID"]>;
+  id_not?: InputMaybe<Scalars["ID"]>;
+  id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
+  localUser?: InputMaybe<Scalars["String"]>;
+  localUser_?: InputMaybe<User_Filter>;
+  localUser_contains?: InputMaybe<Scalars["String"]>;
+  localUser_contains_nocase?: InputMaybe<Scalars["String"]>;
+  localUser_ends_with?: InputMaybe<Scalars["String"]>;
+  localUser_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  localUser_gt?: InputMaybe<Scalars["String"]>;
+  localUser_gte?: InputMaybe<Scalars["String"]>;
+  localUser_in?: InputMaybe<Array<Scalars["String"]>>;
+  localUser_lt?: InputMaybe<Scalars["String"]>;
+  localUser_lte?: InputMaybe<Scalars["String"]>;
+  localUser_not?: InputMaybe<Scalars["String"]>;
+  localUser_not_contains?: InputMaybe<Scalars["String"]>;
+  localUser_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  localUser_not_ends_with?: InputMaybe<Scalars["String"]>;
+  localUser_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  localUser_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  localUser_not_starts_with?: InputMaybe<Scalars["String"]>;
+  localUser_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  localUser_starts_with?: InputMaybe<Scalars["String"]>;
+  localUser_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  or?: InputMaybe<Array<InputMaybe<OmniVotingEscrowLock_Filter>>>;
+  remoteUser?: InputMaybe<Scalars["Bytes"]>;
+  remoteUser_contains?: InputMaybe<Scalars["Bytes"]>;
+  remoteUser_gt?: InputMaybe<Scalars["Bytes"]>;
+  remoteUser_gte?: InputMaybe<Scalars["Bytes"]>;
+  remoteUser_in?: InputMaybe<Array<Scalars["Bytes"]>>;
+  remoteUser_lt?: InputMaybe<Scalars["Bytes"]>;
+  remoteUser_lte?: InputMaybe<Scalars["Bytes"]>;
+  remoteUser_not?: InputMaybe<Scalars["Bytes"]>;
+  remoteUser_not_contains?: InputMaybe<Scalars["Bytes"]>;
+  remoteUser_not_in?: InputMaybe<Array<Scalars["Bytes"]>>;
+  slope?: InputMaybe<Scalars["BigDecimal"]>;
+  slope_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  slope_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  slope_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  slope_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  slope_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  slope_not?: InputMaybe<Scalars["BigDecimal"]>;
+  slope_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  votingEscrowID?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_?: InputMaybe<VotingEscrow_Filter>;
+  votingEscrowID_contains?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_contains_nocase?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_ends_with?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_gt?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_gte?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_in?: InputMaybe<Array<Scalars["String"]>>;
+  votingEscrowID_lt?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_lte?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_not?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_not_contains?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_not_ends_with?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  votingEscrowID_not_starts_with?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_starts_with?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+}
+
+export type OmniVotingEscrowLock_OrderBy =
+  | "bias"
+  | "dstChainId"
+  | "id"
+  | "localUser"
+  | "localUser__id"
+  | "remoteUser"
+  | "slope"
+  | "votingEscrowID"
+  | "votingEscrowID__id"
+  | "votingEscrowID__stakedSupply";
 
 export type OperationType = "Deposit" | "Update" | "Withdraw";
 
@@ -946,6 +2051,7 @@ export type OrderDirection = "asc" | "desc";
 
 export interface Pool {
   __typename: "Pool";
+  /**  Address of the pool (lp_token of the gauge)  */
   address: Scalars["Bytes"];
   alpha?: Maybe<Scalars["BigDecimal"]>;
   amp?: Maybe<Scalars["BigInt"]>;
@@ -958,24 +2064,35 @@ export interface Pool {
   epsilon?: Maybe<Scalars["BigDecimal"]>;
   expiryTime?: Maybe<Scalars["BigInt"]>;
   factory?: Maybe<Scalars["Bytes"]>;
+  /**  List of gauges created for the pool  */
+  gauges?: Maybe<Array<LiquidityGauge>>;
+  /**  List of the pool's gauges addresses  */
+  gaugesList: Array<Scalars["Bytes"]>;
   historicalValues?: Maybe<Array<PoolHistoricalLiquidity>>;
   holdersCount: Scalars["BigInt"];
+  /**  Address of the pool (lp_token of the gauge)  */
   id: Scalars["ID"];
   isInRecoveryMode?: Maybe<Scalars["Boolean"]>;
   isPaused?: Maybe<Scalars["Boolean"]>;
   lambda?: Maybe<Scalars["BigDecimal"]>;
+  lastPostJoinExitInvariant?: Maybe<Scalars["BigDecimal"]>;
   lowerTarget?: Maybe<Scalars["BigDecimal"]>;
   mainIndex?: Maybe<Scalars["Int"]>;
   managementFee?: Maybe<Scalars["BigDecimal"]>;
   name?: Maybe<Scalars["String"]>;
   oracleEnabled: Scalars["Boolean"];
   owner?: Maybe<Scalars["Bytes"]>;
+  /**  Pool ID if lp_token is a Balancer pool; null otherwise  */
+  poolId?: Maybe<Scalars["Bytes"]>;
   poolType?: Maybe<Scalars["String"]>;
   poolTypeVersion?: Maybe<Scalars["Int"]>;
+  /**  Most recent, unkilled gauge in the GaugeController  */
+  preferentialGauge?: Maybe<LiquidityGauge>;
   priceRateProviders?: Maybe<Array<PriceRateProvider>>;
   principalToken?: Maybe<Scalars["Bytes"]>;
   protocolAumFeeCache?: Maybe<Scalars["BigDecimal"]>;
   protocolId?: Maybe<Scalars["Int"]>;
+  protocolIdData?: Maybe<ProtocolIdData>;
   protocolSwapFeeCache?: Maybe<Scalars["BigDecimal"]>;
   protocolYieldFeeCache?: Maybe<Scalars["BigDecimal"]>;
   root3Alpha?: Maybe<Scalars["BigDecimal"]>;
@@ -1011,6 +2128,14 @@ export interface Pool {
   weightUpdates?: Maybe<Array<GradualWeightUpdate>>;
   wrappedIndex?: Maybe<Scalars["Int"]>;
   z?: Maybe<Scalars["BigDecimal"]>;
+}
+
+export interface PoolGaugesArgs {
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<LiquidityGauge_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<LiquidityGauge_Filter>;
 }
 
 export interface PoolHistoricalValuesArgs {
@@ -1111,7 +2236,66 @@ export interface PoolContract_Filter {
   pool_starts_with_nocase?: InputMaybe<Scalars["String"]>;
 }
 
-export type PoolContract_OrderBy = "id" | "pool";
+export type PoolContract_OrderBy =
+  | "id"
+  | "pool"
+  | "pool__address"
+  | "pool__alpha"
+  | "pool__amp"
+  | "pool__baseToken"
+  | "pool__beta"
+  | "pool__c"
+  | "pool__createTime"
+  | "pool__dSq"
+  | "pool__delta"
+  | "pool__epsilon"
+  | "pool__expiryTime"
+  | "pool__factory"
+  | "pool__holdersCount"
+  | "pool__id"
+  | "pool__isInRecoveryMode"
+  | "pool__isPaused"
+  | "pool__lambda"
+  | "pool__lastPostJoinExitInvariant"
+  | "pool__lowerTarget"
+  | "pool__mainIndex"
+  | "pool__managementFee"
+  | "pool__name"
+  | "pool__oracleEnabled"
+  | "pool__owner"
+  | "pool__poolType"
+  | "pool__poolTypeVersion"
+  | "pool__principalToken"
+  | "pool__protocolAumFeeCache"
+  | "pool__protocolId"
+  | "pool__protocolSwapFeeCache"
+  | "pool__protocolYieldFeeCache"
+  | "pool__root3Alpha"
+  | "pool__s"
+  | "pool__sqrtAlpha"
+  | "pool__sqrtBeta"
+  | "pool__strategyType"
+  | "pool__swapEnabled"
+  | "pool__swapFee"
+  | "pool__swapsCount"
+  | "pool__symbol"
+  | "pool__tauAlphaX"
+  | "pool__tauAlphaY"
+  | "pool__tauBetaX"
+  | "pool__tauBetaY"
+  | "pool__totalLiquidity"
+  | "pool__totalShares"
+  | "pool__totalSwapFee"
+  | "pool__totalSwapVolume"
+  | "pool__totalWeight"
+  | "pool__tx"
+  | "pool__u"
+  | "pool__unitSeconds"
+  | "pool__upperTarget"
+  | "pool__v"
+  | "pool__w"
+  | "pool__wrappedIndex"
+  | "pool__z";
 
 export interface PoolHistoricalLiquidity {
   __typename: "PoolHistoricalLiquidity";
@@ -1206,6 +2390,63 @@ export type PoolHistoricalLiquidity_OrderBy =
   | "block"
   | "id"
   | "poolId"
+  | "poolId__address"
+  | "poolId__alpha"
+  | "poolId__amp"
+  | "poolId__baseToken"
+  | "poolId__beta"
+  | "poolId__c"
+  | "poolId__createTime"
+  | "poolId__dSq"
+  | "poolId__delta"
+  | "poolId__epsilon"
+  | "poolId__expiryTime"
+  | "poolId__factory"
+  | "poolId__holdersCount"
+  | "poolId__id"
+  | "poolId__isInRecoveryMode"
+  | "poolId__isPaused"
+  | "poolId__lambda"
+  | "poolId__lastPostJoinExitInvariant"
+  | "poolId__lowerTarget"
+  | "poolId__mainIndex"
+  | "poolId__managementFee"
+  | "poolId__name"
+  | "poolId__oracleEnabled"
+  | "poolId__owner"
+  | "poolId__poolType"
+  | "poolId__poolTypeVersion"
+  | "poolId__principalToken"
+  | "poolId__protocolAumFeeCache"
+  | "poolId__protocolId"
+  | "poolId__protocolSwapFeeCache"
+  | "poolId__protocolYieldFeeCache"
+  | "poolId__root3Alpha"
+  | "poolId__s"
+  | "poolId__sqrtAlpha"
+  | "poolId__sqrtBeta"
+  | "poolId__strategyType"
+  | "poolId__swapEnabled"
+  | "poolId__swapFee"
+  | "poolId__swapsCount"
+  | "poolId__symbol"
+  | "poolId__tauAlphaX"
+  | "poolId__tauAlphaY"
+  | "poolId__tauBetaX"
+  | "poolId__tauBetaY"
+  | "poolId__totalLiquidity"
+  | "poolId__totalShares"
+  | "poolId__totalSwapFee"
+  | "poolId__totalSwapVolume"
+  | "poolId__totalWeight"
+  | "poolId__tx"
+  | "poolId__u"
+  | "poolId__unitSeconds"
+  | "poolId__upperTarget"
+  | "poolId__v"
+  | "poolId__w"
+  | "poolId__wrappedIndex"
+  | "poolId__z"
   | "poolLiquidity"
   | "poolShareValue"
   | "poolTotalShares"
@@ -1284,7 +2525,69 @@ export interface PoolShare_Filter {
   userAddress_starts_with_nocase?: InputMaybe<Scalars["String"]>;
 }
 
-export type PoolShare_OrderBy = "balance" | "id" | "poolId" | "userAddress";
+export type PoolShare_OrderBy =
+  | "balance"
+  | "id"
+  | "poolId"
+  | "poolId__address"
+  | "poolId__alpha"
+  | "poolId__amp"
+  | "poolId__baseToken"
+  | "poolId__beta"
+  | "poolId__c"
+  | "poolId__createTime"
+  | "poolId__dSq"
+  | "poolId__delta"
+  | "poolId__epsilon"
+  | "poolId__expiryTime"
+  | "poolId__factory"
+  | "poolId__holdersCount"
+  | "poolId__id"
+  | "poolId__isInRecoveryMode"
+  | "poolId__isPaused"
+  | "poolId__lambda"
+  | "poolId__lastPostJoinExitInvariant"
+  | "poolId__lowerTarget"
+  | "poolId__mainIndex"
+  | "poolId__managementFee"
+  | "poolId__name"
+  | "poolId__oracleEnabled"
+  | "poolId__owner"
+  | "poolId__poolType"
+  | "poolId__poolTypeVersion"
+  | "poolId__principalToken"
+  | "poolId__protocolAumFeeCache"
+  | "poolId__protocolId"
+  | "poolId__protocolSwapFeeCache"
+  | "poolId__protocolYieldFeeCache"
+  | "poolId__root3Alpha"
+  | "poolId__s"
+  | "poolId__sqrtAlpha"
+  | "poolId__sqrtBeta"
+  | "poolId__strategyType"
+  | "poolId__swapEnabled"
+  | "poolId__swapFee"
+  | "poolId__swapsCount"
+  | "poolId__symbol"
+  | "poolId__tauAlphaX"
+  | "poolId__tauAlphaY"
+  | "poolId__tauBetaX"
+  | "poolId__tauBetaY"
+  | "poolId__totalLiquidity"
+  | "poolId__totalShares"
+  | "poolId__totalSwapFee"
+  | "poolId__totalSwapVolume"
+  | "poolId__totalWeight"
+  | "poolId__tx"
+  | "poolId__u"
+  | "poolId__unitSeconds"
+  | "poolId__upperTarget"
+  | "poolId__v"
+  | "poolId__w"
+  | "poolId__wrappedIndex"
+  | "poolId__z"
+  | "userAddress"
+  | "userAddress__id";
 
 export interface PoolSnapshot {
   __typename: "PoolSnapshot";
@@ -1404,6 +2707,63 @@ export type PoolSnapshot_OrderBy =
   | "id"
   | "liquidity"
   | "pool"
+  | "pool__address"
+  | "pool__alpha"
+  | "pool__amp"
+  | "pool__baseToken"
+  | "pool__beta"
+  | "pool__c"
+  | "pool__createTime"
+  | "pool__dSq"
+  | "pool__delta"
+  | "pool__epsilon"
+  | "pool__expiryTime"
+  | "pool__factory"
+  | "pool__holdersCount"
+  | "pool__id"
+  | "pool__isInRecoveryMode"
+  | "pool__isPaused"
+  | "pool__lambda"
+  | "pool__lastPostJoinExitInvariant"
+  | "pool__lowerTarget"
+  | "pool__mainIndex"
+  | "pool__managementFee"
+  | "pool__name"
+  | "pool__oracleEnabled"
+  | "pool__owner"
+  | "pool__poolType"
+  | "pool__poolTypeVersion"
+  | "pool__principalToken"
+  | "pool__protocolAumFeeCache"
+  | "pool__protocolId"
+  | "pool__protocolSwapFeeCache"
+  | "pool__protocolYieldFeeCache"
+  | "pool__root3Alpha"
+  | "pool__s"
+  | "pool__sqrtAlpha"
+  | "pool__sqrtBeta"
+  | "pool__strategyType"
+  | "pool__swapEnabled"
+  | "pool__swapFee"
+  | "pool__swapsCount"
+  | "pool__symbol"
+  | "pool__tauAlphaX"
+  | "pool__tauAlphaY"
+  | "pool__tauBetaX"
+  | "pool__tauBetaY"
+  | "pool__totalLiquidity"
+  | "pool__totalShares"
+  | "pool__totalSwapFee"
+  | "pool__totalSwapVolume"
+  | "pool__totalWeight"
+  | "pool__tx"
+  | "pool__u"
+  | "pool__unitSeconds"
+  | "pool__upperTarget"
+  | "pool__v"
+  | "pool__w"
+  | "pool__wrappedIndex"
+  | "pool__z"
   | "swapFees"
   | "swapVolume"
   | "swapsCount"
@@ -1423,6 +2783,7 @@ export interface PoolToken {
   managedBalance: Scalars["BigDecimal"];
   managements?: Maybe<Array<ManagementOperation>>;
   name: Scalars["String"];
+  oldPriceRate?: Maybe<Scalars["BigDecimal"]>;
   poolId?: Maybe<Pool>;
   priceRate: Scalars["BigDecimal"];
   symbol: Scalars["String"];
@@ -1545,6 +2906,14 @@ export interface PoolToken_Filter {
   name_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   name_starts_with?: InputMaybe<Scalars["String"]>;
   name_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  oldPriceRate?: InputMaybe<Scalars["BigDecimal"]>;
+  oldPriceRate_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  oldPriceRate_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  oldPriceRate_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  oldPriceRate_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  oldPriceRate_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  oldPriceRate_not?: InputMaybe<Scalars["BigDecimal"]>;
+  oldPriceRate_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
   or?: InputMaybe<Array<InputMaybe<PoolToken_Filter>>>;
   poolId?: InputMaybe<Scalars["String"]>;
   poolId_?: InputMaybe<Pool_Filter>;
@@ -1638,10 +3007,81 @@ export type PoolToken_OrderBy =
   | "managedBalance"
   | "managements"
   | "name"
+  | "oldPriceRate"
   | "poolId"
+  | "poolId__address"
+  | "poolId__alpha"
+  | "poolId__amp"
+  | "poolId__baseToken"
+  | "poolId__beta"
+  | "poolId__c"
+  | "poolId__createTime"
+  | "poolId__dSq"
+  | "poolId__delta"
+  | "poolId__epsilon"
+  | "poolId__expiryTime"
+  | "poolId__factory"
+  | "poolId__holdersCount"
+  | "poolId__id"
+  | "poolId__isInRecoveryMode"
+  | "poolId__isPaused"
+  | "poolId__lambda"
+  | "poolId__lastPostJoinExitInvariant"
+  | "poolId__lowerTarget"
+  | "poolId__mainIndex"
+  | "poolId__managementFee"
+  | "poolId__name"
+  | "poolId__oracleEnabled"
+  | "poolId__owner"
+  | "poolId__poolType"
+  | "poolId__poolTypeVersion"
+  | "poolId__principalToken"
+  | "poolId__protocolAumFeeCache"
+  | "poolId__protocolId"
+  | "poolId__protocolSwapFeeCache"
+  | "poolId__protocolYieldFeeCache"
+  | "poolId__root3Alpha"
+  | "poolId__s"
+  | "poolId__sqrtAlpha"
+  | "poolId__sqrtBeta"
+  | "poolId__strategyType"
+  | "poolId__swapEnabled"
+  | "poolId__swapFee"
+  | "poolId__swapsCount"
+  | "poolId__symbol"
+  | "poolId__tauAlphaX"
+  | "poolId__tauAlphaY"
+  | "poolId__tauBetaX"
+  | "poolId__tauBetaY"
+  | "poolId__totalLiquidity"
+  | "poolId__totalShares"
+  | "poolId__totalSwapFee"
+  | "poolId__totalSwapVolume"
+  | "poolId__totalWeight"
+  | "poolId__tx"
+  | "poolId__u"
+  | "poolId__unitSeconds"
+  | "poolId__upperTarget"
+  | "poolId__v"
+  | "poolId__w"
+  | "poolId__wrappedIndex"
+  | "poolId__z"
   | "priceRate"
   | "symbol"
   | "token"
+  | "token__address"
+  | "token__decimals"
+  | "token__id"
+  | "token__latestFXPrice"
+  | "token__latestUSDPrice"
+  | "token__latestUSDPriceTimestamp"
+  | "token__name"
+  | "token__symbol"
+  | "token__totalBalanceNotional"
+  | "token__totalBalanceUSD"
+  | "token__totalSwapCount"
+  | "token__totalVolumeNotional"
+  | "token__totalVolumeUSD"
   | "weight";
 
 export interface Pool_Filter {
@@ -1750,6 +3190,13 @@ export interface Pool_Filter {
   factory_not?: InputMaybe<Scalars["Bytes"]>;
   factory_not_contains?: InputMaybe<Scalars["Bytes"]>;
   factory_not_in?: InputMaybe<Array<Scalars["Bytes"]>>;
+  gaugesList?: InputMaybe<Array<Scalars["Bytes"]>>;
+  gaugesList_contains?: InputMaybe<Array<Scalars["Bytes"]>>;
+  gaugesList_contains_nocase?: InputMaybe<Array<Scalars["Bytes"]>>;
+  gaugesList_not?: InputMaybe<Array<Scalars["Bytes"]>>;
+  gaugesList_not_contains?: InputMaybe<Array<Scalars["Bytes"]>>;
+  gaugesList_not_contains_nocase?: InputMaybe<Array<Scalars["Bytes"]>>;
+  gauges_?: InputMaybe<LiquidityGauge_Filter>;
   historicalValues_?: InputMaybe<PoolHistoricalLiquidity_Filter>;
   holdersCount?: InputMaybe<Scalars["BigInt"]>;
   holdersCount_gt?: InputMaybe<Scalars["BigInt"]>;
@@ -1783,6 +3230,14 @@ export interface Pool_Filter {
   lambda_lte?: InputMaybe<Scalars["BigDecimal"]>;
   lambda_not?: InputMaybe<Scalars["BigDecimal"]>;
   lambda_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  lastPostJoinExitInvariant?: InputMaybe<Scalars["BigDecimal"]>;
+  lastPostJoinExitInvariant_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  lastPostJoinExitInvariant_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  lastPostJoinExitInvariant_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  lastPostJoinExitInvariant_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  lastPostJoinExitInvariant_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  lastPostJoinExitInvariant_not?: InputMaybe<Scalars["BigDecimal"]>;
+  lastPostJoinExitInvariant_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
   lowerTarget?: InputMaybe<Scalars["BigDecimal"]>;
   lowerTarget_gt?: InputMaybe<Scalars["BigDecimal"]>;
   lowerTarget_gte?: InputMaybe<Scalars["BigDecimal"]>;
@@ -1842,6 +3297,16 @@ export interface Pool_Filter {
   owner_not?: InputMaybe<Scalars["Bytes"]>;
   owner_not_contains?: InputMaybe<Scalars["Bytes"]>;
   owner_not_in?: InputMaybe<Array<Scalars["Bytes"]>>;
+  poolId?: InputMaybe<Scalars["Bytes"]>;
+  poolId_contains?: InputMaybe<Scalars["Bytes"]>;
+  poolId_gt?: InputMaybe<Scalars["Bytes"]>;
+  poolId_gte?: InputMaybe<Scalars["Bytes"]>;
+  poolId_in?: InputMaybe<Array<Scalars["Bytes"]>>;
+  poolId_lt?: InputMaybe<Scalars["Bytes"]>;
+  poolId_lte?: InputMaybe<Scalars["Bytes"]>;
+  poolId_not?: InputMaybe<Scalars["Bytes"]>;
+  poolId_not_contains?: InputMaybe<Scalars["Bytes"]>;
+  poolId_not_in?: InputMaybe<Array<Scalars["Bytes"]>>;
   poolType?: InputMaybe<Scalars["String"]>;
   poolTypeVersion?: InputMaybe<Scalars["Int"]>;
   poolTypeVersion_gt?: InputMaybe<Scalars["Int"]>;
@@ -1870,6 +3335,27 @@ export interface Pool_Filter {
   poolType_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   poolType_starts_with?: InputMaybe<Scalars["String"]>;
   poolType_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  preferentialGauge?: InputMaybe<Scalars["String"]>;
+  preferentialGauge_?: InputMaybe<LiquidityGauge_Filter>;
+  preferentialGauge_contains?: InputMaybe<Scalars["String"]>;
+  preferentialGauge_contains_nocase?: InputMaybe<Scalars["String"]>;
+  preferentialGauge_ends_with?: InputMaybe<Scalars["String"]>;
+  preferentialGauge_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  preferentialGauge_gt?: InputMaybe<Scalars["String"]>;
+  preferentialGauge_gte?: InputMaybe<Scalars["String"]>;
+  preferentialGauge_in?: InputMaybe<Array<Scalars["String"]>>;
+  preferentialGauge_lt?: InputMaybe<Scalars["String"]>;
+  preferentialGauge_lte?: InputMaybe<Scalars["String"]>;
+  preferentialGauge_not?: InputMaybe<Scalars["String"]>;
+  preferentialGauge_not_contains?: InputMaybe<Scalars["String"]>;
+  preferentialGauge_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  preferentialGauge_not_ends_with?: InputMaybe<Scalars["String"]>;
+  preferentialGauge_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  preferentialGauge_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  preferentialGauge_not_starts_with?: InputMaybe<Scalars["String"]>;
+  preferentialGauge_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  preferentialGauge_starts_with?: InputMaybe<Scalars["String"]>;
+  preferentialGauge_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   priceRateProviders_?: InputMaybe<PriceRateProvider_Filter>;
   principalToken?: InputMaybe<Scalars["Bytes"]>;
   principalToken_contains?: InputMaybe<Scalars["Bytes"]>;
@@ -1890,6 +3376,27 @@ export interface Pool_Filter {
   protocolAumFeeCache_not?: InputMaybe<Scalars["BigDecimal"]>;
   protocolAumFeeCache_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
   protocolId?: InputMaybe<Scalars["Int"]>;
+  protocolIdData?: InputMaybe<Scalars["String"]>;
+  protocolIdData_?: InputMaybe<ProtocolIdData_Filter>;
+  protocolIdData_contains?: InputMaybe<Scalars["String"]>;
+  protocolIdData_contains_nocase?: InputMaybe<Scalars["String"]>;
+  protocolIdData_ends_with?: InputMaybe<Scalars["String"]>;
+  protocolIdData_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  protocolIdData_gt?: InputMaybe<Scalars["String"]>;
+  protocolIdData_gte?: InputMaybe<Scalars["String"]>;
+  protocolIdData_in?: InputMaybe<Array<Scalars["String"]>>;
+  protocolIdData_lt?: InputMaybe<Scalars["String"]>;
+  protocolIdData_lte?: InputMaybe<Scalars["String"]>;
+  protocolIdData_not?: InputMaybe<Scalars["String"]>;
+  protocolIdData_not_contains?: InputMaybe<Scalars["String"]>;
+  protocolIdData_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  protocolIdData_not_ends_with?: InputMaybe<Scalars["String"]>;
+  protocolIdData_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  protocolIdData_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  protocolIdData_not_starts_with?: InputMaybe<Scalars["String"]>;
+  protocolIdData_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  protocolIdData_starts_with?: InputMaybe<Scalars["String"]>;
+  protocolIdData_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   protocolId_gt?: InputMaybe<Scalars["Int"]>;
   protocolId_gte?: InputMaybe<Scalars["Int"]>;
   protocolId_in?: InputMaybe<Array<Scalars["Int"]>>;
@@ -2178,24 +3685,41 @@ export type Pool_OrderBy =
   | "epsilon"
   | "expiryTime"
   | "factory"
+  | "gauges"
+  | "gaugesList"
   | "historicalValues"
   | "holdersCount"
   | "id"
   | "isInRecoveryMode"
   | "isPaused"
   | "lambda"
+  | "lastPostJoinExitInvariant"
   | "lowerTarget"
   | "mainIndex"
   | "managementFee"
   | "name"
   | "oracleEnabled"
   | "owner"
+  | "poolId"
   | "poolType"
   | "poolTypeVersion"
+  | "preferentialGauge"
+  | "preferentialGauge__id"
+  | "preferentialGauge__isKilled"
+  | "preferentialGauge__isPreferentialGauge"
+  | "preferentialGauge__poolAddress"
+  | "preferentialGauge__poolId"
+  | "preferentialGauge__relativeWeightCap"
+  | "preferentialGauge__streamer"
+  | "preferentialGauge__symbol"
+  | "preferentialGauge__totalSupply"
   | "priceRateProviders"
   | "principalToken"
   | "protocolAumFeeCache"
   | "protocolId"
+  | "protocolIdData"
+  | "protocolIdData__id"
+  | "protocolIdData__name"
   | "protocolSwapFeeCache"
   | "protocolYieldFeeCache"
   | "root3Alpha"
@@ -2227,6 +3751,12 @@ export type Pool_OrderBy =
   | "upperTarget"
   | "v"
   | "vaultID"
+  | "vaultID__id"
+  | "vaultID__poolCount"
+  | "vaultID__totalLiquidity"
+  | "vaultID__totalSwapCount"
+  | "vaultID__totalSwapFee"
+  | "vaultID__totalSwapVolume"
   | "w"
   | "weightUpdates"
   | "wrappedIndex"
@@ -2350,8 +3880,122 @@ export type PriceRateProvider_OrderBy =
   | "id"
   | "lastCached"
   | "poolId"
+  | "poolId__address"
+  | "poolId__alpha"
+  | "poolId__amp"
+  | "poolId__baseToken"
+  | "poolId__beta"
+  | "poolId__c"
+  | "poolId__createTime"
+  | "poolId__dSq"
+  | "poolId__delta"
+  | "poolId__epsilon"
+  | "poolId__expiryTime"
+  | "poolId__factory"
+  | "poolId__holdersCount"
+  | "poolId__id"
+  | "poolId__isInRecoveryMode"
+  | "poolId__isPaused"
+  | "poolId__lambda"
+  | "poolId__lastPostJoinExitInvariant"
+  | "poolId__lowerTarget"
+  | "poolId__mainIndex"
+  | "poolId__managementFee"
+  | "poolId__name"
+  | "poolId__oracleEnabled"
+  | "poolId__owner"
+  | "poolId__poolType"
+  | "poolId__poolTypeVersion"
+  | "poolId__principalToken"
+  | "poolId__protocolAumFeeCache"
+  | "poolId__protocolId"
+  | "poolId__protocolSwapFeeCache"
+  | "poolId__protocolYieldFeeCache"
+  | "poolId__root3Alpha"
+  | "poolId__s"
+  | "poolId__sqrtAlpha"
+  | "poolId__sqrtBeta"
+  | "poolId__strategyType"
+  | "poolId__swapEnabled"
+  | "poolId__swapFee"
+  | "poolId__swapsCount"
+  | "poolId__symbol"
+  | "poolId__tauAlphaX"
+  | "poolId__tauAlphaY"
+  | "poolId__tauBetaX"
+  | "poolId__tauBetaY"
+  | "poolId__totalLiquidity"
+  | "poolId__totalShares"
+  | "poolId__totalSwapFee"
+  | "poolId__totalSwapVolume"
+  | "poolId__totalWeight"
+  | "poolId__tx"
+  | "poolId__u"
+  | "poolId__unitSeconds"
+  | "poolId__upperTarget"
+  | "poolId__v"
+  | "poolId__w"
+  | "poolId__wrappedIndex"
+  | "poolId__z"
   | "rate"
-  | "token";
+  | "token"
+  | "token__address"
+  | "token__assetManager"
+  | "token__balance"
+  | "token__cashBalance"
+  | "token__decimals"
+  | "token__id"
+  | "token__index"
+  | "token__isExemptFromYieldProtocolFee"
+  | "token__managedBalance"
+  | "token__name"
+  | "token__oldPriceRate"
+  | "token__priceRate"
+  | "token__symbol"
+  | "token__weight";
+
+export interface ProtocolIdData {
+  __typename: "ProtocolIdData";
+  id: Scalars["ID"];
+  name: Scalars["String"];
+}
+
+export interface ProtocolIdData_Filter {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<ProtocolIdData_Filter>>>;
+  id?: InputMaybe<Scalars["ID"]>;
+  id_gt?: InputMaybe<Scalars["ID"]>;
+  id_gte?: InputMaybe<Scalars["ID"]>;
+  id_in?: InputMaybe<Array<Scalars["ID"]>>;
+  id_lt?: InputMaybe<Scalars["ID"]>;
+  id_lte?: InputMaybe<Scalars["ID"]>;
+  id_not?: InputMaybe<Scalars["ID"]>;
+  id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
+  name?: InputMaybe<Scalars["String"]>;
+  name_contains?: InputMaybe<Scalars["String"]>;
+  name_contains_nocase?: InputMaybe<Scalars["String"]>;
+  name_ends_with?: InputMaybe<Scalars["String"]>;
+  name_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  name_gt?: InputMaybe<Scalars["String"]>;
+  name_gte?: InputMaybe<Scalars["String"]>;
+  name_in?: InputMaybe<Array<Scalars["String"]>>;
+  name_lt?: InputMaybe<Scalars["String"]>;
+  name_lte?: InputMaybe<Scalars["String"]>;
+  name_not?: InputMaybe<Scalars["String"]>;
+  name_not_contains?: InputMaybe<Scalars["String"]>;
+  name_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  name_not_ends_with?: InputMaybe<Scalars["String"]>;
+  name_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  name_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  name_not_starts_with?: InputMaybe<Scalars["String"]>;
+  name_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  name_starts_with?: InputMaybe<Scalars["String"]>;
+  name_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  or?: InputMaybe<Array<InputMaybe<ProtocolIdData_Filter>>>;
+}
+
+export type ProtocolIdData_OrderBy = "id" | "name";
 
 export interface Query {
   __typename: "Query";
@@ -2365,14 +4009,30 @@ export interface Query {
   balancers: Array<Balancer>;
   block?: Maybe<Block>;
   blocks: Array<Block>;
+  gauge?: Maybe<Gauge>;
+  gaugeFactories: Array<GaugeFactory>;
+  gaugeFactory?: Maybe<GaugeFactory>;
+  gaugeShare?: Maybe<GaugeShare>;
+  gaugeShares: Array<GaugeShare>;
+  gaugeType?: Maybe<GaugeType>;
+  gaugeTypes: Array<GaugeType>;
+  gaugeVote?: Maybe<GaugeVote>;
+  gaugeVotes: Array<GaugeVote>;
+  gauges: Array<Gauge>;
   gradualWeightUpdate?: Maybe<GradualWeightUpdate>;
   gradualWeightUpdates: Array<GradualWeightUpdate>;
   joinExit?: Maybe<JoinExit>;
   joinExits: Array<JoinExit>;
   latestPrice?: Maybe<LatestPrice>;
   latestPrices: Array<LatestPrice>;
+  liquidityGauge?: Maybe<LiquidityGauge>;
+  liquidityGauges: Array<LiquidityGauge>;
+  lockSnapshot?: Maybe<LockSnapshot>;
+  lockSnapshots: Array<LockSnapshot>;
   managementOperation?: Maybe<ManagementOperation>;
   managementOperations: Array<ManagementOperation>;
+  omniVotingEscrowLock?: Maybe<OmniVotingEscrowLock>;
+  omniVotingEscrowLocks: Array<OmniVotingEscrowLock>;
   pool?: Maybe<Pool>;
   poolContract?: Maybe<PoolContract>;
   poolContracts: Array<PoolContract>;
@@ -2387,6 +4047,14 @@ export interface Query {
   pools: Array<Pool>;
   priceRateProvider?: Maybe<PriceRateProvider>;
   priceRateProviders: Array<PriceRateProvider>;
+  protocolIdData?: Maybe<ProtocolIdData>;
+  protocolIdDatas: Array<ProtocolIdData>;
+  rewardToken?: Maybe<RewardToken>;
+  rewardTokens: Array<RewardToken>;
+  rootGauge?: Maybe<RootGauge>;
+  rootGauges: Array<RootGauge>;
+  singleRecipientGauge?: Maybe<SingleRecipientGauge>;
+  singleRecipientGauges: Array<SingleRecipientGauge>;
   swap?: Maybe<Swap>;
   swapFeeUpdate?: Maybe<SwapFeeUpdate>;
   swapFeeUpdates: Array<SwapFeeUpdate>;
@@ -2405,6 +4073,10 @@ export interface Query {
   userInternalBalance?: Maybe<UserInternalBalance>;
   userInternalBalances: Array<UserInternalBalance>;
   users: Array<User>;
+  votingEscrow?: Maybe<VotingEscrow>;
+  votingEscrowLock?: Maybe<VotingEscrowLock>;
+  votingEscrowLocks: Array<VotingEscrowLock>;
+  votingEscrows: Array<VotingEscrow>;
 }
 
 export interface Query_MetaArgs {
@@ -2475,6 +4147,86 @@ export interface QueryBlocksArgs {
   where?: InputMaybe<Block_Filter>;
 }
 
+export interface QueryGaugeArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface QueryGaugeFactoriesArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<GaugeFactory_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<GaugeFactory_Filter>;
+}
+
+export interface QueryGaugeFactoryArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface QueryGaugeShareArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface QueryGaugeSharesArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<GaugeShare_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<GaugeShare_Filter>;
+}
+
+export interface QueryGaugeTypeArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface QueryGaugeTypesArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<GaugeType_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<GaugeType_Filter>;
+}
+
+export interface QueryGaugeVoteArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface QueryGaugeVotesArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<GaugeVote_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<GaugeVote_Filter>;
+}
+
+export interface QueryGaugesArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<Gauge_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<Gauge_Filter>;
+}
+
 export interface QueryGradualWeightUpdateArgs {
   block?: InputMaybe<Block_Height>;
   id: Scalars["ID"];
@@ -2523,6 +4275,38 @@ export interface QueryLatestPricesArgs {
   where?: InputMaybe<LatestPrice_Filter>;
 }
 
+export interface QueryLiquidityGaugeArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface QueryLiquidityGaugesArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<LiquidityGauge_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<LiquidityGauge_Filter>;
+}
+
+export interface QueryLockSnapshotArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface QueryLockSnapshotsArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<LockSnapshot_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<LockSnapshot_Filter>;
+}
+
 export interface QueryManagementOperationArgs {
   block?: InputMaybe<Block_Height>;
   id: Scalars["ID"];
@@ -2537,6 +4321,22 @@ export interface QueryManagementOperationsArgs {
   skip?: InputMaybe<Scalars["Int"]>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<ManagementOperation_Filter>;
+}
+
+export interface QueryOmniVotingEscrowLockArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface QueryOmniVotingEscrowLocksArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<OmniVotingEscrowLock_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<OmniVotingEscrowLock_Filter>;
 }
 
 export interface QueryPoolArgs {
@@ -2649,6 +4449,70 @@ export interface QueryPriceRateProvidersArgs {
   skip?: InputMaybe<Scalars["Int"]>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<PriceRateProvider_Filter>;
+}
+
+export interface QueryProtocolIdDataArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface QueryProtocolIdDatasArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<ProtocolIdData_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<ProtocolIdData_Filter>;
+}
+
+export interface QueryRewardTokenArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface QueryRewardTokensArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<RewardToken_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<RewardToken_Filter>;
+}
+
+export interface QueryRootGaugeArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface QueryRootGaugesArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<RootGauge_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<RootGauge_Filter>;
+}
+
+export interface QuerySingleRecipientGaugeArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface QuerySingleRecipientGaugesArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<SingleRecipientGauge_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<SingleRecipientGauge_Filter>;
 }
 
 export interface QuerySwapArgs {
@@ -2795,6 +4659,385 @@ export interface QueryUsersArgs {
   where?: InputMaybe<User_Filter>;
 }
 
+export interface QueryVotingEscrowArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface QueryVotingEscrowLockArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface QueryVotingEscrowLocksArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<VotingEscrowLock_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<VotingEscrowLock_Filter>;
+}
+
+export interface QueryVotingEscrowsArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<VotingEscrow_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<VotingEscrow_Filter>;
+}
+
+export interface RewardToken {
+  __typename: "RewardToken";
+  /**  ERC20 token decimals - zero if call to decimals() reverts  */
+  decimals: Scalars["Int"];
+  /**  Reference to LiquidityGauge entity  */
+  gauge: LiquidityGauge;
+  /**  Equal to: <tokenAddress>-<gaugeAddress>  */
+  id: Scalars["ID"];
+  /**  Timestamp at which finishes the period of rewards  */
+  periodFinish?: Maybe<Scalars["BigInt"]>;
+  /**  Rate of reward tokens streamed per second  */
+  rate?: Maybe<Scalars["BigDecimal"]>;
+  /**  ERC20 token symbol - empty string if call to symbol() reverts  */
+  symbol: Scalars["String"];
+  /**  Amount of reward tokens that has been deposited into the gauge  */
+  totalDeposited: Scalars["BigDecimal"];
+}
+
+export interface RewardToken_Filter {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<RewardToken_Filter>>>;
+  decimals?: InputMaybe<Scalars["Int"]>;
+  decimals_gt?: InputMaybe<Scalars["Int"]>;
+  decimals_gte?: InputMaybe<Scalars["Int"]>;
+  decimals_in?: InputMaybe<Array<Scalars["Int"]>>;
+  decimals_lt?: InputMaybe<Scalars["Int"]>;
+  decimals_lte?: InputMaybe<Scalars["Int"]>;
+  decimals_not?: InputMaybe<Scalars["Int"]>;
+  decimals_not_in?: InputMaybe<Array<Scalars["Int"]>>;
+  gauge?: InputMaybe<Scalars["String"]>;
+  gauge_?: InputMaybe<LiquidityGauge_Filter>;
+  gauge_contains?: InputMaybe<Scalars["String"]>;
+  gauge_contains_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_ends_with?: InputMaybe<Scalars["String"]>;
+  gauge_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_gt?: InputMaybe<Scalars["String"]>;
+  gauge_gte?: InputMaybe<Scalars["String"]>;
+  gauge_in?: InputMaybe<Array<Scalars["String"]>>;
+  gauge_lt?: InputMaybe<Scalars["String"]>;
+  gauge_lte?: InputMaybe<Scalars["String"]>;
+  gauge_not?: InputMaybe<Scalars["String"]>;
+  gauge_not_contains?: InputMaybe<Scalars["String"]>;
+  gauge_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_not_ends_with?: InputMaybe<Scalars["String"]>;
+  gauge_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  gauge_not_starts_with?: InputMaybe<Scalars["String"]>;
+  gauge_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_starts_with?: InputMaybe<Scalars["String"]>;
+  gauge_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars["ID"]>;
+  id_gt?: InputMaybe<Scalars["ID"]>;
+  id_gte?: InputMaybe<Scalars["ID"]>;
+  id_in?: InputMaybe<Array<Scalars["ID"]>>;
+  id_lt?: InputMaybe<Scalars["ID"]>;
+  id_lte?: InputMaybe<Scalars["ID"]>;
+  id_not?: InputMaybe<Scalars["ID"]>;
+  id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
+  or?: InputMaybe<Array<InputMaybe<RewardToken_Filter>>>;
+  periodFinish?: InputMaybe<Scalars["BigInt"]>;
+  periodFinish_gt?: InputMaybe<Scalars["BigInt"]>;
+  periodFinish_gte?: InputMaybe<Scalars["BigInt"]>;
+  periodFinish_in?: InputMaybe<Array<Scalars["BigInt"]>>;
+  periodFinish_lt?: InputMaybe<Scalars["BigInt"]>;
+  periodFinish_lte?: InputMaybe<Scalars["BigInt"]>;
+  periodFinish_not?: InputMaybe<Scalars["BigInt"]>;
+  periodFinish_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
+  rate?: InputMaybe<Scalars["BigDecimal"]>;
+  rate_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  rate_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  rate_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  rate_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  rate_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  rate_not?: InputMaybe<Scalars["BigDecimal"]>;
+  rate_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  symbol?: InputMaybe<Scalars["String"]>;
+  symbol_contains?: InputMaybe<Scalars["String"]>;
+  symbol_contains_nocase?: InputMaybe<Scalars["String"]>;
+  symbol_ends_with?: InputMaybe<Scalars["String"]>;
+  symbol_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  symbol_gt?: InputMaybe<Scalars["String"]>;
+  symbol_gte?: InputMaybe<Scalars["String"]>;
+  symbol_in?: InputMaybe<Array<Scalars["String"]>>;
+  symbol_lt?: InputMaybe<Scalars["String"]>;
+  symbol_lte?: InputMaybe<Scalars["String"]>;
+  symbol_not?: InputMaybe<Scalars["String"]>;
+  symbol_not_contains?: InputMaybe<Scalars["String"]>;
+  symbol_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  symbol_not_ends_with?: InputMaybe<Scalars["String"]>;
+  symbol_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  symbol_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  symbol_not_starts_with?: InputMaybe<Scalars["String"]>;
+  symbol_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  symbol_starts_with?: InputMaybe<Scalars["String"]>;
+  symbol_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  totalDeposited?: InputMaybe<Scalars["BigDecimal"]>;
+  totalDeposited_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  totalDeposited_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  totalDeposited_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  totalDeposited_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  totalDeposited_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  totalDeposited_not?: InputMaybe<Scalars["BigDecimal"]>;
+  totalDeposited_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+}
+
+export type RewardToken_OrderBy =
+  | "decimals"
+  | "gauge"
+  | "gauge__id"
+  | "gauge__isKilled"
+  | "gauge__isPreferentialGauge"
+  | "gauge__poolAddress"
+  | "gauge__poolId"
+  | "gauge__relativeWeightCap"
+  | "gauge__streamer"
+  | "gauge__symbol"
+  | "gauge__totalSupply"
+  | "id"
+  | "periodFinish"
+  | "rate"
+  | "symbol"
+  | "totalDeposited";
+
+export interface RootGauge {
+  __typename: "RootGauge";
+  /**  Chain where emissions by this gauge will be bridged to  */
+  chain: Chain;
+  /**  Factory contract address  */
+  factory: GaugeFactory;
+  /**  Reference to Gauge entity - created when LiquidityGauge is added to GaugeController */
+  gauge?: Maybe<Gauge>;
+  /**  RootGauge contract address */
+  id: Scalars["ID"];
+  /**  Whether Balancer DAO killed the gauge  */
+  isKilled: Scalars["Boolean"];
+  /**  Address where emissions by this gauge will be bridged to  */
+  recipient: Scalars["Bytes"];
+  /**  Relative weight cap of the gauge (0.01 = 1%) - V2 factories only  */
+  relativeWeightCap?: Maybe<Scalars["BigDecimal"]>;
+}
+
+export interface RootGauge_Filter {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<RootGauge_Filter>>>;
+  chain?: InputMaybe<Chain>;
+  chain_in?: InputMaybe<Array<Chain>>;
+  chain_not?: InputMaybe<Chain>;
+  chain_not_in?: InputMaybe<Array<Chain>>;
+  factory?: InputMaybe<Scalars["String"]>;
+  factory_?: InputMaybe<GaugeFactory_Filter>;
+  factory_contains?: InputMaybe<Scalars["String"]>;
+  factory_contains_nocase?: InputMaybe<Scalars["String"]>;
+  factory_ends_with?: InputMaybe<Scalars["String"]>;
+  factory_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  factory_gt?: InputMaybe<Scalars["String"]>;
+  factory_gte?: InputMaybe<Scalars["String"]>;
+  factory_in?: InputMaybe<Array<Scalars["String"]>>;
+  factory_lt?: InputMaybe<Scalars["String"]>;
+  factory_lte?: InputMaybe<Scalars["String"]>;
+  factory_not?: InputMaybe<Scalars["String"]>;
+  factory_not_contains?: InputMaybe<Scalars["String"]>;
+  factory_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  factory_not_ends_with?: InputMaybe<Scalars["String"]>;
+  factory_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  factory_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  factory_not_starts_with?: InputMaybe<Scalars["String"]>;
+  factory_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  factory_starts_with?: InputMaybe<Scalars["String"]>;
+  factory_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge?: InputMaybe<Scalars["String"]>;
+  gauge_?: InputMaybe<Gauge_Filter>;
+  gauge_contains?: InputMaybe<Scalars["String"]>;
+  gauge_contains_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_ends_with?: InputMaybe<Scalars["String"]>;
+  gauge_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_gt?: InputMaybe<Scalars["String"]>;
+  gauge_gte?: InputMaybe<Scalars["String"]>;
+  gauge_in?: InputMaybe<Array<Scalars["String"]>>;
+  gauge_lt?: InputMaybe<Scalars["String"]>;
+  gauge_lte?: InputMaybe<Scalars["String"]>;
+  gauge_not?: InputMaybe<Scalars["String"]>;
+  gauge_not_contains?: InputMaybe<Scalars["String"]>;
+  gauge_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_not_ends_with?: InputMaybe<Scalars["String"]>;
+  gauge_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  gauge_not_starts_with?: InputMaybe<Scalars["String"]>;
+  gauge_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_starts_with?: InputMaybe<Scalars["String"]>;
+  gauge_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars["ID"]>;
+  id_gt?: InputMaybe<Scalars["ID"]>;
+  id_gte?: InputMaybe<Scalars["ID"]>;
+  id_in?: InputMaybe<Array<Scalars["ID"]>>;
+  id_lt?: InputMaybe<Scalars["ID"]>;
+  id_lte?: InputMaybe<Scalars["ID"]>;
+  id_not?: InputMaybe<Scalars["ID"]>;
+  id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
+  isKilled?: InputMaybe<Scalars["Boolean"]>;
+  isKilled_in?: InputMaybe<Array<Scalars["Boolean"]>>;
+  isKilled_not?: InputMaybe<Scalars["Boolean"]>;
+  isKilled_not_in?: InputMaybe<Array<Scalars["Boolean"]>>;
+  or?: InputMaybe<Array<InputMaybe<RootGauge_Filter>>>;
+  recipient?: InputMaybe<Scalars["Bytes"]>;
+  recipient_contains?: InputMaybe<Scalars["Bytes"]>;
+  recipient_gt?: InputMaybe<Scalars["Bytes"]>;
+  recipient_gte?: InputMaybe<Scalars["Bytes"]>;
+  recipient_in?: InputMaybe<Array<Scalars["Bytes"]>>;
+  recipient_lt?: InputMaybe<Scalars["Bytes"]>;
+  recipient_lte?: InputMaybe<Scalars["Bytes"]>;
+  recipient_not?: InputMaybe<Scalars["Bytes"]>;
+  recipient_not_contains?: InputMaybe<Scalars["Bytes"]>;
+  recipient_not_in?: InputMaybe<Array<Scalars["Bytes"]>>;
+  relativeWeightCap?: InputMaybe<Scalars["BigDecimal"]>;
+  relativeWeightCap_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  relativeWeightCap_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  relativeWeightCap_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  relativeWeightCap_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  relativeWeightCap_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  relativeWeightCap_not?: InputMaybe<Scalars["BigDecimal"]>;
+  relativeWeightCap_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+}
+
+export type RootGauge_OrderBy =
+  | "chain"
+  | "factory"
+  | "factory__id"
+  | "factory__numGauges"
+  | "gauge"
+  | "gauge__addedTimestamp"
+  | "gauge__address"
+  | "gauge__id"
+  | "id"
+  | "isKilled"
+  | "recipient"
+  | "relativeWeightCap";
+
+export interface SingleRecipientGauge {
+  __typename: "SingleRecipientGauge";
+  /**  Factory contract address  */
+  factory: GaugeFactory;
+  /**  Reference to Gauge entity - created when SingleRecipientGauge is added to GaugeController */
+  gauge?: Maybe<Gauge>;
+  /**  SingleRecipientGauge contract address */
+  id: Scalars["ID"];
+  /**  Whether Balancer DAO killed the gauge  */
+  isKilled: Scalars["Boolean"];
+  /**  Address where emissions for this gauge will be sent to  */
+  recipient: Scalars["Bytes"];
+  /**  Relative weight cap of the gauge (0.01 = 1%) - V2 factories only  */
+  relativeWeightCap?: Maybe<Scalars["BigDecimal"]>;
+}
+
+export interface SingleRecipientGauge_Filter {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<SingleRecipientGauge_Filter>>>;
+  factory?: InputMaybe<Scalars["String"]>;
+  factory_?: InputMaybe<GaugeFactory_Filter>;
+  factory_contains?: InputMaybe<Scalars["String"]>;
+  factory_contains_nocase?: InputMaybe<Scalars["String"]>;
+  factory_ends_with?: InputMaybe<Scalars["String"]>;
+  factory_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  factory_gt?: InputMaybe<Scalars["String"]>;
+  factory_gte?: InputMaybe<Scalars["String"]>;
+  factory_in?: InputMaybe<Array<Scalars["String"]>>;
+  factory_lt?: InputMaybe<Scalars["String"]>;
+  factory_lte?: InputMaybe<Scalars["String"]>;
+  factory_not?: InputMaybe<Scalars["String"]>;
+  factory_not_contains?: InputMaybe<Scalars["String"]>;
+  factory_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  factory_not_ends_with?: InputMaybe<Scalars["String"]>;
+  factory_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  factory_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  factory_not_starts_with?: InputMaybe<Scalars["String"]>;
+  factory_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  factory_starts_with?: InputMaybe<Scalars["String"]>;
+  factory_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge?: InputMaybe<Scalars["String"]>;
+  gauge_?: InputMaybe<Gauge_Filter>;
+  gauge_contains?: InputMaybe<Scalars["String"]>;
+  gauge_contains_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_ends_with?: InputMaybe<Scalars["String"]>;
+  gauge_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_gt?: InputMaybe<Scalars["String"]>;
+  gauge_gte?: InputMaybe<Scalars["String"]>;
+  gauge_in?: InputMaybe<Array<Scalars["String"]>>;
+  gauge_lt?: InputMaybe<Scalars["String"]>;
+  gauge_lte?: InputMaybe<Scalars["String"]>;
+  gauge_not?: InputMaybe<Scalars["String"]>;
+  gauge_not_contains?: InputMaybe<Scalars["String"]>;
+  gauge_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_not_ends_with?: InputMaybe<Scalars["String"]>;
+  gauge_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  gauge_not_starts_with?: InputMaybe<Scalars["String"]>;
+  gauge_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  gauge_starts_with?: InputMaybe<Scalars["String"]>;
+  gauge_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars["ID"]>;
+  id_gt?: InputMaybe<Scalars["ID"]>;
+  id_gte?: InputMaybe<Scalars["ID"]>;
+  id_in?: InputMaybe<Array<Scalars["ID"]>>;
+  id_lt?: InputMaybe<Scalars["ID"]>;
+  id_lte?: InputMaybe<Scalars["ID"]>;
+  id_not?: InputMaybe<Scalars["ID"]>;
+  id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
+  isKilled?: InputMaybe<Scalars["Boolean"]>;
+  isKilled_in?: InputMaybe<Array<Scalars["Boolean"]>>;
+  isKilled_not?: InputMaybe<Scalars["Boolean"]>;
+  isKilled_not_in?: InputMaybe<Array<Scalars["Boolean"]>>;
+  or?: InputMaybe<Array<InputMaybe<SingleRecipientGauge_Filter>>>;
+  recipient?: InputMaybe<Scalars["Bytes"]>;
+  recipient_contains?: InputMaybe<Scalars["Bytes"]>;
+  recipient_gt?: InputMaybe<Scalars["Bytes"]>;
+  recipient_gte?: InputMaybe<Scalars["Bytes"]>;
+  recipient_in?: InputMaybe<Array<Scalars["Bytes"]>>;
+  recipient_lt?: InputMaybe<Scalars["Bytes"]>;
+  recipient_lte?: InputMaybe<Scalars["Bytes"]>;
+  recipient_not?: InputMaybe<Scalars["Bytes"]>;
+  recipient_not_contains?: InputMaybe<Scalars["Bytes"]>;
+  recipient_not_in?: InputMaybe<Array<Scalars["Bytes"]>>;
+  relativeWeightCap?: InputMaybe<Scalars["BigDecimal"]>;
+  relativeWeightCap_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  relativeWeightCap_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  relativeWeightCap_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  relativeWeightCap_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  relativeWeightCap_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  relativeWeightCap_not?: InputMaybe<Scalars["BigDecimal"]>;
+  relativeWeightCap_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+}
+
+export type SingleRecipientGauge_OrderBy =
+  | "factory"
+  | "factory__id"
+  | "factory__numGauges"
+  | "gauge"
+  | "gauge__addedTimestamp"
+  | "gauge__address"
+  | "gauge__id"
+  | "id"
+  | "isKilled"
+  | "recipient"
+  | "relativeWeightCap";
+
 export interface Subscription {
   __typename: "Subscription";
   /** Access to subgraph metadata */
@@ -2807,14 +5050,30 @@ export interface Subscription {
   balancers: Array<Balancer>;
   block?: Maybe<Block>;
   blocks: Array<Block>;
+  gauge?: Maybe<Gauge>;
+  gaugeFactories: Array<GaugeFactory>;
+  gaugeFactory?: Maybe<GaugeFactory>;
+  gaugeShare?: Maybe<GaugeShare>;
+  gaugeShares: Array<GaugeShare>;
+  gaugeType?: Maybe<GaugeType>;
+  gaugeTypes: Array<GaugeType>;
+  gaugeVote?: Maybe<GaugeVote>;
+  gaugeVotes: Array<GaugeVote>;
+  gauges: Array<Gauge>;
   gradualWeightUpdate?: Maybe<GradualWeightUpdate>;
   gradualWeightUpdates: Array<GradualWeightUpdate>;
   joinExit?: Maybe<JoinExit>;
   joinExits: Array<JoinExit>;
   latestPrice?: Maybe<LatestPrice>;
   latestPrices: Array<LatestPrice>;
+  liquidityGauge?: Maybe<LiquidityGauge>;
+  liquidityGauges: Array<LiquidityGauge>;
+  lockSnapshot?: Maybe<LockSnapshot>;
+  lockSnapshots: Array<LockSnapshot>;
   managementOperation?: Maybe<ManagementOperation>;
   managementOperations: Array<ManagementOperation>;
+  omniVotingEscrowLock?: Maybe<OmniVotingEscrowLock>;
+  omniVotingEscrowLocks: Array<OmniVotingEscrowLock>;
   pool?: Maybe<Pool>;
   poolContract?: Maybe<PoolContract>;
   poolContracts: Array<PoolContract>;
@@ -2829,6 +5088,14 @@ export interface Subscription {
   pools: Array<Pool>;
   priceRateProvider?: Maybe<PriceRateProvider>;
   priceRateProviders: Array<PriceRateProvider>;
+  protocolIdData?: Maybe<ProtocolIdData>;
+  protocolIdDatas: Array<ProtocolIdData>;
+  rewardToken?: Maybe<RewardToken>;
+  rewardTokens: Array<RewardToken>;
+  rootGauge?: Maybe<RootGauge>;
+  rootGauges: Array<RootGauge>;
+  singleRecipientGauge?: Maybe<SingleRecipientGauge>;
+  singleRecipientGauges: Array<SingleRecipientGauge>;
   swap?: Maybe<Swap>;
   swapFeeUpdate?: Maybe<SwapFeeUpdate>;
   swapFeeUpdates: Array<SwapFeeUpdate>;
@@ -2847,6 +5114,10 @@ export interface Subscription {
   userInternalBalance?: Maybe<UserInternalBalance>;
   userInternalBalances: Array<UserInternalBalance>;
   users: Array<User>;
+  votingEscrow?: Maybe<VotingEscrow>;
+  votingEscrowLock?: Maybe<VotingEscrowLock>;
+  votingEscrowLocks: Array<VotingEscrowLock>;
+  votingEscrows: Array<VotingEscrow>;
 }
 
 export interface Subscription_MetaArgs {
@@ -2917,6 +5188,86 @@ export interface SubscriptionBlocksArgs {
   where?: InputMaybe<Block_Filter>;
 }
 
+export interface SubscriptionGaugeArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface SubscriptionGaugeFactoriesArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<GaugeFactory_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<GaugeFactory_Filter>;
+}
+
+export interface SubscriptionGaugeFactoryArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface SubscriptionGaugeShareArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface SubscriptionGaugeSharesArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<GaugeShare_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<GaugeShare_Filter>;
+}
+
+export interface SubscriptionGaugeTypeArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface SubscriptionGaugeTypesArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<GaugeType_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<GaugeType_Filter>;
+}
+
+export interface SubscriptionGaugeVoteArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface SubscriptionGaugeVotesArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<GaugeVote_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<GaugeVote_Filter>;
+}
+
+export interface SubscriptionGaugesArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<Gauge_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<Gauge_Filter>;
+}
+
 export interface SubscriptionGradualWeightUpdateArgs {
   block?: InputMaybe<Block_Height>;
   id: Scalars["ID"];
@@ -2965,6 +5316,38 @@ export interface SubscriptionLatestPricesArgs {
   where?: InputMaybe<LatestPrice_Filter>;
 }
 
+export interface SubscriptionLiquidityGaugeArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface SubscriptionLiquidityGaugesArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<LiquidityGauge_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<LiquidityGauge_Filter>;
+}
+
+export interface SubscriptionLockSnapshotArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface SubscriptionLockSnapshotsArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<LockSnapshot_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<LockSnapshot_Filter>;
+}
+
 export interface SubscriptionManagementOperationArgs {
   block?: InputMaybe<Block_Height>;
   id: Scalars["ID"];
@@ -2979,6 +5362,22 @@ export interface SubscriptionManagementOperationsArgs {
   skip?: InputMaybe<Scalars["Int"]>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<ManagementOperation_Filter>;
+}
+
+export interface SubscriptionOmniVotingEscrowLockArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface SubscriptionOmniVotingEscrowLocksArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<OmniVotingEscrowLock_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<OmniVotingEscrowLock_Filter>;
 }
 
 export interface SubscriptionPoolArgs {
@@ -3091,6 +5490,70 @@ export interface SubscriptionPriceRateProvidersArgs {
   skip?: InputMaybe<Scalars["Int"]>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<PriceRateProvider_Filter>;
+}
+
+export interface SubscriptionProtocolIdDataArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface SubscriptionProtocolIdDatasArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<ProtocolIdData_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<ProtocolIdData_Filter>;
+}
+
+export interface SubscriptionRewardTokenArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface SubscriptionRewardTokensArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<RewardToken_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<RewardToken_Filter>;
+}
+
+export interface SubscriptionRootGaugeArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface SubscriptionRootGaugesArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<RootGauge_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<RootGauge_Filter>;
+}
+
+export interface SubscriptionSingleRecipientGaugeArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface SubscriptionSingleRecipientGaugesArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<SingleRecipientGauge_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<SingleRecipientGauge_Filter>;
 }
 
 export interface SubscriptionSwapArgs {
@@ -3237,6 +5700,38 @@ export interface SubscriptionUsersArgs {
   where?: InputMaybe<User_Filter>;
 }
 
+export interface SubscriptionVotingEscrowArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface SubscriptionVotingEscrowLockArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface SubscriptionVotingEscrowLocksArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<VotingEscrowLock_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<VotingEscrowLock_Filter>;
+}
+
+export interface SubscriptionVotingEscrowsArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<VotingEscrow_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<VotingEscrow_Filter>;
+}
+
 export interface Swap {
   __typename: "Swap";
   caller: Scalars["Bytes"];
@@ -3346,6 +5841,63 @@ export type SwapFeeUpdate_OrderBy =
   | "endTimestamp"
   | "id"
   | "pool"
+  | "pool__address"
+  | "pool__alpha"
+  | "pool__amp"
+  | "pool__baseToken"
+  | "pool__beta"
+  | "pool__c"
+  | "pool__createTime"
+  | "pool__dSq"
+  | "pool__delta"
+  | "pool__epsilon"
+  | "pool__expiryTime"
+  | "pool__factory"
+  | "pool__holdersCount"
+  | "pool__id"
+  | "pool__isInRecoveryMode"
+  | "pool__isPaused"
+  | "pool__lambda"
+  | "pool__lastPostJoinExitInvariant"
+  | "pool__lowerTarget"
+  | "pool__mainIndex"
+  | "pool__managementFee"
+  | "pool__name"
+  | "pool__oracleEnabled"
+  | "pool__owner"
+  | "pool__poolType"
+  | "pool__poolTypeVersion"
+  | "pool__principalToken"
+  | "pool__protocolAumFeeCache"
+  | "pool__protocolId"
+  | "pool__protocolSwapFeeCache"
+  | "pool__protocolYieldFeeCache"
+  | "pool__root3Alpha"
+  | "pool__s"
+  | "pool__sqrtAlpha"
+  | "pool__sqrtBeta"
+  | "pool__strategyType"
+  | "pool__swapEnabled"
+  | "pool__swapFee"
+  | "pool__swapsCount"
+  | "pool__symbol"
+  | "pool__tauAlphaX"
+  | "pool__tauAlphaY"
+  | "pool__tauBetaX"
+  | "pool__tauBetaY"
+  | "pool__totalLiquidity"
+  | "pool__totalShares"
+  | "pool__totalSwapFee"
+  | "pool__totalSwapVolume"
+  | "pool__totalWeight"
+  | "pool__tx"
+  | "pool__u"
+  | "pool__unitSeconds"
+  | "pool__upperTarget"
+  | "pool__v"
+  | "pool__w"
+  | "pool__wrappedIndex"
+  | "pool__z"
   | "scheduledTimestamp"
   | "startSwapFeePercentage"
   | "startTimestamp";
@@ -3523,6 +6075,63 @@ export type Swap_OrderBy =
   | "caller"
   | "id"
   | "poolId"
+  | "poolId__address"
+  | "poolId__alpha"
+  | "poolId__amp"
+  | "poolId__baseToken"
+  | "poolId__beta"
+  | "poolId__c"
+  | "poolId__createTime"
+  | "poolId__dSq"
+  | "poolId__delta"
+  | "poolId__epsilon"
+  | "poolId__expiryTime"
+  | "poolId__factory"
+  | "poolId__holdersCount"
+  | "poolId__id"
+  | "poolId__isInRecoveryMode"
+  | "poolId__isPaused"
+  | "poolId__lambda"
+  | "poolId__lastPostJoinExitInvariant"
+  | "poolId__lowerTarget"
+  | "poolId__mainIndex"
+  | "poolId__managementFee"
+  | "poolId__name"
+  | "poolId__oracleEnabled"
+  | "poolId__owner"
+  | "poolId__poolType"
+  | "poolId__poolTypeVersion"
+  | "poolId__principalToken"
+  | "poolId__protocolAumFeeCache"
+  | "poolId__protocolId"
+  | "poolId__protocolSwapFeeCache"
+  | "poolId__protocolYieldFeeCache"
+  | "poolId__root3Alpha"
+  | "poolId__s"
+  | "poolId__sqrtAlpha"
+  | "poolId__sqrtBeta"
+  | "poolId__strategyType"
+  | "poolId__swapEnabled"
+  | "poolId__swapFee"
+  | "poolId__swapsCount"
+  | "poolId__symbol"
+  | "poolId__tauAlphaX"
+  | "poolId__tauAlphaY"
+  | "poolId__tauBetaX"
+  | "poolId__tauBetaY"
+  | "poolId__totalLiquidity"
+  | "poolId__totalShares"
+  | "poolId__totalSwapFee"
+  | "poolId__totalSwapVolume"
+  | "poolId__totalWeight"
+  | "poolId__tx"
+  | "poolId__u"
+  | "poolId__unitSeconds"
+  | "poolId__upperTarget"
+  | "poolId__v"
+  | "poolId__w"
+  | "poolId__wrappedIndex"
+  | "poolId__z"
   | "timestamp"
   | "tokenAmountIn"
   | "tokenAmountOut"
@@ -3532,6 +6141,7 @@ export type Swap_OrderBy =
   | "tokenOutSym"
   | "tx"
   | "userAddress"
+  | "userAddress__id"
   | "valueUSD";
 
 export interface Token {
@@ -3542,6 +6152,7 @@ export interface Token {
   latestFXPrice?: Maybe<Scalars["BigDecimal"]>;
   latestPrice?: Maybe<LatestPrice>;
   latestUSDPrice?: Maybe<Scalars["BigDecimal"]>;
+  latestUSDPriceTimestamp?: Maybe<Scalars["BigInt"]>;
   name?: Maybe<Scalars["String"]>;
   pool?: Maybe<Pool>;
   symbol?: Maybe<Scalars["String"]>;
@@ -3658,6 +6269,63 @@ export type TokenPrice_OrderBy =
   | "block"
   | "id"
   | "poolId"
+  | "poolId__address"
+  | "poolId__alpha"
+  | "poolId__amp"
+  | "poolId__baseToken"
+  | "poolId__beta"
+  | "poolId__c"
+  | "poolId__createTime"
+  | "poolId__dSq"
+  | "poolId__delta"
+  | "poolId__epsilon"
+  | "poolId__expiryTime"
+  | "poolId__factory"
+  | "poolId__holdersCount"
+  | "poolId__id"
+  | "poolId__isInRecoveryMode"
+  | "poolId__isPaused"
+  | "poolId__lambda"
+  | "poolId__lastPostJoinExitInvariant"
+  | "poolId__lowerTarget"
+  | "poolId__mainIndex"
+  | "poolId__managementFee"
+  | "poolId__name"
+  | "poolId__oracleEnabled"
+  | "poolId__owner"
+  | "poolId__poolType"
+  | "poolId__poolTypeVersion"
+  | "poolId__principalToken"
+  | "poolId__protocolAumFeeCache"
+  | "poolId__protocolId"
+  | "poolId__protocolSwapFeeCache"
+  | "poolId__protocolYieldFeeCache"
+  | "poolId__root3Alpha"
+  | "poolId__s"
+  | "poolId__sqrtAlpha"
+  | "poolId__sqrtBeta"
+  | "poolId__strategyType"
+  | "poolId__swapEnabled"
+  | "poolId__swapFee"
+  | "poolId__swapsCount"
+  | "poolId__symbol"
+  | "poolId__tauAlphaX"
+  | "poolId__tauAlphaY"
+  | "poolId__tauBetaX"
+  | "poolId__tauBetaY"
+  | "poolId__totalLiquidity"
+  | "poolId__totalShares"
+  | "poolId__totalSwapFee"
+  | "poolId__totalSwapVolume"
+  | "poolId__totalWeight"
+  | "poolId__tx"
+  | "poolId__u"
+  | "poolId__unitSeconds"
+  | "poolId__upperTarget"
+  | "poolId__v"
+  | "poolId__w"
+  | "poolId__wrappedIndex"
+  | "poolId__z"
   | "price"
   | "pricingAsset"
   | "timestamp";
@@ -3762,6 +6430,19 @@ export type TokenSnapshot_OrderBy =
   | "id"
   | "timestamp"
   | "token"
+  | "token__address"
+  | "token__decimals"
+  | "token__id"
+  | "token__latestFXPrice"
+  | "token__latestUSDPrice"
+  | "token__latestUSDPriceTimestamp"
+  | "token__name"
+  | "token__symbol"
+  | "token__totalBalanceNotional"
+  | "token__totalBalanceUSD"
+  | "token__totalSwapCount"
+  | "token__totalVolumeNotional"
+  | "token__totalVolumeUSD"
   | "totalBalanceNotional"
   | "totalBalanceUSD"
   | "totalSwapCount"
@@ -3838,6 +6519,14 @@ export interface Token_Filter {
   latestPrice_starts_with?: InputMaybe<Scalars["String"]>;
   latestPrice_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   latestUSDPrice?: InputMaybe<Scalars["BigDecimal"]>;
+  latestUSDPriceTimestamp?: InputMaybe<Scalars["BigInt"]>;
+  latestUSDPriceTimestamp_gt?: InputMaybe<Scalars["BigInt"]>;
+  latestUSDPriceTimestamp_gte?: InputMaybe<Scalars["BigInt"]>;
+  latestUSDPriceTimestamp_in?: InputMaybe<Array<Scalars["BigInt"]>>;
+  latestUSDPriceTimestamp_lt?: InputMaybe<Scalars["BigInt"]>;
+  latestUSDPriceTimestamp_lte?: InputMaybe<Scalars["BigInt"]>;
+  latestUSDPriceTimestamp_not?: InputMaybe<Scalars["BigInt"]>;
+  latestUSDPriceTimestamp_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
   latestUSDPrice_gt?: InputMaybe<Scalars["BigDecimal"]>;
   latestUSDPrice_gte?: InputMaybe<Scalars["BigDecimal"]>;
   latestUSDPrice_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
@@ -3955,9 +6644,72 @@ export type Token_OrderBy =
   | "id"
   | "latestFXPrice"
   | "latestPrice"
+  | "latestPrice__asset"
+  | "latestPrice__block"
+  | "latestPrice__id"
+  | "latestPrice__price"
+  | "latestPrice__pricingAsset"
   | "latestUSDPrice"
+  | "latestUSDPriceTimestamp"
   | "name"
   | "pool"
+  | "pool__address"
+  | "pool__alpha"
+  | "pool__amp"
+  | "pool__baseToken"
+  | "pool__beta"
+  | "pool__c"
+  | "pool__createTime"
+  | "pool__dSq"
+  | "pool__delta"
+  | "pool__epsilon"
+  | "pool__expiryTime"
+  | "pool__factory"
+  | "pool__holdersCount"
+  | "pool__id"
+  | "pool__isInRecoveryMode"
+  | "pool__isPaused"
+  | "pool__lambda"
+  | "pool__lastPostJoinExitInvariant"
+  | "pool__lowerTarget"
+  | "pool__mainIndex"
+  | "pool__managementFee"
+  | "pool__name"
+  | "pool__oracleEnabled"
+  | "pool__owner"
+  | "pool__poolType"
+  | "pool__poolTypeVersion"
+  | "pool__principalToken"
+  | "pool__protocolAumFeeCache"
+  | "pool__protocolId"
+  | "pool__protocolSwapFeeCache"
+  | "pool__protocolYieldFeeCache"
+  | "pool__root3Alpha"
+  | "pool__s"
+  | "pool__sqrtAlpha"
+  | "pool__sqrtBeta"
+  | "pool__strategyType"
+  | "pool__swapEnabled"
+  | "pool__swapFee"
+  | "pool__swapsCount"
+  | "pool__symbol"
+  | "pool__tauAlphaX"
+  | "pool__tauAlphaY"
+  | "pool__tauBetaX"
+  | "pool__tauBetaY"
+  | "pool__totalLiquidity"
+  | "pool__totalShares"
+  | "pool__totalSwapFee"
+  | "pool__totalSwapVolume"
+  | "pool__totalWeight"
+  | "pool__tx"
+  | "pool__u"
+  | "pool__unitSeconds"
+  | "pool__upperTarget"
+  | "pool__v"
+  | "pool__w"
+  | "pool__wrappedIndex"
+  | "pool__z"
   | "symbol"
   | "totalBalanceNotional"
   | "totalBalanceUSD"
@@ -4047,6 +6799,9 @@ export interface TradePairSnapshot_Filter {
 export type TradePairSnapshot_OrderBy =
   | "id"
   | "pair"
+  | "pair__id"
+  | "pair__totalSwapFee"
+  | "pair__totalSwapVolume"
   | "timestamp"
   | "totalSwapFee"
   | "totalSwapVolume";
@@ -4127,16 +6882,75 @@ export interface TradePair_Filter {
 export type TradePair_OrderBy =
   | "id"
   | "token0"
+  | "token0__address"
+  | "token0__decimals"
+  | "token0__id"
+  | "token0__latestFXPrice"
+  | "token0__latestUSDPrice"
+  | "token0__latestUSDPriceTimestamp"
+  | "token0__name"
+  | "token0__symbol"
+  | "token0__totalBalanceNotional"
+  | "token0__totalBalanceUSD"
+  | "token0__totalSwapCount"
+  | "token0__totalVolumeNotional"
+  | "token0__totalVolumeUSD"
   | "token1"
+  | "token1__address"
+  | "token1__decimals"
+  | "token1__id"
+  | "token1__latestFXPrice"
+  | "token1__latestUSDPrice"
+  | "token1__latestUSDPriceTimestamp"
+  | "token1__name"
+  | "token1__symbol"
+  | "token1__totalBalanceNotional"
+  | "token1__totalBalanceUSD"
+  | "token1__totalSwapCount"
+  | "token1__totalVolumeNotional"
+  | "token1__totalVolumeUSD"
   | "totalSwapFee"
   | "totalSwapVolume";
 
 export interface User {
   __typename: "User";
+  /**  List of gauge the user has shares  */
+  gaugeShares?: Maybe<Array<GaugeShare>>;
+  /**  List of votes on gauges  */
+  gaugeVotes?: Maybe<Array<GaugeVote>>;
+  /**  User address  */
   id: Scalars["ID"];
+  /**  List of omni locks the user created  */
+  omniVotingLocks?: Maybe<Array<OmniVotingEscrowLock>>;
   sharesOwned?: Maybe<Array<PoolShare>>;
   swaps?: Maybe<Array<Swap>>;
   userInternalBalances?: Maybe<Array<UserInternalBalance>>;
+  /**  List of locks the user created  */
+  votingLocks?: Maybe<Array<VotingEscrowLock>>;
+}
+
+export interface UserGaugeSharesArgs {
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<GaugeShare_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<GaugeShare_Filter>;
+}
+
+export interface UserGaugeVotesArgs {
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<GaugeVote_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<GaugeVote_Filter>;
+}
+
+export interface UserOmniVotingLocksArgs {
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<OmniVotingEscrowLock_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<OmniVotingEscrowLock_Filter>;
 }
 
 export interface UserSharesOwnedArgs {
@@ -4163,11 +6977,20 @@ export interface UserUserInternalBalancesArgs {
   where?: InputMaybe<UserInternalBalance_Filter>;
 }
 
+export interface UserVotingLocksArgs {
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<VotingEscrowLock_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<VotingEscrowLock_Filter>;
+}
+
 export interface UserInternalBalance {
   __typename: "UserInternalBalance";
   balance: Scalars["BigDecimal"];
   id: Scalars["ID"];
   token: Scalars["Bytes"];
+  tokenInfo?: Maybe<Token>;
   userAddress?: Maybe<User>;
 }
 
@@ -4193,6 +7016,27 @@ export interface UserInternalBalance_Filter {
   id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
   or?: InputMaybe<Array<InputMaybe<UserInternalBalance_Filter>>>;
   token?: InputMaybe<Scalars["Bytes"]>;
+  tokenInfo?: InputMaybe<Scalars["String"]>;
+  tokenInfo_?: InputMaybe<Token_Filter>;
+  tokenInfo_contains?: InputMaybe<Scalars["String"]>;
+  tokenInfo_contains_nocase?: InputMaybe<Scalars["String"]>;
+  tokenInfo_ends_with?: InputMaybe<Scalars["String"]>;
+  tokenInfo_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  tokenInfo_gt?: InputMaybe<Scalars["String"]>;
+  tokenInfo_gte?: InputMaybe<Scalars["String"]>;
+  tokenInfo_in?: InputMaybe<Array<Scalars["String"]>>;
+  tokenInfo_lt?: InputMaybe<Scalars["String"]>;
+  tokenInfo_lte?: InputMaybe<Scalars["String"]>;
+  tokenInfo_not?: InputMaybe<Scalars["String"]>;
+  tokenInfo_not_contains?: InputMaybe<Scalars["String"]>;
+  tokenInfo_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  tokenInfo_not_ends_with?: InputMaybe<Scalars["String"]>;
+  tokenInfo_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  tokenInfo_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  tokenInfo_not_starts_with?: InputMaybe<Scalars["String"]>;
+  tokenInfo_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  tokenInfo_starts_with?: InputMaybe<Scalars["String"]>;
+  tokenInfo_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   token_contains?: InputMaybe<Scalars["Bytes"]>;
   token_gt?: InputMaybe<Scalars["Bytes"]>;
   token_gte?: InputMaybe<Scalars["Bytes"]>;
@@ -4229,12 +7073,29 @@ export type UserInternalBalance_OrderBy =
   | "balance"
   | "id"
   | "token"
-  | "userAddress";
+  | "tokenInfo"
+  | "tokenInfo__address"
+  | "tokenInfo__decimals"
+  | "tokenInfo__id"
+  | "tokenInfo__latestFXPrice"
+  | "tokenInfo__latestUSDPrice"
+  | "tokenInfo__latestUSDPriceTimestamp"
+  | "tokenInfo__name"
+  | "tokenInfo__symbol"
+  | "tokenInfo__totalBalanceNotional"
+  | "tokenInfo__totalBalanceUSD"
+  | "tokenInfo__totalSwapCount"
+  | "tokenInfo__totalVolumeNotional"
+  | "tokenInfo__totalVolumeUSD"
+  | "userAddress"
+  | "userAddress__id";
 
 export interface User_Filter {
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<User_Filter>>>;
+  gaugeShares_?: InputMaybe<GaugeShare_Filter>;
+  gaugeVotes_?: InputMaybe<GaugeVote_Filter>;
   id?: InputMaybe<Scalars["ID"]>;
   id_gt?: InputMaybe<Scalars["ID"]>;
   id_gte?: InputMaybe<Scalars["ID"]>;
@@ -4243,17 +7104,212 @@ export interface User_Filter {
   id_lte?: InputMaybe<Scalars["ID"]>;
   id_not?: InputMaybe<Scalars["ID"]>;
   id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
+  omniVotingLocks_?: InputMaybe<OmniVotingEscrowLock_Filter>;
   or?: InputMaybe<Array<InputMaybe<User_Filter>>>;
   sharesOwned_?: InputMaybe<PoolShare_Filter>;
   swaps_?: InputMaybe<Swap_Filter>;
   userInternalBalances_?: InputMaybe<UserInternalBalance_Filter>;
+  votingLocks_?: InputMaybe<VotingEscrowLock_Filter>;
 }
 
 export type User_OrderBy =
+  | "gaugeShares"
+  | "gaugeVotes"
   | "id"
+  | "omniVotingLocks"
   | "sharesOwned"
   | "swaps"
-  | "userInternalBalances";
+  | "userInternalBalances"
+  | "votingLocks";
+
+export interface VotingEscrow {
+  __typename: "VotingEscrow";
+  /**  VotingEscrow contract address  */
+  id: Scalars["ID"];
+  /**  List of veBAL locks created  */
+  locks?: Maybe<Array<VotingEscrowLock>>;
+  /**  List of veBAL locks created  */
+  omniLocks?: Maybe<Array<OmniVotingEscrowLock>>;
+  /**  Amount of B-80BAL-20WETH BPT locked, only applies on mainnet  */
+  stakedSupply?: Maybe<Scalars["BigDecimal"]>;
+}
+
+export interface VotingEscrowLocksArgs {
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<VotingEscrowLock_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<VotingEscrowLock_Filter>;
+}
+
+export interface VotingEscrowOmniLocksArgs {
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<OmniVotingEscrowLock_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<OmniVotingEscrowLock_Filter>;
+}
+
+export interface VotingEscrowLock {
+  __typename: "VotingEscrowLock";
+  /**  veBAL balance at the moment user locks  */
+  bias: Scalars["BigDecimal"];
+  /**  Equal to: <userAdress>-<votingEscrow>  */
+  id: Scalars["ID"];
+  /**  Amount of B-80BAL-20WETH BPT the user has locked  */
+  lockedBalance: Scalars["BigDecimal"];
+  /**  veBAL decay rate (per second)  */
+  slope: Scalars["BigDecimal"];
+  /**  Timestamp at which B-80BAL-20WETH BPT can be unlocked by user [seconds]  */
+  unlockTime: Scalars["BigInt"];
+  /**  Timestamp at which the lock was updated [seconds]  */
+  updatedAt: Scalars["Int"];
+  /**  Reference to User entity  */
+  user: User;
+  /**  Reference to VotingEscrow entity  */
+  votingEscrowID: VotingEscrow;
+}
+
+export interface VotingEscrowLock_Filter {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<VotingEscrowLock_Filter>>>;
+  bias?: InputMaybe<Scalars["BigDecimal"]>;
+  bias_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  bias_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  bias_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  bias_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  bias_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  bias_not?: InputMaybe<Scalars["BigDecimal"]>;
+  bias_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  id?: InputMaybe<Scalars["ID"]>;
+  id_gt?: InputMaybe<Scalars["ID"]>;
+  id_gte?: InputMaybe<Scalars["ID"]>;
+  id_in?: InputMaybe<Array<Scalars["ID"]>>;
+  id_lt?: InputMaybe<Scalars["ID"]>;
+  id_lte?: InputMaybe<Scalars["ID"]>;
+  id_not?: InputMaybe<Scalars["ID"]>;
+  id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
+  lockedBalance?: InputMaybe<Scalars["BigDecimal"]>;
+  lockedBalance_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  lockedBalance_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  lockedBalance_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  lockedBalance_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  lockedBalance_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  lockedBalance_not?: InputMaybe<Scalars["BigDecimal"]>;
+  lockedBalance_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  or?: InputMaybe<Array<InputMaybe<VotingEscrowLock_Filter>>>;
+  slope?: InputMaybe<Scalars["BigDecimal"]>;
+  slope_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  slope_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  slope_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  slope_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  slope_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  slope_not?: InputMaybe<Scalars["BigDecimal"]>;
+  slope_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  unlockTime?: InputMaybe<Scalars["BigInt"]>;
+  unlockTime_gt?: InputMaybe<Scalars["BigInt"]>;
+  unlockTime_gte?: InputMaybe<Scalars["BigInt"]>;
+  unlockTime_in?: InputMaybe<Array<Scalars["BigInt"]>>;
+  unlockTime_lt?: InputMaybe<Scalars["BigInt"]>;
+  unlockTime_lte?: InputMaybe<Scalars["BigInt"]>;
+  unlockTime_not?: InputMaybe<Scalars["BigInt"]>;
+  unlockTime_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
+  updatedAt?: InputMaybe<Scalars["Int"]>;
+  updatedAt_gt?: InputMaybe<Scalars["Int"]>;
+  updatedAt_gte?: InputMaybe<Scalars["Int"]>;
+  updatedAt_in?: InputMaybe<Array<Scalars["Int"]>>;
+  updatedAt_lt?: InputMaybe<Scalars["Int"]>;
+  updatedAt_lte?: InputMaybe<Scalars["Int"]>;
+  updatedAt_not?: InputMaybe<Scalars["Int"]>;
+  updatedAt_not_in?: InputMaybe<Array<Scalars["Int"]>>;
+  user?: InputMaybe<Scalars["String"]>;
+  user_?: InputMaybe<User_Filter>;
+  user_contains?: InputMaybe<Scalars["String"]>;
+  user_contains_nocase?: InputMaybe<Scalars["String"]>;
+  user_ends_with?: InputMaybe<Scalars["String"]>;
+  user_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  user_gt?: InputMaybe<Scalars["String"]>;
+  user_gte?: InputMaybe<Scalars["String"]>;
+  user_in?: InputMaybe<Array<Scalars["String"]>>;
+  user_lt?: InputMaybe<Scalars["String"]>;
+  user_lte?: InputMaybe<Scalars["String"]>;
+  user_not?: InputMaybe<Scalars["String"]>;
+  user_not_contains?: InputMaybe<Scalars["String"]>;
+  user_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  user_not_ends_with?: InputMaybe<Scalars["String"]>;
+  user_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  user_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  user_not_starts_with?: InputMaybe<Scalars["String"]>;
+  user_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  user_starts_with?: InputMaybe<Scalars["String"]>;
+  user_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  votingEscrowID?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_?: InputMaybe<VotingEscrow_Filter>;
+  votingEscrowID_contains?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_contains_nocase?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_ends_with?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_gt?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_gte?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_in?: InputMaybe<Array<Scalars["String"]>>;
+  votingEscrowID_lt?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_lte?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_not?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_not_contains?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_not_ends_with?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  votingEscrowID_not_starts_with?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_starts_with?: InputMaybe<Scalars["String"]>;
+  votingEscrowID_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+}
+
+export type VotingEscrowLock_OrderBy =
+  | "bias"
+  | "id"
+  | "lockedBalance"
+  | "slope"
+  | "unlockTime"
+  | "updatedAt"
+  | "user"
+  | "user__id"
+  | "votingEscrowID"
+  | "votingEscrowID__id"
+  | "votingEscrowID__stakedSupply";
+
+export interface VotingEscrow_Filter {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<VotingEscrow_Filter>>>;
+  id?: InputMaybe<Scalars["ID"]>;
+  id_gt?: InputMaybe<Scalars["ID"]>;
+  id_gte?: InputMaybe<Scalars["ID"]>;
+  id_in?: InputMaybe<Array<Scalars["ID"]>>;
+  id_lt?: InputMaybe<Scalars["ID"]>;
+  id_lte?: InputMaybe<Scalars["ID"]>;
+  id_not?: InputMaybe<Scalars["ID"]>;
+  id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
+  locks_?: InputMaybe<VotingEscrowLock_Filter>;
+  omniLocks_?: InputMaybe<OmniVotingEscrowLock_Filter>;
+  or?: InputMaybe<Array<InputMaybe<VotingEscrow_Filter>>>;
+  stakedSupply?: InputMaybe<Scalars["BigDecimal"]>;
+  stakedSupply_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  stakedSupply_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  stakedSupply_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  stakedSupply_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  stakedSupply_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  stakedSupply_not?: InputMaybe<Scalars["BigDecimal"]>;
+  stakedSupply_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+}
+
+export type VotingEscrow_OrderBy =
+  | "id"
+  | "locks"
+  | "omniLocks"
+  | "stakedSupply";
 
 export interface _Block_ {
   __typename: "_Block_";
@@ -4287,6 +7343,22 @@ export type _SubgraphErrorPolicy_ =
   | "allow"
   /** If the subgraph has indexing errors, data will be omitted. The default. */
   | "deny";
+
+export type GetUserVotesQueryVariables = Exact<{
+  userId: Scalars["ID"];
+}>;
+
+export type GetUserVotesQuery = {
+  __typename: "Query";
+  user?: {
+    __typename: "User";
+    votingLocks?: Array<{
+      __typename: "VotingEscrowLock";
+      lockedBalance: string;
+      unlockTime: string;
+    }> | null;
+  } | null;
+};
 
 export type GetProtocolDataQueryVariables = Exact<{
   startTimestamp: Scalars["Int"];
@@ -5682,6 +8754,67 @@ export const BalancerSnapshotFragmentDoc = gql`
     totalSwapFee
   }
 `;
+export const GetUserVotesDocument = gql`
+  query GetUserVotes($userId: ID!) {
+    user(id: $userId) {
+      votingLocks {
+        lockedBalance
+        unlockTime
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetUserVotesQuery__
+ *
+ * To run a query within a React component, call `useGetUserVotesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserVotesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserVotesQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useGetUserVotesQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetUserVotesQuery,
+    GetUserVotesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetUserVotesQuery, GetUserVotesQueryVariables>(
+    GetUserVotesDocument,
+    options
+  );
+}
+export function useGetUserVotesLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetUserVotesQuery,
+    GetUserVotesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetUserVotesQuery, GetUserVotesQueryVariables>(
+    GetUserVotesDocument,
+    options
+  );
+}
+export type GetUserVotesQueryHookResult = ReturnType<
+  typeof useGetUserVotesQuery
+>;
+export type GetUserVotesLazyQueryHookResult = ReturnType<
+  typeof useGetUserVotesLazyQuery
+>;
+export type GetUserVotesQueryResult = Apollo.QueryResult<
+  GetUserVotesQuery,
+  GetUserVotesQueryVariables
+>;
 export const GetProtocolDataDocument = gql`
   query GetProtocolData(
     $startTimestamp: Int!

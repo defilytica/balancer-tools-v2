@@ -187,6 +187,16 @@ export const BalancerSnapshot = gql`
     totalSwapFee
   }
 `;
+export const GetUserVotes = gql`
+  query GetUserVotes($userId: ID!) {
+    user(id: $userId) {
+      votingLocks {
+        lockedBalance
+        unlockTime
+      }
+    }
+  }
+`;
 export const GetProtocolData = gql`
   query GetProtocolData(
     $startTimestamp: Int!
