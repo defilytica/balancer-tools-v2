@@ -8,16 +8,21 @@ import EtherLogo from '../../assets/svg/ethereum.svg'
 import PolygonLogo from '../../assets/svg/polygon.svg'
 import GnosisLogo from '../../assets/svg/gnosis.svg'
 import { useNavigate } from "react-router-dom";
+import { useSwitchNetwork } from 'wagmi'
 
 export default function NetworkSelector() {
 
     const [activeNetwork, update] = useActiveNetworkVersion();
     const navigate = useNavigate();
+    const { switchNetwork } =
+        useSwitchNetwork()
 
     const handleNetworkChange = (evt: SelectChangeEvent) => {
         const chainId = evt.target.value as string;
+        switchNetwork?.(Number(chainId))
         if (chainId === EthereumNetworkInfo.chainId) {
             update(EthereumNetworkInfo)
+
             navigate('/')
 
         } else if (chainId === PolygonNetworkInfo.chainId) {

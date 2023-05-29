@@ -47,4 +47,3 @@ export const getThemeDesignTokens = (mode: PaletteMode) => ({
     },
   }
 });
-

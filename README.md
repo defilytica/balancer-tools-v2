@@ -6,12 +6,12 @@ Balancer Tools v2 front-end
 An open-source interface to interact with balancer tech.
 
 
-Release URL: https://balancer.tools
+Release URL: https://defilytica.tools
 
 ## Development
 
 ### Configure .env environment
-- replace sample .env_example file with your file
+- replace sample .env_example file with your data
 - rename to .env
 - do not store sensitive API keys in this file
 
@@ -28,14 +28,14 @@ yarn start
 ```
 
 ## What this project wants to achieve
-Balancer.tools is a community tooling site to better understand the Balancer ecosystem. It provides advanced tools like a veBAL boosting calculator, impermanent loss calculator and much more.
+defilytica.tools is a community tooling site to better understand ecosystems like the Balancer protocol. 
+It provides advanced tools like a veBAL boosting calculator, impermanent loss calculator and much more.
 
-## Current features
+## Planned features
 
 * veBAL boost calculator
-* Impermanent loss calculator
-* Price impact calculator for swaps and investments
-* Endpoint status checker
+* veBAL gauge multi-voter
+* Governance tooling such as a gauge PR creator
 
 ## Future features in review
 
