@@ -10,9 +10,7 @@
 #General components
 node_modules
 .env
-.firebaserc
 .firebase
-firebase.json
 build
 
 # User-specific stuff
