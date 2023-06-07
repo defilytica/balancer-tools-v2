@@ -6,13 +6,17 @@ import LockPersonIcon from '@mui/icons-material/LockPerson';
 import GenericMetricsCard from "../../components/Cards/GenericMetricCard";
 import LockClockIcon from '@mui/icons-material/LockClock';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import { useGetUserVeBAL } from "../../data/balancer/useGetUserVeBAL";
 import useGetGaugeData from "../../data/balancer/useGetGaugeData"
+import {useGetUserVeBAL} from "../../data/balancer/useGetUserVeBAL";
+import useGetSimpleGaugeData from "../../data/balancer/useGetSimpleGaugeData";
+import GaugeBoostTable from "../../components/Tables/GaugeBoostTable";
 
 export default function VeBAL() {
   const userLocks = useUserVeBALLocks();
   const userVeBAL = useGetUserVeBAL();
   const gaugeData = useGetGaugeData();
+  const simpleGaugeData = useGetSimpleGaugeData();
+  console.log("simpleGaugeData", simpleGaugeData)
 
   const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);
   const unlockDate = date.toLocaleDateString();
@@ -71,6 +75,7 @@ export default function VeBAL() {
             <Typography variant="h5">Theoretical Boost across gauges</Typography>
           </Box>
           <Typography>Show a table of the boost and APRs for all pools</Typography>
+          <GaugeBoostTable gaugeDatas={simpleGaugeData} />
         </Grid>
       </Grid>
     </Box>

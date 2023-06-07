@@ -22,7 +22,5 @@ export function useGetUserVeBAL(): number {
         return 0;
     }
 
-    console.log("contract data", Number(data) / 1e18)
-
     return Number(data) / 1e18;
 }
