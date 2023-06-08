@@ -16,7 +16,8 @@ export default function VeBAL() {
   const userVeBAL = useGetUserVeBAL();
   const gaugeData = useGetGaugeData();
   const simpleGaugeData = useGetSimpleGaugeData();
-  console.log("simpleGaugeData", simpleGaugeData)
+  console.log("simpleGaugeData", simpleGaugeData);
+  console.log(gaugeData);
 
   const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);
   const unlockDate = date.toLocaleDateString();

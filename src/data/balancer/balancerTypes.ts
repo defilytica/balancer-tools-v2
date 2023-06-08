@@ -172,3 +172,49 @@ export interface AprSet {
   export interface RewardsBreakdown {
     [key: string]: number
   }
+
+  export interface Gauge {
+    address: string;
+    network: number;
+    isKilled: boolean;
+    addedTimestamp: number;
+    relativeWeightCap: string | null;
+    pool: {
+      id: string;
+      address: string;
+      poolType: string;
+      symbol: string;
+      tokens: {
+        address: string;
+        weight: string | null;
+        symbol: string;
+      }[];
+    };
+    tokenLogoURIs: {
+      [address: string]: string;
+    };
+  }
+
+  export interface GaugeWithSupplies {
+    address: string;
+    network: string;
+    isKilled: boolean;
+    addedTimestamp: number;
+    relativeWeightCap: string | null;
+    pool: {
+      id: string;
+      address: string;
+      poolType: string;
+      symbol: string;
+      tokens: {
+        address: string;
+        weight: string | null;
+        symbol: string;
+      }[];
+    };
+    tokenLogoURIs: {
+      [address: string]: string;
+    };
+    workingSupply: string;
+    totalSupply: string;
+  }

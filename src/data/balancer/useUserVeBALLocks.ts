@@ -8,8 +8,6 @@ export function useUserVeBALLocks() : UserVoteLocks | null{
     //if we have a user address connected, we fetch the veBAL balance and additional parameters
     const { address, isConnected } = useAccount();
 
-    console.log("address string", address)
-
     const [getUserData, { data }] = useGetUserVotesLazyQuery({client: gaugeClient})
 
     useEffect(() => {
