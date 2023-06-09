@@ -17,16 +17,14 @@ import PoolCurrencyLogo from '../../PoolCurrencyLogo';
 import TokensWhite from '../../../assets/svg/tokens_white.svg';
 import TokensBlack from '../../../assets/svg/tokens_black.svg';
 import {useTheme} from '@mui/material/styles'
-import {useNavigate} from 'react-router-dom';
 import {networkPrefix} from '../../../utils/networkPrefix';
-import {useActiveNetworkVersion} from '../../../state/application/hooks';
 import {NetworkInfo} from '../../../constants/networks';
-import {SimpleGauge} from '../../../data/balancer/useGetSimpleGaugeData';
 import ArbitrumLogo from '../../../assets/svg/arbitrum.svg'
 import EtherLogo from '../../../assets/svg/ethereum.svg'
 import PolygonLogo from '../../../assets/svg/polygon.svg'
 import GnosisLogo from '../../../assets/svg/gnosis.svg'
 import {BalancerStakingGauges} from "../../../data/balancer/balancerTypes";
+import {formatNumber} from "../../../utils/numbers";
 
 
 interface Data {
@@ -36,6 +34,7 @@ interface Data {
     poolData: SimplePoolData,
     workingSupply: string;
     totalSupply: string;
+    maxBoost: number;
 }
 
 interface SimplePoolTokenData {
@@ -59,6 +58,7 @@ function createData(
     poolData: SimplePoolData,
     workingSupply: string,
     totalSupply: string,
+    maxBoost: number,
 ): Data {
     return {
         address,
@@ -67,6 +67,7 @@ function createData(
         poolData,
         workingSupply,
         totalSupply,
+        maxBoost,
     };
 }
 
@@ -138,10 +139,10 @@ const headCells: readonly HeadCell[] = [
         isMobileVisible: false,
     },
     {
-        id: 'address',
+        id: 'totalSupply',
         numeric: false,
         disablePadding: false,
-        label: 'TVL',
+        label: 'Total Supply',
         isMobileVisible: false,
     },
     {
@@ -152,7 +153,7 @@ const headCells: readonly HeadCell[] = [
         isMobileVisible: false,
     },
     {
-        id: 'address',
+        id: 'maxBoost',
         numeric: false,
         disablePadding: false,
         label: 'Max Boost',
@@ -210,9 +211,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 
-export default function GaugeBoostTable({
-                                            gaugeDatas
-                                        }: {
+export default function GaugeBoostTable({gaugeDatas}: {
     gaugeDatas?: BalancerStakingGauges[]
 }) {
     const [order, setOrder] = React.useState<Order>('desc');
@@ -239,7 +238,7 @@ export default function GaugeBoostTable({
     });
 
     const rows = filteredPoolDatas.map(el =>
-        createData(el.address, el.network, el.isKilled, el.pool, el.workingSupply, el.totalSupply)
+        createData(el.address, el.network, el.isKilled, el.pool, el.workingSupply, el.totalSupply, 0)
     )
 
     const handleRequestSort = (
@@ -344,10 +343,10 @@ export default function GaugeBoostTable({
                                                 {/* <PoolComposition key={row.poolData.id} poolData={row.poolData} size={35} /> */}
                                             </TableCell>
                                             <TableCell>
-                                                TODO
+                                                {formatNumber(Number(row.totalSupply) / 1e18)}
                                             </TableCell>
                                             <TableCell>
-                                                {row.workingSupply}
+                                                {formatNumber(Number(row.workingSupply) / 1e18)}
                                             </TableCell>
                                             <TableCell>
                                                 TODO

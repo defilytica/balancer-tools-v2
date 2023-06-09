@@ -1,12 +1,14 @@
 import {BalancerStakingGauges} from "./balancerTypes";
 import vyperMainnetGauge from "../../constants/abis/vyperMainnetGauge.json";
+import veBAL from '../../constants/abis/veBAL.json'
 import {ethers} from "ethers";
 import rootGaugeL2 from "../../constants/abis/rootGaugeL2.json";
 import vyperPolygonGauge from "../../constants/abis/vyperPolygonGauge.json";
 import {useEffect, useState} from "react";
 import {ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo} from "../../constants/networks";
+import { multicall } from '@wagmi/core'
 
-const useDecorateGaugesWithStakingSupplies = (stakingGaugeData: BalancerStakingGauges[] | undefined ): BalancerStakingGauges[] => {
+const useDecorateGaugesWithStakingSupplies = (stakingGaugeData: BalancerStakingGauges[]): BalancerStakingGauges[] => {
 
     const [decoratedGauges, setDecoratedGauges] = useState<BalancerStakingGauges[]>()
     const [isLoading, setIsLoading] = useState(true)
@@ -14,11 +16,11 @@ const useDecorateGaugesWithStakingSupplies = (stakingGaugeData: BalancerStakingG
         let updatedGaugeData: BalancerStakingGauges[] = [];
         if (gaugeData && gaugeData.length > 1) {
             try {
-                for (let i = 0; i < gaugeData.length; i++) {
+                for (let i = 0; i < 10; i++) {
                     const gauge = gaugeData[i];
                     let networkAbi, networkProvider;
 
-                    //TODO: fix this logic
+                    //TODO: Refactor with multi-call
                     if (Number(gauge.network) === Number(EthereumNetworkInfo.chainId)) {
                         networkAbi = vyperMainnetGauge;
                         networkProvider = new ethers.providers.JsonRpcProvider('https://eth.llamarpc.com');
@@ -73,7 +75,6 @@ const useDecorateGaugesWithStakingSupplies = (stakingGaugeData: BalancerStakingG
                         console.error('Error retrieving working supply and total supply:', error);
                         supplyFetchError = true;
                     }
-
                     let updatedGauge = {...gauge};
                     const convertedSupply = ethers.BigNumber.from(workingSupply).toString();
                     const convertedTotalSupply = ethers.BigNumber.from(totalSupply).toString();
@@ -84,27 +85,26 @@ const useDecorateGaugesWithStakingSupplies = (stakingGaugeData: BalancerStakingG
                         updatedGauge.workingSupply = "0";
                         updatedGauge.totalSupply = "0";
                     }
+
                     updatedGaugeData.push(updatedGauge);
-
                 }
-
             } catch (error) {
                 console.error('Error fetching working supply:', error);
             }
             setIsLoading(false)
-            console.log("updated fresh array: ", updatedGaugeData)
             return updatedGaugeData;
         }
         return [];
     };
 
-//Fetch and populate gauge working supply
+
+
+    //Fetch and populate gauge supply numbers
     useEffect(() => {
         if (isLoading && stakingGaugeData && stakingGaugeData.length > 0) {
-            console.log("inside fetch")
+            setIsLoading(false);
             fetchVotingGaugesWorkingSupply(stakingGaugeData)
                 .then((decoratedData) => {
-                    console.log("inside decoration: ", decoratedData);
                     setDecoratedGauges(decoratedData);
                     setIsLoading(false);
                 })
@@ -113,12 +113,8 @@ const useDecorateGaugesWithStakingSupplies = (stakingGaugeData: BalancerStakingG
                     setIsLoading(false);
                 });
             setIsLoading(false);
-            console.log("isLoading state: ", isLoading)
         }
     }, [isLoading, stakingGaugeData]);
-
-
-
 
     if (decoratedGauges !== undefined) {
         return decoratedGauges;
@@ -126,6 +122,5 @@ const useDecorateGaugesWithStakingSupplies = (stakingGaugeData: BalancerStakingG
         return [];
     }
 }
-
 
 export default useDecorateGaugesWithStakingSupplies;

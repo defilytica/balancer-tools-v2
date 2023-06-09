@@ -12,18 +12,19 @@ import useGetSimpleGaugeData from "../../data/balancer/useGetSimpleGaugeData";
 import GaugeBoostTable from "../../components/Tables/GaugeBoostTable";
 import {useAccount} from "wagmi";
 import useDecorateGaugesWithStakingSupplies from "../../data/balancer/useDecorateGaugesWithStakingSupplies";
+import {BalancerStakingGauges} from "../../data/balancer/balancerTypes";
 
 export default function VeBAL() {
+
+  //Load user wallet stats
   const { isConnected } = useAccount();
   const userLocks = useUserVeBALLocks();
   const userVeBAL = useGetUserVeBAL();
 
+  //Load gauge and Staking information
+  const gaugeData = useGetBalancerStakingGauges();
+  const decoratedGaugeData = useDecorateGaugesWithStakingSupplies(gaugeData);
 
-  const decoratedGaugeData = useGetBalancerStakingGauges();
-  //const decoratedGaugeData = useDecorateGaugesWithStakingSupplies(gaugeData);
-
-
-  console.log("decorated staking Gauges", decoratedGaugeData)
 
   const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);
   const unlockDate = date.toLocaleDateString();
