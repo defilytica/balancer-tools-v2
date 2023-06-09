@@ -44,19 +44,13 @@ export default function CurrencyLogo({
     const [activeNetwork] = useActiveNetworkVersion();
     const theme = useTheme();
 
-    //Balancer coin repository asset location
-    let assetLoc = 'master';
-    if (activeNetwork !== EthereumNetworkInfo) {
-        assetLoc = 'refactor-for-multichain'
-    }
-
     //Secondary assets are loaded through Balancer
     const tempSources: { [address: string]: string } = useMemo(() => {
         return {
             [`${address}`]:
                 `https://raw.githubusercontent.com/balancer/tokenlists/main/src/assets/images/tokens/${address}.png`,
         }
-    }, [address, assetLoc])
+    }, [address])
 
     //Token image sources
     const srcs: string[] = useMemo(() => {
@@ -76,7 +70,7 @@ export default function CurrencyLogo({
             height: size,
             width: size,
             backgroundColor: theme.palette.mode === 'dark' ? 'white' : 'rgb(226, 232, 240)',
-            color: theme.palette.mode === 'dark' ? 'white' : 'black',
+            color: 'black',
             fontSize: '15px',
         }}
         src={srcs[1]}

@@ -6,18 +6,24 @@ import LockPersonIcon from '@mui/icons-material/LockPerson';
 import GenericMetricsCard from "../../components/Cards/GenericMetricCard";
 import LockClockIcon from '@mui/icons-material/LockClock';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import useGetGaugeData from "../../data/balancer/useGetGaugeData"
+import useGetBalancerStakingGauges from "../../data/balancer/useGetBalancerStakingGauges"
 import {useGetUserVeBAL} from "../../data/balancer/useGetUserVeBAL";
 import useGetSimpleGaugeData from "../../data/balancer/useGetSimpleGaugeData";
 import GaugeBoostTable from "../../components/Tables/GaugeBoostTable";
+import {useAccount} from "wagmi";
+import useDecorateGaugesWithStakingSupplies from "../../data/balancer/useDecorateGaugesWithStakingSupplies";
 
 export default function VeBAL() {
+  const { isConnected } = useAccount();
   const userLocks = useUserVeBALLocks();
   const userVeBAL = useGetUserVeBAL();
-  const gaugeData = useGetGaugeData();
-  const simpleGaugeData = useGetSimpleGaugeData();
-  console.log("simpleGaugeData", simpleGaugeData);
-  console.log(gaugeData);
+
+
+  const decoratedGaugeData = useGetBalancerStakingGauges();
+  //const decoratedGaugeData = useDecorateGaugesWithStakingSupplies(gaugeData);
+
+
+  console.log("decorated staking Gauges", decoratedGaugeData)
 
   const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);
   const unlockDate = date.toLocaleDateString();
@@ -34,6 +40,8 @@ export default function VeBAL() {
             <Typography variant="h5">My veBAL Stats</Typography>
           </Box>
         </Grid>
+
+        { isConnected ?
         <Grid item mt={1} xs={11}>
           <Grid
             container
@@ -64,7 +72,13 @@ export default function VeBAL() {
               />
             </Box>
           </Grid>
-        </Grid>
+        </Grid> :
+            <Grid item mt={1} xs={11}>
+              <Box m={1}>
+                <GenericMetricsCard mainMetric={'-'} metricName={'No wallet connected'} MetricIcon={AccountBalanceWalletIcon} />
+              </Box>
+            </Grid>
+        }
         <Grid item xs={11}>
           <Box>
             <Typography variant="h5">Calculate your boost</Typography>
@@ -76,7 +90,7 @@ export default function VeBAL() {
             <Typography variant="h5">Theoretical Boost across gauges</Typography>
           </Box>
           <Typography>Show a table of the boost and APRs for all pools</Typography>
-          <GaugeBoostTable gaugeDatas={simpleGaugeData} />
+          <GaugeBoostTable gaugeDatas={decoratedGaugeData} />
         </Grid>
       </Grid>
     </Box>

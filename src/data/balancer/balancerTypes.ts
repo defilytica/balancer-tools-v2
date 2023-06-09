@@ -173,29 +173,7 @@ export interface AprSet {
     [key: string]: number
   }
 
-  export interface Gauge {
-    address: string;
-    network: number;
-    isKilled: boolean;
-    addedTimestamp: number;
-    relativeWeightCap: string | null;
-    pool: {
-      id: string;
-      address: string;
-      poolType: string;
-      symbol: string;
-      tokens: {
-        address: string;
-        weight: string | null;
-        symbol: string;
-      }[];
-    };
-    tokenLogoURIs: {
-      [address: string]: string;
-    };
-  }
-
-  export interface GaugeWithSupplies {
+  export interface BalancerStakingGauges {
     address: string;
     network: string;
     isKilled: boolean;
@@ -217,4 +195,5 @@ export interface AprSet {
     };
     workingSupply: string;
     totalSupply: string;
+    aprSet?: AprSet;
   }

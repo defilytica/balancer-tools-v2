@@ -39,9 +39,7 @@ export const getThemeDesignTokens = (mode: PaletteMode) => ({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          background: mode === 'dark' ? " background: linear-gradient(to right, #141e30, #243b55)" : '',
-
-
+          background: mode === 'dark' ? "linear-gradient(to right, #141e30, #243b55)" : 'linear-gradient(to right, #ece9e6, #ffffff)',
         },
       },
     },

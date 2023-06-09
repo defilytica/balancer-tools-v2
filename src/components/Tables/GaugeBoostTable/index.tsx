@@ -9,46 +9,42 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import {Avatar, Grid} from '@mui/material';
+import {Avatar, CircularProgress, Grid} from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import { visuallyHidden } from '@mui/utils';
-import { PoolData, PoolTokenData } from '../../../data/balancer/balancerTypes';
-import { getShortPoolName } from '../../../utils/getShortPoolName';
-import { CircularProgress } from '@mui/material';
-import { formatDollarAmount } from '../../../utils/numbers';
+import {visuallyHidden} from '@mui/utils';
 import PoolCurrencyLogo from '../../PoolCurrencyLogo';
-import { POOL_HIDE } from '../../../constants/index'
 import TokensWhite from '../../../assets/svg/tokens_white.svg';
 import TokensBlack from '../../../assets/svg/tokens_black.svg';
-import { useTheme } from '@mui/material/styles'
-import PoolComposition from '../../PoolComposition'
-import { useNavigate } from 'react-router-dom';
-import { networkPrefix } from '../../../utils/networkPrefix';
-import { useActiveNetworkVersion } from '../../../state/application/hooks';
-import { NetworkInfo } from '../../../constants/networks';
-import SwapFee from '../../SwapFee'
-import { SimpleGauge } from '../../../data/balancer/useGetSimpleGaugeData';
+import {useTheme} from '@mui/material/styles'
+import {useNavigate} from 'react-router-dom';
+import {networkPrefix} from '../../../utils/networkPrefix';
+import {useActiveNetworkVersion} from '../../../state/application/hooks';
+import {NetworkInfo} from '../../../constants/networks';
+import {SimpleGauge} from '../../../data/balancer/useGetSimpleGaugeData';
 import ArbitrumLogo from '../../../assets/svg/arbitrum.svg'
 import EtherLogo from '../../../assets/svg/ethereum.svg'
 import PolygonLogo from '../../../assets/svg/polygon.svg'
 import GnosisLogo from '../../../assets/svg/gnosis.svg'
+import {BalancerStakingGauges} from "../../../data/balancer/balancerTypes";
 
 
 interface Data {
     address: string;
-    network: number;
+    network: string;
     isKilled: boolean;
     poolData: SimplePoolData,
+    workingSupply: string;
+    totalSupply: string;
 }
 
-interface SimplePoolTokenData{
+interface SimplePoolTokenData {
     address: string;
     weight: string | null;
     symbol: string;
 }
 
-interface SimplePoolData{
+interface SimplePoolData {
     id: string;
     address: string;
     poolType: string;
@@ -58,15 +54,19 @@ interface SimplePoolData{
 
 function createData(
     address: string,
-    network: number,
+    network: string,
     isKilled: boolean,
     poolData: SimplePoolData,
+    workingSupply: string,
+    totalSupply: string,
 ): Data {
     return {
         address,
         network,
         isKilled,
         poolData,
+        workingSupply,
+        totalSupply,
     };
 }
 
@@ -86,8 +86,8 @@ function getComparator<Key extends keyof any>(
     order: Order,
     orderBy: Key,
 ): (
-    a: { [key in Key]: number | string | SimplePoolData | boolean  },
-    b: { [key in Key]: number | string | SimplePoolData | boolean  },
+    a: { [key in Key]: number | string | SimplePoolData | boolean },
+    b: { [key in Key]: number | string | SimplePoolData | boolean },
 ) => number {
     return order === 'asc'
         ? (a, b) => descendingComparator(a, b, orderBy)
@@ -145,10 +145,10 @@ const headCells: readonly HeadCell[] = [
         isMobileVisible: false,
     },
     {
-        id: 'address',
+        id: 'workingSupply',
         numeric: false,
         disablePadding: false,
-        label: 'Current Boost',
+        label: 'Working Supply',
         isMobileVisible: false,
     },
     {
@@ -168,7 +168,7 @@ interface EnhancedTableProps {
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-    const { order, orderBy, onRequestSort } =
+    const {order, orderBy, onRequestSort} =
         props;
     const createSortHandler =
         (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
@@ -186,7 +186,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                         align={headCell.numeric ? 'right' : 'left'}
                         padding={headCell.disablePadding ? 'none' : 'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
-                        sx={{ display: { xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell' } }}
+                        sx={{display: {xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell'}}}
                     >
                         <TableSortLabel
                             active={orderBy === headCell.id}
@@ -194,7 +194,9 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                             onClick={createSortHandler(headCell.id)}
                             //sx={{ display: {xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell' }}}
                         >
-                            {headCell.label === '' ? <img src={(theme.palette.mode === 'dark') ? TokensWhite : TokensBlack} alt="Theme Icon" width="25" /> : headCell.label}
+                            {headCell.label === '' ?
+                                <img src={(theme.palette.mode === 'dark') ? TokensWhite : TokensBlack} alt="Theme Icon"
+                                     width="25"/> : headCell.label}
                             {orderBy === headCell.id ? (
                                 <Box component="span" sx={visuallyHidden}>
                                     {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
@@ -209,26 +211,24 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 }
 
 export default function GaugeBoostTable({
-                                      gaugeDatas
-                                  }: {
-    gaugeDatas?: SimpleGauge[]
+                                            gaugeDatas
+                                        }: {
+    gaugeDatas?: BalancerStakingGauges[]
 }) {
     const [order, setOrder] = React.useState<Order>('desc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('network');
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(25);
-    const [activeNetwork] = useActiveNetworkVersion();
-    let navigate = useNavigate();
 
     if (!gaugeDatas) {
-        return <CircularProgress />;
+        return <CircularProgress/>;
     }
 
     if (gaugeDatas.length === 0) {
         return (
             <Grid>
-                <CircularProgress />
+                <CircularProgress/>
             </Grid>
         );
     }
@@ -239,8 +239,7 @@ export default function GaugeBoostTable({
     });
 
     const rows = filteredPoolDatas.map(el =>
-        createData(el.address, el.network, el.isKilled, el.pool)
-
+        createData(el.address, el.network, el.isKilled, el.pool, el.workingSupply, el.totalSupply)
     )
 
     const handleRequestSort = (
@@ -290,8 +289,8 @@ export default function GaugeBoostTable({
     //Table generation
 
     return (
-        <Box sx={{ width: '100%' }}>
-            <Paper sx={{ mb: 2, boxShadow: 3 }}>
+        <Box sx={{width: '100%'}}>
+            <Paper sx={{mb: 2, boxShadow: 3}}>
                 <TableContainer>
                     <Table
                         //sx={{ minWidth: 750 }}
@@ -317,8 +316,8 @@ export default function GaugeBoostTable({
                                             //onClick={() => window.open(`https://balancer.defilytica.com/${getLink(row.network, row.address)}/`, '_blank') }
                                             role="number"
                                             tabIndex={-1}
-                                            key={row.address}
-                                            sx={{ cursor: 'pointer' }}
+                                            key={row.address + Math.random() * 10}
+                                            sx={{cursor: 'pointer'}}
                                         >
                                             <TableCell>
                                                 <Avatar
@@ -326,20 +325,20 @@ export default function GaugeBoostTable({
                                                         height: 20,
                                                         width: 20
                                                     }}
-                                                    src={networkLogoMap[row.network]}
+                                                    src={networkLogoMap[Number(row.network)]}
                                                 />
                                             </TableCell>
-                                            <TableCell >
+                                            <TableCell>
                                                 {/* TODO: fix for token list elements*/}
                                                 <PoolCurrencyLogo
-                                                    tokens={row.poolData.tokens.map(token => ({address: token.address.toLowerCase()}))}
-                                                    size={'25px'} />
+                                                    tokens={row.poolData.tokens.map(token => ({address: token.address ? token.address.toLowerCase() : ''}))}
+                                                    size={'25px'}/>
                                             </TableCell>
                                             <TableCell
                                                 component="th"
                                                 id={labelId}
                                                 scope="row"
-                                                sx={{ display: { xs: 'none', md: 'table-cell' } }}
+                                                sx={{display: {xs: 'none', md: 'table-cell'}}}
                                             >
                                                 {row.address}
                                                 {/* <PoolComposition key={row.poolData.id} poolData={row.poolData} size={35} /> */}
@@ -348,7 +347,7 @@ export default function GaugeBoostTable({
                                                 TODO
                                             </TableCell>
                                             <TableCell>
-                                                TODO
+                                                {row.workingSupply}
                                             </TableCell>
                                             <TableCell>
                                                 TODO
@@ -362,7 +361,7 @@ export default function GaugeBoostTable({
                                         height: (dense ? 33 : 53) * emptyRows,
                                     }}
                                 >
-                                    <TableCell colSpan={6} />
+                                    <TableCell colSpan={6}/>
                                 </TableRow>
                             )}
                         </TableBody>
@@ -371,7 +370,7 @@ export default function GaugeBoostTable({
                 <Box display="flex" alignItems="center" justifyContent={"space-between"}>
                     <Box m={1} display="flex" justifyContent={"flex-start"}>
                         <FormControlLabel
-                            control={<Switch checked={dense} onChange={handleChangeDense} />}
+                            control={<Switch checked={dense} onChange={handleChangeDense}/>}
                             label="Compact view"
                         />
                     </Box>
