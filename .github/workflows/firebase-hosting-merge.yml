@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CI: false
+      REACT_APP_SITE_TITLE: 'DeFilytica Tools'
     strategy:
       matrix:
         node-version: [ 16.x ]
