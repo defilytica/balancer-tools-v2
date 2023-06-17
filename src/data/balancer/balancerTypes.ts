@@ -196,4 +196,5 @@ export interface AprSet {
     workingSupply: string;
     totalSupply: string;
     aprSet?: AprSet;
+    recipient: string;
   }
