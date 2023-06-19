@@ -196,5 +196,6 @@ export interface AprSet {
     workingSupply: string;
     totalSupply: string;
     aprSet?: AprSet;
+    userVotingPower?: number;
     recipient: string;
   }
