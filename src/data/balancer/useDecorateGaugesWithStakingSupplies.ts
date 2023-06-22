@@ -18,6 +18,75 @@ const NETWORK_PROVIDERS = {
     "1101": 'https://zkevm-rpc.com',
 };
 
+
+type CallContext = {
+    reference: string,
+    returnValues: any[],
+}
+
+type MultiCallContext = {
+    reference: string,
+    contractAddress: string,
+    abi: ({name: string,
+        inputs: {name: string, type: string, indexed: boolean}[],
+        anonymous: boolean,
+        type: string,
+        stateMutability?: undefined,
+        outputs?: undefined} | {
+        stateMutability: string, type: string, inputs: {}[],
+        outputs: never[], name?: undefined, anonymous?: undefined} | {})[],
+    calls: { reference: string, methodName: string, methodParameters: any[] }[],
+}
+
+// Handle L2s in a multicall so that requests for that chain are only triggered  ONCE
+async function handleL2RootGauges(network: string, recipientAddress: string, gauges: BalancerStakingGauges[]): Promise<BalancerStakingGauges[]> {
+
+    //Set up multicaller
+    const multicall = new Multicall({
+        ethersProvider: new ethers.providers.JsonRpcProvider(NETWORK_PROVIDERS[network]),
+        tryAggregate: true
+    })
+    //Establish context
+    const contractCallContext: MultiCallContext[] = gauges
+        .filter(gauge => gauge.network === network)
+        .map(gauge => ({
+            reference: gauge.address,
+            contractAddress: recipientAddress,
+            abi: vyperPolygonGauge,
+            calls: [
+                { reference: "workingSupply", methodName: 'working_supply', methodParameters: [] },
+                { reference: "totalSupply", methodName: 'totalSupply', methodParameters: [] },
+            ],
+        }));
+
+    try {
+        //fetch L2-results
+        const l2Results = await multicall.call(contractCallContext);
+
+        //Map to relevant gauges
+        gauges = gauges.map(gauge => {
+            if (gauge.network !== network) return gauge;
+
+            const l2WorkingSupplyCall = l2Results.results[gauge.address].callsReturnContext.find(call => call.reference === "workingSupply");
+            const l2TotalSupplyCall = l2Results.results[gauge.address].callsReturnContext.find(call => call.reference === "totalSupply");
+
+            const l2WorkingSupplyHex = l2WorkingSupplyCall && l2WorkingSupplyCall.returnValues[0] ? l2WorkingSupplyCall.returnValues[0].hex : '0';
+            const l2TotalSupplyHex = l2TotalSupplyCall && l2TotalSupplyCall.returnValues[0] ? l2TotalSupplyCall.returnValues[0].hex : '0';
+
+            return {
+                ...gauge,
+                workingSupply: l2WorkingSupplyHex ? BigInt(l2WorkingSupplyHex).toString() : '-',
+                totalSupply: l2TotalSupplyHex ? BigInt(l2TotalSupplyHex).toString() : '-',
+            };
+        });
+
+    } catch (error) {
+        console.error('Error executing multicall:', error);
+    }
+
+    return gauges;
+}
+
 const useDecorateGaugesWithStakingSupplies = (stakingGaugeData: BalancerStakingGauges[]): BalancerStakingGauges[] => {
 
     const [decoratedGauges, setDecoratedGauges] = useState<BalancerStakingGauges[]>()
@@ -26,6 +95,7 @@ const useDecorateGaugesWithStakingSupplies = (stakingGaugeData: BalancerStakingG
         const updatedGaugeData: BalancerStakingGauges[] = [];
         if (gaugeData && gaugeData.length > 0) {
             const multicalls = [];
+
             for (let network in NETWORK_PROVIDERS) {
                 const multicall = new Multicall({
                     ethersProvider: new ethers.providers.JsonRpcProvider('https://eth.llamarpc.com'),
@@ -52,7 +122,7 @@ const useDecorateGaugesWithStakingSupplies = (stakingGaugeData: BalancerStakingG
 
                     multicalls.push(multicall.call(contractCallContext));
                     }
-                }; console.log(gauges);
+                }
 
                 if (gauges.length > 0) {
                     if (network === ArbitrumNetworkInfo.chainId || network === PolygonNetworkInfo.chainId || network === '100' || network === '10' || network === '1101')  {
@@ -68,7 +138,8 @@ const useDecorateGaugesWithStakingSupplies = (stakingGaugeData: BalancerStakingG
                     multicalls.push(multicallRoots.call(contractCallContextRoots));
                     }
                 } 
-            };
+            }
+
             try {
                 const resultsArray = await Promise.all(multicalls);
                 console.log(resultsArray);

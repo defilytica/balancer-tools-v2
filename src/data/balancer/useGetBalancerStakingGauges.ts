@@ -52,6 +52,10 @@ const useGetBalancerStakingGauges = (): BalancerStakingGauges[] => {
     } catch (error) {
       console.error("Error fetching gauge data:", error);
     }
+
+    //Filter testnets
+    result = result.filter((gauge) => gauge.network !== '5');
+
     return result;
   };
 

@@ -3,11 +3,13 @@ import ARBITRUM_LOGO_URL from '../assets/svg/arbitrum.svg'
 import ETHEREUM_LOGO_URL from '../assets/svg/ethereum.svg'
 import POLYGON_LOGO_URL from '../assets/svg/polygon.svg'
 import GNOSIS_LOGO_URL from '../assets/svg/gnosis.svg'
+import ZKEVM_LOGO_URL from '../assets/svg/zkevm.svg'
+import OPTIMISM_LOGO_URL from '../assets/svg/optimism.svg';
 
 import {
   ALCHEMY_KEY,
-  ALCHEMY_KEY_ARBITRUM, ALCHEMY_KEY_POLYGON, 
-  ALCHEMY_URL, ALCHEMY_URL_ARBITRUM, ALCHEMY_URL_POLYGON, 
+  ALCHEMY_KEY_ARBITRUM, ALCHEMY_KEY_POLYGON, ALCHEMY_KEY_ZKEVM,
+  ALCHEMY_URL, ALCHEMY_URL_ARBITRUM, ALCHEMY_URL_POLYGON, ALCHEMY_URL_ZKEVM,
   BALANCER_PRIMARY_COLOR,
   BALANCER_SECONDARY_COLOR, PERSONAL_GRAPH_KEY
 } from '../data/balancer/constants';
@@ -17,6 +19,8 @@ export enum SupportedNetwork {
   ARBITRUM,
   POLYGON,
   GNOSIS,
+  ZKEVM,
+  OPTIMISM,
 }
 
 export type NetworkInfo = {
@@ -132,9 +136,55 @@ export const GnosisNetworkInfo: NetworkInfo = {
   blurb: 'Beta',
 }
 
+export const PolygonZkEVMNetworkInfo: NetworkInfo = {
+  id: SupportedNetwork.ZKEVM,
+  chainId: '1101',
+  coingeckoId: 'polygon-zkevm',
+  debankId: 'pze',
+  balAddress: '0x120eF59b80774F02211563834d8E3b72cb1649d6',
+  feeCollectorThreshold: 5000,
+  route: 'zkevm',
+  name: 'Polygon zkEVM',
+  startTimeStamp: 1685990897,
+  appUri: 'https://app.balancer.fi/#/zkevm/',
+  //clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-prune-v2',
+  clientUri: 'https://balancer-polygon-zkevm-v2-analytics.stellate.sh',
+  decentralicedClientUri: '',
+  alchemyRPCUrl: ALCHEMY_URL_ZKEVM,
+  alchemyKey: ALCHEMY_KEY_ZKEVM,
+  bgColor: '#a176e8',
+  primaryColor: '#620df3',
+  secondaryColor: '#FB7876',
+  imageURL: ZKEVM_LOGO_URL,
+  blurb: 'Beta',
+}
+
+export const OptimismNetworkInfo: NetworkInfo = {
+  id: SupportedNetwork.OPTIMISM,
+  chainId: '10',
+  coingeckoId: 'optimistic-ethereum',
+  debankId: 'op',
+  balAddress: '0xf24bcf4d1e507740041c9cfd2dddb29585adce1e',
+  decentralicedClientUri: '',
+  route: 'optimism',
+  name: 'OΞ (Optimism)',
+  startTimeStamp: 1654034400,
+  appUri: 'https://op.beets.fi',
+  clientUri: 'https://beethovenxfi-op-analytics.stellate.sh',
+  alchemyKey: '',
+  alchemyRPCUrl: '',
+  feeCollectorThreshold: 1000,
+  bgColor: '#F01B36',
+  primaryColor: '#F01B36',
+  secondaryColor: '#FB7876',
+  imageURL: OPTIMISM_LOGO_URL,
+  blurb: 'L2 Beta',
+};
+
 export const SUPPORTED_NETWORK_VERSIONS: NetworkInfo[] = [
   EthereumNetworkInfo,
   ArbitrumNetworkInfo,
   PolygonNetworkInfo,
   GnosisNetworkInfo,
+  PolygonZkEVMNetworkInfo,
 ]
