@@ -10,7 +10,7 @@ import {Multicall} from 'ethereum-multicall';
 //TODO: refactor/ add to consts if we will use something like this in the future
 const NETWORK_PROVIDERS = {
     [EthereumNetworkInfo.chainId]: 'https://eth.llamarpc.com',
-    [ArbitrumNetworkInfo.chainId]: 'https://arb1.arbitrum.io/rpc',
+    [ArbitrumNetworkInfo.chainId]: 'https://rpc.ankr.com/arbitrum',
     [PolygonNetworkInfo.chainId]: 'https://polygon-bor.publicnode.com',
     "10": 'https://optimism.publicnode.com',
     "5": 'https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
@@ -27,7 +27,6 @@ const useDecorateGaugesWithStakingSupplies = (stakingGaugeData: BalancerStakingG
         if (gaugeData && gaugeData.length > 0) {
             const multicalls = [];
             for (let network in NETWORK_PROVIDERS) {
-                const providerUrl = NETWORK_PROVIDERS[network];
                 const multicall = new Multicall({
                     ethersProvider: new ethers.providers.JsonRpcProvider('https://eth.llamarpc.com'),
                     tryAggregate: true
@@ -53,7 +52,7 @@ const useDecorateGaugesWithStakingSupplies = (stakingGaugeData: BalancerStakingG
 
                     multicalls.push(multicall.call(contractCallContext));
                     }
-                };
+                }; console.log(gauges);
 
                 if (gauges.length > 0) {
                     if (network === ArbitrumNetworkInfo.chainId || network === PolygonNetworkInfo.chainId || network === '100' || network === '10' || network === '1101')  {
@@ -68,7 +67,7 @@ const useDecorateGaugesWithStakingSupplies = (stakingGaugeData: BalancerStakingG
 
                     multicalls.push(multicallRoots.call(contractCallContextRoots));
                     }
-                } console.log()
+                } 
             };
             try {
                 const resultsArray = await Promise.all(multicalls);
@@ -96,29 +95,25 @@ const useDecorateGaugesWithStakingSupplies = (stakingGaugeData: BalancerStakingG
                       };
                 
                       updatedGaugeData.push(updatedGauge);
-                    } else {
+                    } else if (network === PolygonNetworkInfo.chainId) {
+                      const polygonMulitcall = new Multicall({
+                        ethersProvider: new ethers.providers.JsonRpcProvider(NETWORK_PROVIDERS[network]),
+                          tryAggregate: true
+                      })
                       const recipientCall = context.callsReturnContext.find(call => call.reference === "recipient");
                       const recipientAddress = recipientCall && recipientCall.returnValues[0] ? recipientCall.returnValues[0] : '';
-                
-                      if (recipientAddress) {
-                        const l2Multicall = new Multicall({
-                          ethersProvider: new ethers.providers.JsonRpcProvider(NETWORK_PROVIDERS[network]),
-                          tryAggregate: true
-                        });
-                
-                        const l2ContractCallContext = {
+                      const contractCallContextPolygon = gauges.map((gauge) => ({
                           reference: gauge.address,
                           contractAddress: recipientAddress,
                           abi: vyperPolygonGauge,
                           calls: [
                             { reference: "workingSupply", methodName: 'working_supply', methodParameters: [] },
                             { reference: "totalSupply", methodName: 'totalSupply', methodParameters: [] },
-                          ],
-                        };
-                
+                        ],
+                      })); 
                         try {
-                          const l2Results = await l2Multicall.call(l2ContractCallContext);
-                
+                          const l2Results = await polygonMulitcall.call(contractCallContextPolygon);
+                          
                           const l2WorkingSupplyCall = l2Results.results[gauge.address].callsReturnContext.find(call => call.reference === "workingSupply");
                           const l2TotalSupplyCall = l2Results.results[gauge.address].callsReturnContext.find(call => call.reference === "totalSupply");
                 
@@ -133,20 +128,161 @@ const useDecorateGaugesWithStakingSupplies = (stakingGaugeData: BalancerStakingG
                           };
                           updatedGaugeData.push(updatedGauge);
                         } catch (error) {
-                          console.error('Error executing L2 multicall:', error);
+                          console.error('Error executing Polygon multicall:', error);
                         }
-                      }
-                    };
+                      } else if (network === ArbitrumNetworkInfo.chainId) {
+                        const arbitrumMulitcall = new Multicall({
+                          ethersProvider: new ethers.providers.JsonRpcProvider(NETWORK_PROVIDERS[network]),
+                            tryAggregate: true
+                        })
+                        const recipientCall = context.callsReturnContext.find(call => call.reference === "recipient");
+                        // console.log(recipientCall);
+                        const recipientAddress = recipientCall && recipientCall.returnValues[0] ? recipientCall.returnValues[0] : '';
+                        // console.log(recipientAddress);
+                        const contractCallContextArbitrum = gauges.map((gauge) => ({
+                            reference: gauge.address,
+                            contractAddress: recipientAddress,
+                            abi: vyperPolygonGauge,
+                            calls: [
+                              { reference: "workingSupply", methodName: 'working_supply', methodParameters: [] },
+                              { reference: "totalSupply", methodName: 'totalSupply', methodParameters: [] },
+                          ],
+                        })); 
+                          try {
+                            const l2Results = await arbitrumMulitcall.call(contractCallContextArbitrum);
+                            // console.log(l2Results);
+                            const l2WorkingSupplyCall = l2Results.results[gauge.address].callsReturnContext.find(call => call.reference === "workingSupply");
+                            const l2TotalSupplyCall = l2Results.results[gauge.address].callsReturnContext.find(call => call.reference === "totalSupply");
+                  
+                            const l2WorkingSupplyHex = l2WorkingSupplyCall && l2WorkingSupplyCall.returnValues[0] ? l2WorkingSupplyCall.returnValues[0].hex : '0';
+                            const l2TotalSupplyHex = l2TotalSupplyCall && l2TotalSupplyCall.returnValues[0] ? l2TotalSupplyCall.returnValues[0].hex : '0';
+                            // console.log(l2TotalSupplyHex);
+                            const updatedGauge = {
+                              ...gauges[i],
+                              workingSupply: l2WorkingSupplyHex ? BigInt(l2WorkingSupplyHex).toString() : '-',
+                              totalSupply: l2TotalSupplyHex ? BigInt(l2TotalSupplyHex).toString() : '-',
+                              recipient: recipientAddress
+                            };
+                            updatedGaugeData.push(updatedGauge);
+                          } catch (error) {
+                            console.error('Error executing Gnosis multicall:', error);
+                          }
+                        }  else if (network === "100") {
+                          const gnosisMulitcall = new Multicall({
+                            ethersProvider: new ethers.providers.JsonRpcProvider(NETWORK_PROVIDERS[network]),
+                              tryAggregate: true
+                          })
+                          const recipientCall = context.callsReturnContext.find(call => call.reference === "recipient");
+                          const recipientAddress = recipientCall && recipientCall.returnValues[0] ? recipientCall.returnValues[0] : '';
+                          const contractCallContextGnosis = gauges.map((gauge) => ({
+                              reference: gauge.address,
+                              contractAddress: recipientAddress,
+                              abi: vyperPolygonGauge,
+                              calls: [
+                                { reference: "workingSupply", methodName: 'working_supply', methodParameters: [] },
+                                { reference: "totalSupply", methodName: 'totalSupply', methodParameters: [] },
+                            ],
+                          }));
+                            try {
+                              const l2Results = await gnosisMulitcall.call(contractCallContextGnosis);
+                    
+                              const l2WorkingSupplyCall = l2Results.results[gauge.address].callsReturnContext.find(call => call.reference === "workingSupply");
+                              const l2TotalSupplyCall = l2Results.results[gauge.address].callsReturnContext.find(call => call.reference === "totalSupply");
+                    
+                              const l2WorkingSupplyHex = l2WorkingSupplyCall && l2WorkingSupplyCall.returnValues[0] ? l2WorkingSupplyCall.returnValues[0].hex : '0';
+                              const l2TotalSupplyHex = l2TotalSupplyCall && l2TotalSupplyCall.returnValues[0] ? l2TotalSupplyCall.returnValues[0].hex : '0';
+                    
+                              const updatedGauge = {
+                                ...gauges[i],
+                                workingSupply: l2WorkingSupplyHex ? BigInt(l2WorkingSupplyHex).toString() : '-',
+                                totalSupply: l2TotalSupplyHex ? BigInt(l2TotalSupplyHex).toString() : '-',
+                                recipient: recipientAddress
+                              };
+                              updatedGaugeData.push(updatedGauge);
+                            } catch (error) {
+                              console.error('Error executing Gnosis multicall:', error);
+                            }
+                          } else if (network === "10" ) {
+                            const optimismMulitcall = new Multicall({
+                              ethersProvider: new ethers.providers.JsonRpcProvider(NETWORK_PROVIDERS[network]),
+                                tryAggregate: true
+                            })
+                            const recipientCall = context.callsReturnContext.find(call => call.reference === "recipient");
+                            const recipientAddress = recipientCall && recipientCall.returnValues[0] ? recipientCall.returnValues[0] : '';
+                            const contractCallContextOptimism = gauges.map((gauge) => ({
+                                reference: gauge.address,
+                                contractAddress: recipientAddress,
+                                abi: vyperPolygonGauge,
+                                calls: [
+                                  { reference: "workingSupply", methodName: 'working_supply', methodParameters: [] },
+                                  { reference: "totalSupply", methodName: 'totalSupply', methodParameters: [] },
+                              ],
+                            }));
+                              try {
+                                const l2Results = await optimismMulitcall.call(contractCallContextOptimism);
+                      
+                                const l2WorkingSupplyCall = l2Results.results[gauge.address].callsReturnContext.find(call => call.reference === "workingSupply");
+                                const l2TotalSupplyCall = l2Results.results[gauge.address].callsReturnContext.find(call => call.reference === "totalSupply");
+                      
+                                const l2WorkingSupplyHex = l2WorkingSupplyCall && l2WorkingSupplyCall.returnValues[0] ? l2WorkingSupplyCall.returnValues[0].hex : '0';
+                                const l2TotalSupplyHex = l2TotalSupplyCall && l2TotalSupplyCall.returnValues[0] ? l2TotalSupplyCall.returnValues[0].hex : '0';
+                      
+                                const updatedGauge = {
+                                  ...gauges[i],
+                                  workingSupply: l2WorkingSupplyHex ? BigInt(l2WorkingSupplyHex).toString() : '-',
+                                  totalSupply: l2TotalSupplyHex ? BigInt(l2TotalSupplyHex).toString() : '-',
+                                  recipient: recipientAddress
+                                };
+                                updatedGaugeData.push(updatedGauge);
+                              } catch (error) {
+                                console.error('Error executing Optimsim multicall:', error);
+                              }
+                            } else if (network === '1101') {
+                              const zkEVMMulitcall = new Multicall({
+                                ethersProvider: new ethers.providers.JsonRpcProvider(NETWORK_PROVIDERS[network]),
+                                  tryAggregate: true
+                              })
+                              const recipientCall = context.callsReturnContext.find(call => call.reference === "recipient");
+                              const recipientAddress = recipientCall && recipientCall.returnValues[0] ? recipientCall.returnValues[0] : '';
+                              const contractCallContextZkEVM = gauges.map((gauge) => ({
+                                  reference: gauge.address,
+                                  contractAddress: recipientAddress,
+                                  abi: vyperPolygonGauge,
+                                  calls: [
+                                    { reference: "workingSupply", methodName: 'working_supply', methodParameters: [] },
+                                    { reference: "totalSupply", methodName: 'totalSupply', methodParameters: [] },
+                                ],
+                              }));
+                                try {
+                                  const l2Results = await zkEVMMulitcall.call(contractCallContextZkEVM);
+                        
+                                  const l2WorkingSupplyCall = l2Results.results[gauge.address].callsReturnContext.find(call => call.reference === "workingSupply");
+                                  const l2TotalSupplyCall = l2Results.results[gauge.address].callsReturnContext.find(call => call.reference === "totalSupply");
+                        
+                                  const l2WorkingSupplyHex = l2WorkingSupplyCall && l2WorkingSupplyCall.returnValues[0] ? l2WorkingSupplyCall.returnValues[0].hex : '0';
+                                  const l2TotalSupplyHex = l2TotalSupplyCall && l2TotalSupplyCall.returnValues[0] ? l2TotalSupplyCall.returnValues[0].hex : '0';
+                        
+                                  const updatedGauge = {
+                                    ...gauges[i],
+                                    workingSupply: l2WorkingSupplyHex ? BigInt(l2WorkingSupplyHex).toString() : '-',
+                                    totalSupply: l2TotalSupplyHex ? BigInt(l2TotalSupplyHex).toString() : '-',
+                                    recipient: recipientAddress
+                                  };
+                                  updatedGaugeData.push(updatedGauge);
+                                } catch (error) {
+                                  console.error('Error executing zkEVM multicall:', error);
+                                }
+                              }
+                    });
                   }); 
-                }); 
-              } catch (error) {
-                console.error('Error executing multicall:', error);
-                return [];
+                } catch (error) {
+                  console.error('Error executing multicall:', error);
+                  return [];
+                } 
               }              
-        }
         console.log(updatedGaugeData);
         return updatedGaugeData;
-    }
+    };
 
 
     //Fetch and populate gauge supply numbers

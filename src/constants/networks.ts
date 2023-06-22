@@ -83,7 +83,7 @@ export const ArbitrumNetworkInfo: NetworkInfo = {
   bgColor: '#0A294B',
   primaryColor: '#0490ED',
   secondaryColor: '#96BEDC',
-  blurb: 'L2',
+  blurb: 'Beta',
 }
 
 export const PolygonNetworkInfo: NetworkInfo = {

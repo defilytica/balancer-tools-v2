@@ -198,4 +198,5 @@ export interface AprSet {
     aprSet?: AprSet;
     userVotingPower?: number;
     recipient: string;
+    maxBoost: number;
   }

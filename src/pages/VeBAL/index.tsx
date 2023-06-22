@@ -24,6 +24,7 @@ export default function VeBAL() {
   //Load gauge and Staking information
   const gaugeData = useGetBalancerStakingGauges();
   const decoratedGaugeData = useDecorateGaugesWithStakingSupplies(gaugeData);
+  // const decoratedBoostGaugeData = useCalculateBoostForGauges(decoratedGaugeData);
 
 
   const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);
