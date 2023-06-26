@@ -34,7 +34,9 @@ interface Data {
     poolData: SimplePoolData,
     workingSupply: string;
     totalSupply: string;
-    maxBoost: number;
+    boost: string;
+    max_boost: string,
+    min_VeBAL: string,
 }
 
 interface SimplePoolTokenData {
@@ -58,7 +60,9 @@ function createData(
     poolData: SimplePoolData,
     workingSupply: string,
     totalSupply: string,
-    maxBoost: number,
+    boost: string,
+    max_boost: string,
+    min_VeBAL: string,
 ): Data {
     return {
         address,
@@ -67,7 +71,9 @@ function createData(
         poolData,
         workingSupply,
         totalSupply,
-        maxBoost,
+        boost,
+        max_boost,
+        min_VeBAL,
     };
 }
 
@@ -153,13 +159,26 @@ const headCells: readonly HeadCell[] = [
         isMobileVisible: false,
     },
     {
-        id: 'maxBoost',
+        id: 'boost',
+        numeric: false,
+        disablePadding: false,
+        label: 'Boost',
+        isMobileVisible: false,
+    },
+    {
+        id: 'max_boost',
         numeric: false,
         disablePadding: false,
         label: 'Max Boost',
         isMobileVisible: false,
     },
-
+    {
+        id: 'min_VeBAL',
+        numeric: false,
+        disablePadding: false,
+        label: 'Min VeBAL for Max Boost',
+        isMobileVisible: false,
+    },
 ];
 
 interface EnhancedTableProps {
@@ -238,7 +257,7 @@ export default function GaugeBoostTable({gaugeDatas}: {
     });
 
     const rows = filteredPoolDatas.map(el =>
-        createData(el.address, el.network, el.isKilled, el.pool, el.workingSupply, el.totalSupply, 0)
+        createData(el.address, el.network, el.isKilled, el.pool, el.workingSupply, el.totalSupply, el.boost, el.max_boost, el.min_VeBAL)
     )
 
     const handleRequestSort = (
@@ -349,7 +368,13 @@ export default function GaugeBoostTable({gaugeDatas}: {
                                                 {formatNumber(Number(row.workingSupply) / 1e18)}
                                             </TableCell>
                                             <TableCell>
-                                                TODO
+                                                {formatNumber(Number(row.boost),  3)}
+                                            </TableCell>
+                                            <TableCell>
+                                                {formatNumber(Number(row.max_boost),  3)}
+                                            </TableCell>
+                                            <TableCell>
+                                                {formatNumber(Number(row.min_VeBAL),  3)}
                                             </TableCell>
                                         </TableRow>
                                     );

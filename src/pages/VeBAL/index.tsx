@@ -11,10 +11,10 @@ import {useGetUserVeBAL} from "../../data/balancer/useGetUserVeBAL";
 import useGetSimpleGaugeData from "../../data/balancer/useGetSimpleGaugeData";
 import GaugeBoostTable from "../../components/Tables/GaugeBoostTable";
 import {useAccount} from "wagmi";
-import useDecorateGaugesWithStakingSupplies from "../../data/balancer/useDecorateGaugesWithStakingSupplies";
 import {BalancerStakingGauges} from "../../data/balancer/balancerTypes";
 import useDecorateL1Gauges from "../../data/balancer/useDecorateL1Gauges";
 import useDecorateL2Gauges from "../../data/balancer/useDeocrateL2Gauges";
+// import { calculateBoostFromGauge } from './veBALHelpers';
 
 export default function VeBAL() {
 
@@ -27,6 +27,7 @@ export default function VeBAL() {
   const gaugeData = useGetBalancerStakingGauges();
   const l1GaugeData = useDecorateL1Gauges(gaugeData);
   const decoratedGaugeData = useDecorateL2Gauges(l1GaugeData)
+  console.log(decoratedGaugeData);
 
 
   const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);

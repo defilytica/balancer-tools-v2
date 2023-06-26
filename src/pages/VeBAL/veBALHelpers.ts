@@ -1,9 +1,5 @@
 //Provide all necessary helper functions for the veBAL boost calculator here
 
-export function scaffold(){
-     return null;
- }
-
 // ///////////////////////////////////////////////////////////////////////////////////////
 // ///// Helper function to calculate the Gauge APR for a given Balancer pool gauge. /////
 // // Note the emmissions rate (balEmission) needs to be updated. ////////////////////////
@@ -37,10 +33,10 @@ export function scaffold(){
 // //Helper function to calculate Boost for a certain gauge / veBAL configuration /////
 // ////////////////////////////////////////////////////////////////////////////////////
 
-// export function calculateBoostFromGauge(newVeBAL, lockedVeBAL, totalVeBALStaked, newShare, share, totalShare, totalStakedLiquidity) {
+export function calculateBoostFromGauge(workingBalance: number, workingSupply: number, totalSupply: number, userBalance: number) {
 
-//     //console.log("vars: ", newVeBAL, lockedVeBAL, totalVeBALStaked, newShare, share, totalShare)
-//     let boost = 0.0;
+     //console.log("vars: ", newVeBAL, lockedVeBAL, totalVeBALStaked, newShare, share, totalShare)
+     let boost = 0.0;
 //     //Calculate working supply:
 //     const liquidity_provided = Number(newShare) + Number(share);
 //     //const working_supply_pool = Number(totalShare);
@@ -53,9 +49,11 @@ export function scaffold(){
 //     //const max_working_supply_user = 0.40 * liquidity_provided + 0.60 * (Number(totalStakedLiquidity)) * (Number(newShare) / (Number(totalShare)));
 //     //Boost calculation depending 2 scenarios: new liquidity or already providing liquidity and adding more
 
-//     if (Number(newShare) === 0.0 && Number(newVeBAL) === 0.0) {
-//         //Case 1: current boost
-//         boost = (working_supply_user / Number(totalShare)) / ((0.4 * Number(share)) / (Number(totalShare) - working_supply_user + 0.4 * Number(share)))
+     if (Number(workingBalance) > 0.0) {
+         boost = Number((workingBalance / workingSupply) / ((0.4 * userBalance / workingSupply)))
+     }
+         //Case 1: current boost
+        // boost = (workingBalance / Number(totalSupply)) / ((0.4 * Number(userBalance)) / (Number(totalSupply) - workingBalance + 0.4 * Number(userBalance)))
 //         //console.log("case1 triggered")
 //     } else if (Number(share) !== 0.0 || Number(lockedVeBAL) !== 0.0) {
 //         //Case 2: user boost when adjusting current position (share !== 0)
@@ -66,38 +64,40 @@ export function scaffold(){
 //         boost = (working_supply_user / (working_supply_user + Number(totalShare))) / (non_boosted_working_supply_user / (non_boosted_working_supply_user + Number(totalShare)))
 //         //console.log("case3 triggered")
 //     }
-//     if (boost > 2.5) {
-//         boost = 2.5
-//     } else if (boost < 1) {
-//         boost = 1.0
-//     }
+    //   if (boost > 2.5) {
+    //       boost = 2.5
+    //   } else if (boost < 1) {
+    //       boost = 5
+    //   }
 
-//     //console.log("boost", boost);
+      //console.log("boost", boost);
 
-//     return boost;
-// }
+      return boost;
+  }
 
 // /////////////////////////////////////////////////////////////////////////////////////////
 // //Helper function to calculate Max Boost for a certain gauge / veBAL configuration /////
 // ////////////////////////////////////////////////////////////////////////////////////////
 
-// export function calculateMaxBoost(newVeBAL, lockedVeBAL, totalVeBALStaked, newShare, share, totalShare, totalStakedLiquidity) {
+ export function calculateMaxBoost(workingBalance: number, workingSupply: number, totalSupply: number, userBalance: number) {
 
-//     //console.log("vars: ", newVeBAL, lockedVeBAL, totalVeBALStaked, newShare, share, totalShare)
-//     let max_boost = 0.0;
-//     //Calculate working supply:
+     //console.log("vars: ", newVeBAL, lockedVeBAL, totalVeBALStaked, newShare, share, totalShare)
+     let max_boost = 0.0;
+     //Calculate working supply:
 //     const liquidity_provided = Number(newShare) + Number(share);
-//     // Calculate minveBAL for Max Boost
+     // Calculate minveBAL for Max Boost
 //     let minveBAL = (totalVeBALStaked) * (liquidity_provided / ( Number(totalShare)));
 //     //const working_supply_pool = Number(totalShare);
 //     const supply_user_max = 0.4 * liquidity_provided + 0.6 * (Number(totalStakedLiquidity)) * (minveBAL) / (Number(totalVeBALStaked));
 //     //Take the minimum of working supply limit and liquidity provided
 //     let working_supply_user_max = Number(Math.min(supply_user_max, liquidity_provided));
 //     //Non-boosted supply
-//     let non_boosted_working_supply_user = 0.4 * liquidity_provided;
-//     //Max working supply for 2.5x
-//     //const max_working_supply_user = 0.40 * liquidity_provided + 0.60 * (Number(totalStakedLiquidity)) * (Number(newShare) / (Number(totalShare)));
-//     //Boost calculation depending 2 scenarios: new liquidity or already providing liquidity and adding more
+     if (Number(workingBalance) > 0.0) {
+        max_boost = Number(2.5 * workingSupply / (workingSupply - workingBalance + userBalance))
+    }
+     //Max working supply for 2.5x
+     //const max_working_supply_user = 0.40 * liquidity_provided + 0.60 * (Number(totalStakedLiquidity)) * (Number(newShare) / (Number(totalShare)));
+     //Boost calculation depending 2 scenarios: new liquidity or already providing liquidity and adding more
 
 //     if (Number(newShare) === 0.0 && Number(newVeBAL) === 0.0) {
 //         //Case 1: current boost
@@ -112,34 +112,36 @@ export function scaffold(){
 //         max_boost = (working_supply_user_max / (working_supply_user_max + Number(totalShare))) / (non_boosted_working_supply_user / (non_boosted_working_supply_user + Number(totalShare)))
 //         //console.log("case3 triggered")
 //     }
-//     if (max_boost > 2.5) {
-//         max_boost = 2.5
-//     } else if (max_boost < 1) {
-//         max_boost = 1.0
-//     }
+    
+     if (max_boost > 2.5) {
+         max_boost = 2.5
+     } else if (max_boost < 1) {
+         max_boost = 1.0
+     }
 
-//     // console.log("max_boost", max_boost);
+     // console.log("max_boost", max_boost);
 
-//     return max_boost;
+     return max_boost;
 
-// }
+ }
 
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // //Helper function to calculate minimum veBAL for Max Boost for a certain gauge / veBAL configuration /////
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// export function calculateMinVeBAL(newVeBAL, lockedVeBAL, totalVeBALStaked, newShare, share, totalShare, totalStakedLiquidity) {
-
-//     //Calculate working supply:
+export function calculateMinVeBAL(workingBalance: number, workingSupply: number, totalSupply: number, userBalance: number, totalVeBAL: number) {
+     //Calculate working supply:
 //     const liquidity_provided = Number(newShare) + Number(share);
 //     // Calculate minveBAL for Max Boost
-//     let minveBAL = (totalVeBALStaked) * (liquidity_provided / ( Number(totalStakedLiquidity) + Number(newShare)));
-//     if (minveBAL > 50000000) {
-//         minveBAL = 0;
-//     }
-//     return minveBAL;
-
-// }
+     let min_VeBAL = 0;
+     if (Number(workingSupply > 0)) {
+        min_VeBAL = totalVeBAL * (userBalance / totalSupply);
+     }
+     if (min_VeBAL > 50000000) {
+        min_VeBAL = 0;
+     }
+     return min_VeBAL;
+ }
 
 // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ////// Helper function to calculate the amount of additional veBAL a user needs to lock to reach max boost. /////

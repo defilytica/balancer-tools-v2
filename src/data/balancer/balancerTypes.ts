@@ -198,5 +198,9 @@ export interface AprSet {
     aprSet?: AprSet;
     userVotingPower?: number;
     recipient: string;
-    maxBoost: number;
+    boost: string;
+    userWorkingBalance: number;
+    userBalance: string;
+    max_boost: string;
+    min_VeBAL: string;
   }

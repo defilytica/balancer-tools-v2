@@ -4,6 +4,9 @@ import vyperPolygonGauge from "../../constants/abis/vyperPolygonGauge.json";
 import { useEffect, useState } from "react";
 import { ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo } from "../../constants/networks";
 import {ContractCallResults, ContractCallReturnContext, Multicall} from 'ethereum-multicall';
+import {useAccount} from 'wagmi';
+import { calculateBoostFromGauge, calculateMaxBoost, calculateMinVeBAL } from "../../pages/VeBAL/veBALHelpers";
+import { useGetTotalVeBAL } from "./useGetTotalVeBAL";
 
 const NETWORK_PROVIDERS = {
     "10": 'https://optimism.publicnode.com',
@@ -21,6 +24,8 @@ const useDecorateL2Gauges = (stakingGaugeData: BalancerStakingGauges[]): Balance
 
     const [decoratedGauges, setDecoratedGauges] = useState<BalancerStakingGauges[]>()
     const [isLoading, setIsLoading] = useState(true)
+    const {address} = useAccount();
+    const totalVeBAL = useGetTotalVeBAL();
 
     const fetchL2Supplies = async (gaugeData: BalancerStakingGauges[] | undefined): Promise<BalancerStakingGauges[]> => {
         const updatedGaugeData: BalancerStakingGauges[] = [];
@@ -43,6 +48,8 @@ const useDecorateL2Gauges = (stakingGaugeData: BalancerStakingGauges[]): Balance
                             calls: [
                                 { reference: "workingSupply", methodName: 'working_supply', methodParameters: [] },
                                 { reference: "totalSupply", methodName: 'totalSupply', methodParameters: [] },
+                                { reference: "workingBalance", methodName: 'working_balances', methodParameters: [address]},
+                                { reference: "userBalance", methodName: 'balanceOf', methodParameters: [address]},
                             ],
                         }));
                         multicalls.push({ chainId, promise: multicall.call(contractCallContext) });
@@ -67,14 +74,23 @@ const useDecorateL2Gauges = (stakingGaugeData: BalancerStakingGauges[]): Balance
                             const context = result.results[networkGauges[i].address];
                             const workingSupplyCall = context.callsReturnContext.find(call => call.reference === "workingSupply");
                             const totalSupplyCall = context.callsReturnContext.find(call => call.reference === "totalSupply");
+                            const workingBalanceCall = context.callsReturnContext.find(call => call.reference === "workingBalance");
+                            const userBalanceCall = context.callsReturnContext.find(call => call.reference === "userBalance");
 
                             const workingSupplyHex = workingSupplyCall && workingSupplyCall.returnValues[0] ? workingSupplyCall.returnValues[0].hex : '0';
                             const totalSupplyHex = totalSupplyCall && totalSupplyCall.returnValues[0] ? totalSupplyCall.returnValues[0].hex : '0';
+                            const workingBalanceHex = workingBalanceCall && workingBalanceCall.returnValues[0] ? workingBalanceCall.returnValues[0].hex : '0';
+                            const userBalanceHex = userBalanceCall && userBalanceCall.returnValues[0] ? userBalanceCall.returnValues[0].hex : '0';
 
                             const updatedGauge = {
                                 ...networkGauges[i],
                                 workingSupply: workingSupplyHex ? BigInt(workingSupplyHex).toString() : '-',
-                                totalSupply: totalSupplyHex ? BigInt(totalSupplyHex).toString() : '-'
+                                totalSupply: totalSupplyHex ? BigInt(totalSupplyHex).toString() : '-',
+                                workingBalance: workingBalanceHex ? BigInt(workingBalanceHex).toString() : '-',
+                                userBalance: userBalanceHex ? BigInt(userBalanceHex).toString() : '-',
+                                boost: workingSupplyHex ? String(calculateBoostFromGauge( Number(BigInt(workingBalanceHex).toString()), Number(BigInt(workingSupplyHex).toString()), Number(BigInt(totalSupplyHex).toString()), Number(BigInt(userBalanceHex).toString()))) : "0",
+                                max_boost: workingSupplyHex ? String(calculateMaxBoost( Number(BigInt(workingBalanceHex).toString()), Number(BigInt(workingSupplyHex).toString()), Number(BigInt(totalSupplyHex).toString()), Number(BigInt(userBalanceHex).toString()))) : "1",
+                                min_VeBAL: workingSupplyHex ? String(calculateMinVeBAL( Number(BigInt(workingBalanceHex).toString()), Number(BigInt(workingSupplyHex).toString()), Number(BigInt(totalSupplyHex).toString()), Number(BigInt(userBalanceHex).toString()), Number(totalVeBAL))) : "1",
                             };
 
                             updatedGaugeData.push(updatedGauge);
