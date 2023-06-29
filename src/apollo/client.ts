@@ -49,6 +49,35 @@ export const client = new ApolloClient({
     },
 });
 
+export const gaugeClient = new ApolloClient({
+    //uri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-v2',
+    uri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-gauges',
+    cache: new InMemoryCache({
+        typePolicies: {
+            Token: {
+                // Singleton types that have no identifying field can use an empty
+                // array for their keyFields.
+                keyFields: false,
+            },
+            Pool: {
+                // Singleton types that have no identifying field can use an empty
+                // array for their keyFields.
+                keyFields: false,
+            },
+        },
+    }),
+    queryDeduplication: true,
+    defaultOptions: {
+        watchQuery: {
+            fetchPolicy: 'no-cache',
+        },
+        query: {
+            fetchPolicy: 'no-cache',
+            errorPolicy: 'all',
+        },
+    },
+});
+
 export const arbitrumClient = new ApolloClient({
     //uri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-arbitrum-v2',
     uri: 'https://balancer-arbitrum-v2-analytics.stellate.sh',

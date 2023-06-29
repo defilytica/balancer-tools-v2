@@ -1,12 +1,15 @@
 
 import { FormControl, Select, MenuItem, Avatar, Divider, SelectChangeEvent } from "@mui/material"
 import { Box } from "@mui/system"
-import { ArbitrumNetworkInfo, EthereumNetworkInfo, GnosisNetworkInfo, PolygonNetworkInfo } from "../../constants/networks"
+import { ArbitrumNetworkInfo, EthereumNetworkInfo, GnosisNetworkInfo,
+    OptimismNetworkInfo, PolygonNetworkInfo, PolygonZkEVMNetworkInfo } from "../../constants/networks"
 import { useActiveNetworkVersion } from "../../state/application/hooks"
 import ArbitrumLogo from '../../assets/svg/arbitrum.svg'
 import EtherLogo from '../../assets/svg/ethereum.svg'
 import PolygonLogo from '../../assets/svg/polygon.svg'
 import GnosisLogo from '../../assets/svg/gnosis.svg'
+import PolygonZkevmLogo from '../../assets/svg/zkevm.svg'
+import OpLogo from '../../assets/svg/optimism.svg'
 import { useNavigate } from "react-router-dom";
 import { useSwitchNetwork } from 'wagmi'
 
@@ -22,20 +25,20 @@ export default function NetworkSelector() {
         switchNetwork?.(Number(chainId))
         if (chainId === EthereumNetworkInfo.chainId) {
             update(EthereumNetworkInfo)
-
             navigate('/')
-
         } else if (chainId === PolygonNetworkInfo.chainId) {
             update(PolygonNetworkInfo)
-            navigate('/polygon/chain');
         } else if (chainId === ArbitrumNetworkInfo.chainId) {
             update(ArbitrumNetworkInfo)
-            navigate('/arbitrum/chain');
         } else if (chainId === GnosisNetworkInfo.chainId) {
             update(GnosisNetworkInfo)
-            navigate('/gnosis/chain');
+        } else if (chainId === PolygonZkEVMNetworkInfo.chainId) {
+        update(PolygonZkEVMNetworkInfo)
+        navigate('/zkevm/chain');
+        } else if (chainId === OptimismNetworkInfo.chainId) {
+            update(OptimismNetworkInfo)
+            navigate('/optimism/chain');
         }
-        
     };
 
     return (
@@ -91,6 +94,22 @@ export default function NetworkSelector() {
                         </Box>
                     </Box>
                 </MenuItem>
+                <MenuItem value={PolygonZkEVMNetworkInfo.chainId} key="zkevm">
+                    <Box display="flex" alignItems="center">
+                        <Box mr={0.5}>
+                            <Avatar
+                                sx={{
+                                    height: 20,
+                                    width: 20
+                                }}
+                                src={PolygonZkevmLogo}
+                            />
+                        </Box>
+                        <Box>
+                            Polygon zkEVM
+                        </Box>
+                    </Box>
+                </MenuItem>
                 <MenuItem value={ArbitrumNetworkInfo.chainId} key="arb">
                     <Box display="flex" alignItems="center">
                         <Box mr={0.5}>
@@ -120,6 +139,22 @@ export default function NetworkSelector() {
                         </Box>
                         <Box>
                             Gnosis
+                        </Box>
+                    </Box>
+                </MenuItem>
+                <MenuItem value={OptimismNetworkInfo.chainId} key="optimism">
+                    <Box display="flex" alignItems="center">
+                        <Box mr={0.5}>
+                            <Avatar
+                                sx={{
+                                    height: 20,
+                                    width: 20
+                                }}
+                                src={OpLogo}
+                            />
+                        </Box>
+                        <Box>
+                            Optimism
                         </Box>
                     </Box>
                 </MenuItem>

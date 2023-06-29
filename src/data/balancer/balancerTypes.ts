@@ -172,3 +172,49 @@ export interface AprSet {
   export interface RewardsBreakdown {
     [key: string]: number
   }
+
+  export interface BalancerStakingGauges {
+    address: string;
+    network: string;
+    isKilled: boolean;
+    addedTimestamp: number;
+    relativeWeightCap: string | null;
+    pool: {
+      id: string;
+      address: string;
+      poolType: string;
+      symbol: string;
+      tokens: {
+        address: string;
+        weight: string | null;
+        symbol: string;
+      }[];
+    };
+    tokenLogoURIs: {
+      [address: string]: string;
+    };
+    workingSupply: string;
+    totalSupply: string;
+    aprSet?: AprSet;
+    userVotingPower?: number;
+    recipient: string;
+    boost: string;
+    userWorkingBalance: number;
+    userBalance: string;
+    max_boost: string;
+    min_VeBAL: string;
+  }
+
+export interface SimplePoolTokenData {
+    address: string;
+    weight: string | null;
+    symbol: string;
+}
+
+export interface SimplePoolData {
+    id: string;
+    address: string;
+    poolType: string;
+    symbol: string;
+    tokens: SimplePoolTokenData[];
+}

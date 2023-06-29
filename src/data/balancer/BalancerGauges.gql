@@ -1,0 +1,9 @@
+query GetUserVotes($userId: ID!) {
+    user(id: $userId) {
+        votingLocks {
+            lockedBalance
+            unlockTime
+        }
+    }
+}
+

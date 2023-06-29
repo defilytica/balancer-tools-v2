@@ -3,6 +3,7 @@ import Cookies from 'universal-cookie';
 import {Route, Routes, useLocation} from 'react-router-dom';
 import BalancerLogoWhite from '../../assets/svg/logo-light.svg'
 import BalancerLogoBlack from '../../assets/svg/logo-dark.svg'
+import DefilyticaIcon from '../../assets/png/defilytica.png'
 import MoonIcon from '../../assets/svg/MoonIcon.svg';
 import SunIcon from '../../assets/svg/SunIcon.svg';
 import Box from '@mui/material/Box';
@@ -25,9 +26,10 @@ import VeBAL from '../../pages/VeBAL';
 import VeBALVoter from '../../pages/VeBALVoter';
 import ImpermanentLoss from '../../pages/ImpermanentLoss';
 import Authorizations from '../../pages/Authorizations';
-import {ConnectButton, midnightTheme, darkTheme, lightTheme, RainbowKitProvider} from "@rainbow-me/rainbowkit";
+import {ConnectButton, darkTheme, lightTheme, RainbowKitProvider} from "@rainbow-me/rainbowkit";
 import {WagmiConfig} from "wagmi";
 import {chains, wagmiConfig} from "../../wagmi/wagmiConfig";
+import {alpha} from "@mui/material";
 
 
 interface AppBarProps extends MuiAppBarProps {
@@ -152,11 +154,20 @@ function Dashboard() {
             <RainbowKitProvider
                 chains={chains}
                 theme={
-                mode === 'dark' ? darkTheme(
-                    {
-                        borderRadius: 'small',
+                    mode === 'dark' ? darkTheme(
+                            {
+                                borderRadius: 'small',
+                                accentColor: alpha('#0F172A', 0.8),
+                                overlayBlur: "large"
 
-                    }) : lightTheme() }>
+                            }) :
+                        lightTheme(
+                            {
+                                borderRadius: 'small',
+                                accentColor: '#9C4ED6'
+
+                            }
+                        )}>
                 <ColorModeContext.Provider value={colorMode}>
                     <ThemeProvider theme={theme}>
                         <Box sx={{display: 'flex'}}>
@@ -183,8 +194,7 @@ function Dashboard() {
                                          justifyContent='flex-end'>
                                         <Box
                                             sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}>
-                                            <img src={(mode === 'dark') ? BalancerLogoBlack : BalancerLogoWhite}
-                                                 alt="Balancer Logo" width="30"/>
+                                            <img src={DefilyticaIcon} alt="Defilytica Logo" width="30"/>
                                         </Box>
                                         <Typography
                                             variant="h6"

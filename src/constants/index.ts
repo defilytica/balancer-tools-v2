@@ -10,6 +10,8 @@ export default function isDev(): boolean
     return development;
 }
 
+export const veBALVoteAddress = '0xC128468b7Ce63eA702C1f104D55A2566b13D3ABD'
+
 export const YIELD_BEARING_TOKENS = [
     '0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0', //wstETH
     '0x5979d7b546e38e414f7e9822514be443a4800529', //wstETH (Arb)
