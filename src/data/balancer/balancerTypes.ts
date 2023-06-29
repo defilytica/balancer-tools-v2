@@ -204,3 +204,17 @@ export interface AprSet {
     max_boost: string;
     min_VeBAL: string;
   }
+
+export interface SimplePoolTokenData {
+    address: string;
+    weight: string | null;
+    symbol: string;
+}
+
+export interface SimplePoolData {
+    id: string;
+    address: string;
+    poolType: string;
+    symbol: string;
+    tokens: SimplePoolTokenData[];
+}

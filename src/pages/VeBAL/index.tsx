@@ -14,6 +14,7 @@ import {useAccount} from "wagmi";
 import {BalancerStakingGauges} from "../../data/balancer/balancerTypes";
 import useDecorateL1Gauges from "../../data/balancer/useDecorateL1Gauges";
 import useDecorateL2Gauges from "../../data/balancer/useDeocrateL2Gauges";
+import CircularProgress from "@mui/material/CircularProgress";
 // import { calculateBoostFromGauge } from './veBALHelpers';
 
 export default function VeBAL() {
@@ -65,7 +66,7 @@ export default function VeBAL() {
               <MetricsCard
                 mainMetric={userVeBAL ? userVeBAL : 0}
                 mainMetricInUSD={false}
-                metricName={'Current veBAL'}
+                metricName={'veBAL'}
                 MetricIcon={AccountBalanceWalletIcon}
               />
             </Box>
@@ -91,11 +92,11 @@ export default function VeBAL() {
           <Typography>TODO: add investment value</Typography>
         </Grid>
         <Grid item xs={11}>
-          <Box>
+          <Box mb={1}>
             <Typography variant="h5">Theoretical Boost across gauges</Typography>
           </Box>
-          <Typography>Show a table of the boost and APRs for all pools</Typography>
-          <GaugeBoostTable gaugeDatas={decoratedGaugeData} />
+          {decoratedGaugeData && decoratedGaugeData.length > 1 ?
+          <GaugeBoostTable gaugeDatas={decoratedGaugeData} /> : <CircularProgress /> }
         </Grid>
       </Grid>
     </Box>

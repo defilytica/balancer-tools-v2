@@ -7,6 +7,10 @@ import { Avatar } from '@mui/material';
 
 
 export const getTokenLogoURL = (address: string, networkId: SupportedNetwork) => {
+    //veBAL:
+    if (address.toLowerCase() === '0xc128a9954e6c874ea3d62ce62b468ba073093f25') {
+        return 'https://raw.githubusercontent.com/balancer/assets/master/assets/0x5c6ee304399dbdb9c8ef030ab642b10820db8f56.png'
+    }
     switch (networkId) {
         case SupportedNetwork.ETHEREUM:
             return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`

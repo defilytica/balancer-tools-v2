@@ -1,5 +1,7 @@
 import * as React from 'react';
+import { useState } from "react";
 import Box from '@mui/material/Box';
+import SearchIcon from '@mui/icons-material/Search';
 import TablePagination from '@mui/material/TablePagination';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Table from '@mui/material/Table';
@@ -9,7 +11,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import {Avatar, CircularProgress, Grid} from '@mui/material';
+import {Avatar, IconButton, InputBase} from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import {visuallyHidden} from '@mui/utils';
@@ -23,54 +25,37 @@ import ArbitrumLogo from '../../../assets/svg/arbitrum.svg'
 import EtherLogo from '../../../assets/svg/ethereum.svg'
 import PolygonLogo from '../../../assets/svg/polygon.svg'
 import GnosisLogo from '../../../assets/svg/gnosis.svg'
-import {BalancerStakingGauges} from "../../../data/balancer/balancerTypes";
+import {BalancerStakingGauges, SimplePoolData} from "../../../data/balancer/balancerTypes";
 import {formatNumber} from "../../../utils/numbers";
+import GaugeComposition from "../../GaugeComposition";
+import ClearIcon from '@mui/icons-material/Clear';
+
 
 
 interface Data {
-    address: string;
+    poolComposition: string;
     network: string;
     isKilled: boolean;
     poolData: SimplePoolData,
-    workingSupply: string;
-    totalSupply: string;
     boost: string;
     max_boost: string,
     min_VeBAL: string,
 }
 
-interface SimplePoolTokenData {
-    address: string;
-    weight: string | null;
-    symbol: string;
-}
-
-interface SimplePoolData {
-    id: string;
-    address: string;
-    poolType: string;
-    symbol: string;
-    tokens: SimplePoolTokenData[];
-}
-
 function createData(
-    address: string,
+    poolComposition: string,
     network: string,
     isKilled: boolean,
     poolData: SimplePoolData,
-    workingSupply: string,
-    totalSupply: string,
     boost: string,
     max_boost: string,
     min_VeBAL: string,
 ): Data {
     return {
-        address,
+        poolComposition,
         network,
         isKilled,
         poolData,
-        workingSupply,
-        totalSupply,
         boost,
         max_boost,
         min_VeBAL,
@@ -138,24 +123,10 @@ const headCells: readonly HeadCell[] = [
         isMobileVisible: false,
     },
     {
-        id: 'address',
+        id: 'poolComposition',
         numeric: false,
         disablePadding: false,
-        label: 'Address',
-        isMobileVisible: false,
-    },
-    {
-        id: 'totalSupply',
-        numeric: false,
-        disablePadding: false,
-        label: 'Total Supply',
-        isMobileVisible: false,
-    },
-    {
-        id: 'workingSupply',
-        numeric: false,
-        disablePadding: false,
-        label: 'Working Supply',
+        label: 'Composition',
         isMobileVisible: false,
     },
     {
@@ -231,7 +202,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 }
 
 export default function GaugeBoostTable({gaugeDatas}: {
-    gaugeDatas?: BalancerStakingGauges[]
+    gaugeDatas: BalancerStakingGauges[]
 }) {
     const [order, setOrder] = React.useState<Order>('desc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('network');
@@ -239,26 +210,20 @@ export default function GaugeBoostTable({gaugeDatas}: {
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(25);
 
-    if (!gaugeDatas) {
-        return <CircularProgress/>;
-    }
-
-    if (gaugeDatas.length === 0) {
-        return (
-            <Grid>
-                <CircularProgress/>
-            </Grid>
-        );
-    }
 
     const seen = new Set();
+
     const filteredPoolDatas = gaugeDatas.filter((x) => {
         return !!x && !x.isKilled && !seen.has(x.address) && seen.add(x.pool.address);
     });
 
-    const rows = filteredPoolDatas.map(el =>
-        createData(el.address, el.network, el.isKilled, el.pool, el.workingSupply, el.totalSupply, el.boost, el.max_boost, el.min_VeBAL)
+    const originalRows = filteredPoolDatas.map(el =>
+        createData(el.address, el.network, el.isKilled, el.pool, el.boost, el.max_boost, el.min_VeBAL)
     )
+    const [rows, setRows] = useState<Data[]>(originalRows);
+    const [searched, setSearched] = useState<string>("");
+
+
 
     const handleRequestSort = (
         event: React.MouseEvent<unknown>,
@@ -291,6 +256,25 @@ export default function GaugeBoostTable({gaugeDatas}: {
         return networkPrefix(activeNetwork) + 'pools/' + id;
     }
 
+
+
+    const requestSearch = (searchedVal: string) => {
+        const filteredRows = originalRows.filter((row) => {
+            const lowerCaseSearchedVal = searchedVal.toLowerCase();
+            const hasPartialMatchInAddress = row.poolData.address.toLowerCase().includes(lowerCaseSearchedVal);
+            const hasPartialMatchInSymbol = row.poolData.symbol.toLowerCase().includes(lowerCaseSearchedVal);
+            const hasPartialMatchInTokens = row.poolData.tokens.some((token) => token.symbol.toLowerCase().includes(lowerCaseSearchedVal));
+            return hasPartialMatchInAddress || hasPartialMatchInSymbol || hasPartialMatchInTokens;
+        });
+        setRows(filteredRows);
+        setSearched(searchedVal)
+    };
+
+    const clearSearch = (): void => {
+        setSearched("");
+        setRows(originalRows)
+    };
+
     interface NetworkLogoMap {
         [networkNumber: number]: string;
     }
@@ -308,7 +292,23 @@ export default function GaugeBoostTable({gaugeDatas}: {
 
     return (
         <Box sx={{width: '100%'}}>
+            <Paper
+                component="form"
+                sx={{ mb: '5px', p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+            >
+                <InputBase
+                    sx={{ ml: 1, flex: 1 }}
+                    placeholder="Search for Gauge"
+                    inputProps={{ 'aria-label': 'search Balancer gauges' }}
+                    value={searched}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => requestSearch(event.target.value)}
+                />
+                <IconButton onClick={clearSearch} type="button" sx={{ p: '10px' }} aria-label="search">
+                    {searched !== "" ? <ClearIcon /> : <SearchIcon />}
+                </IconButton>
+            </Paper>
             <Paper sx={{mb: 2, boxShadow: 3}}>
+
                 <TableContainer>
                     <Table
                         //sx={{ minWidth: 750 }}
@@ -334,7 +334,7 @@ export default function GaugeBoostTable({gaugeDatas}: {
                                             //onClick={() => window.open(`https://balancer.defilytica.com/${getLink(row.network, row.address)}/`, '_blank') }
                                             role="number"
                                             tabIndex={-1}
-                                            key={row.address + Math.random() * 10}
+                                            key={row.poolComposition + Math.random() * 10}
                                             sx={{cursor: 'pointer'}}
                                         >
                                             <TableCell>
@@ -358,14 +358,7 @@ export default function GaugeBoostTable({gaugeDatas}: {
                                                 scope="row"
                                                 sx={{display: {xs: 'none', md: 'table-cell'}}}
                                             >
-                                                {row.address}
-                                                {/* <PoolComposition key={row.poolData.id} poolData={row.poolData} size={35} /> */}
-                                            </TableCell>
-                                            <TableCell>
-                                                {formatNumber(Number(row.totalSupply) / 1e18)}
-                                            </TableCell>
-                                            <TableCell>
-                                                {formatNumber(Number(row.workingSupply) / 1e18)}
+                                                <GaugeComposition poolData={row.poolData} />
                                             </TableCell>
                                             <TableCell>
                                                 {formatNumber(Number(row.boost),  3)}
