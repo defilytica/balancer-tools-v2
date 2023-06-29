@@ -2,7 +2,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles'
 import { styled } from '@mui/material/styles';
-import { Drawer, Box, Link } from "@mui/material"
+import {Drawer, Box, Link, ListItem, Button} from "@mui/material"
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -22,7 +22,6 @@ import ListItemText from '@mui/material/ListItemText';
 import CoingeckoColor from '../../assets/svg/coingecko-color.svg'
 import DebankColor from '../../assets/svg/debank-symbol.svg'
 import AlchemyBlue from '../../assets/svg/alchemy-mark-blue-gradient.svg'
-//import Stellate from '../../assets/svg/stellate.svg'
 import Polling from '../Header/Polling';
 import { NavLink } from "react-router-dom";
 import { EthereumNetworkInfo, NetworkInfo } from '../../constants/networks';
@@ -80,6 +79,9 @@ const MenuDrawer = ({
             </DrawerHeader>
             <Divider />
             <List>
+                <ListItem>
+                    <Typography sx={{ fontWeight: 'bold' }}>Balancer</Typography>
+                </ListItem>
                 <ListItemButton key={'veBAL'} component={NavLink} to={'/veBAL'}>
                     <ListItemIcon>
                         <AccountBalanceIcon />
@@ -117,6 +119,32 @@ const MenuDrawer = ({
                     </ListItemIcon>
                     <ListItemText primary={'Authorizations'} />
                 </ListItemButton>
+            </List>
+            <List>
+                <Divider />
+                <ListItem>
+                    <Box ml={3} display={'flex'} justifyContent={'center'} alignItems={'center'}>
+                    <Button
+                        onClick={() => {window.open('https://balancer.defilytica.com', '_blank')}}
+                        sx={{
+                            background: 'linear-gradient(45deg, #0066cc 30%, #003399 90%)',
+                            borderRadius: 3,
+                            border: 0,
+                            color: 'white',
+                            height: 35,
+                            padding: '0 30px',
+                            boxShadow: '0 3px 5px 2px rgba(0, 0, 0, 0.3)',
+                            transition: 'background-color 0.3s ease, transform 0.2s ease-out',
+                            '&:hover': {
+                                background: 'linear-gradient(45deg, #003399 30%, #0066cc 90%)',
+                                transform: 'scale(1.05)',
+                            },
+                        }}
+                    >
+                        Analytics
+                    </Button>
+                    </Box>
+                </ListItem>
             </List>
             <Divider />
             <Box display="flex" justifyContent="space-between" paddingX={drawerWidth / 6 + 'px'}>

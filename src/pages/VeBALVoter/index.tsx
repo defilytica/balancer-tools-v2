@@ -86,7 +86,8 @@ export default function VeBALVoter() {
                 <Typography>
                     User votes mock:
                     </Typography>
-                    <GaugeBoostTable gaugeDatas={userVotingGauges} />
+                    {userVotingGauges && userVotingGauges.length > 0 ?
+                        <GaugeBoostTable gaugeDatas={userVotingGauges} /> : <CircularProgress /> }
                 </Grid>
             </Grid>
             
