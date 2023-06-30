@@ -40,6 +40,9 @@ interface Data {
     address: string;
     rootGauge: string,
     min_VeBAL: string,
+    poolId: string,
+    poolType: string,
+    symbol: string,
 }
 
 function createData(
@@ -50,6 +53,9 @@ function createData(
     address: string,
     rootGauge: string,
     min_VeBAL: string,
+    poolId: string,
+    poolType: string,
+    symbol: string,
 ): Data {
     return {
         poolComposition,
@@ -59,6 +65,9 @@ function createData(
         address,
         rootGauge,
         min_VeBAL,
+        poolId,
+        poolType,
+        symbol,
     };
 }
 
@@ -150,6 +159,27 @@ const headCells: readonly HeadCell[] = [
         label: 'Min VeBAL for Max Boost',
         isMobileVisible: false,
     },
+    {
+        id: 'poolId',
+        numeric: false,
+        disablePadding: false,
+        label: 'Pool ID',
+        isMobileVisible: false,
+    },
+    {
+        id: 'poolType',
+        numeric: false,
+        disablePadding: false,
+        label: 'Pool Type',
+        isMobileVisible: false,
+    },
+    {
+        id: 'symbol',
+        numeric: false,
+        disablePadding: false,
+        label: 'Symbol',
+        isMobileVisible: false,
+    },
 ];
 
 interface EnhancedTableProps {
@@ -218,7 +248,7 @@ export default function GaugeBoostTable({gaugeDatas}: {
     });
 
     const originalRows = filteredPoolDatas.map(el =>
-        createData(el.address, el.network, el.isKilled, el.pool, el.pool.address, el.address, el.min_VeBAL)
+        createData(el.address, el.network, el.isKilled, el.pool, el.pool.address, el.address, el.min_VeBAL, el.pool.id, el.pool.poolType, el.pool.symbol)
     )
     const [rows, setRows] = useState<Data[]>(originalRows);
     const [searched, setSearched] = useState<string>("");
@@ -338,36 +368,22 @@ export default function GaugeBoostTable({gaugeDatas}: {
                                             sx={{cursor: 'pointer'}}
                                         >
                                             <TableCell>
-                                                <Avatar
-                                                    sx={{
-                                                        height: 20,
-                                                        width: 20
-                                                    }}
-                                                    src={networkLogoMap[Number(row.network)]}
-                                                />
-                                            </TableCell>
-                                            <TableCell>
-                                                {/* TODO: fix for token list elements*/}
-                                                <PoolCurrencyLogo
-                                                    tokens={row.poolData.tokens.map(token => ({address: token.address ? token.address.toLowerCase() : ''}))}
-                                                    size={'25px'}/>
-                                            </TableCell>
-                                            <TableCell
-                                                component="th"
-                                                id={labelId}
-                                                scope="row"
-                                                sx={{display: {xs: 'none', md: 'table-cell'}}}
-                                            >
-                                                <GaugeComposition poolData={row.poolData} />
+                                                {row.rootGauge}
                                             </TableCell>
                                             <TableCell>
                                                 {row.address}
                                             </TableCell>
                                             <TableCell>
-                                                {row.rootGauge}
+                                                {row.poolId}
                                             </TableCell>
                                             <TableCell>
-                                                {formatNumber(Number(row.min_VeBAL),  3)}
+                                                {row.poolType}
+                                            </TableCell>
+                                            <TableCell>
+                                                {row.network}
+                                            </TableCell>
+                                            <TableCell>
+                                                {row.symbol}
                                             </TableCell>
                                         </TableRow>
                                     );
