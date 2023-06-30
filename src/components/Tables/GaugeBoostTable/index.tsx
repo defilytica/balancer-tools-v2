@@ -37,8 +37,8 @@ interface Data {
     network: string;
     isKilled: boolean;
     poolData: SimplePoolData,
-    boost: string;
-    max_boost: string,
+    address: string;
+    rootGauge: string,
     min_VeBAL: string,
 }
 
@@ -47,8 +47,8 @@ function createData(
     network: string,
     isKilled: boolean,
     poolData: SimplePoolData,
-    boost: string,
-    max_boost: string,
+    address: string,
+    rootGauge: string,
     min_VeBAL: string,
 ): Data {
     return {
@@ -56,8 +56,8 @@ function createData(
         network,
         isKilled,
         poolData,
-        boost,
-        max_boost,
+        address,
+        rootGauge,
         min_VeBAL,
     };
 }
@@ -130,17 +130,17 @@ const headCells: readonly HeadCell[] = [
         isMobileVisible: false,
     },
     {
-        id: 'boost',
+        id: 'address',
         numeric: false,
         disablePadding: false,
-        label: 'Boost',
+        label: 'Address',
         isMobileVisible: false,
     },
     {
-        id: 'max_boost',
+        id: 'rootGauge',
         numeric: false,
         disablePadding: false,
-        label: 'Max Boost',
+        label: 'Root Gauge',
         isMobileVisible: false,
     },
     {
@@ -218,7 +218,7 @@ export default function GaugeBoostTable({gaugeDatas}: {
     });
 
     const originalRows = filteredPoolDatas.map(el =>
-        createData(el.address, el.network, el.isKilled, el.pool, el.boost, el.max_boost, el.min_VeBAL)
+        createData(el.address, el.network, el.isKilled, el.pool, el.pool.address, el.address, el.min_VeBAL)
     )
     const [rows, setRows] = useState<Data[]>(originalRows);
     const [searched, setSearched] = useState<string>("");
@@ -361,10 +361,10 @@ export default function GaugeBoostTable({gaugeDatas}: {
                                                 <GaugeComposition poolData={row.poolData} />
                                             </TableCell>
                                             <TableCell>
-                                                {formatNumber(Number(row.boost),  3)}
+                                                {row.address}
                                             </TableCell>
                                             <TableCell>
-                                                {formatNumber(Number(row.max_boost),  3)}
+                                                {row.rootGauge}
                                             </TableCell>
                                             <TableCell>
                                                 {formatNumber(Number(row.min_VeBAL),  3)}
