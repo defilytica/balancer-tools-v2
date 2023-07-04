@@ -14,9 +14,19 @@ import useDecorateGaugesWithVotes from "../../data/balancer/useDecorateGaugesWit
 import * as React from "react";
 import {useGetHHVotingIncentives} from "../../data/hidden-hand/useGetHHVotingIncentives";
 import {decorateGaugesWithIncentives} from "../../data/hidden-hand/helpers";
-import {BalancerStakingGauges} from "../../data/balancer/balancerTypes";
+import {BalancerStakingGauges, SimplePoolData} from "../../data/balancer/balancerTypes";
 import VotingTable from '../../components/Tables/VotingTable';
+import {useEffect, useState} from "react";
+import PoolCurrencyLogo from "../../components/PoolCurrencyLogo";
+import GaugeComposition from "../../components/GaugeComposition";
+import TextField from "@mui/material/TextField";
+import {SimpleGauge} from "../../data/balancer/useGetSimpleGaugeData";
 
+
+export interface GaugeAllocation {
+    gaugeAddress: string,
+    percentage: number,
+}
 
 export default function VeBALVoter() {
 
@@ -26,8 +36,27 @@ export default function VeBALVoter() {
     const userVeBAL = useGetUserVeBAL(address ? address : '');
     const hhIncentives = useGetHHVotingIncentives();
 
-    console.log("hhIncentives", hhIncentives)
-    console.log("userVeBAL", userVeBAL)
+    const [allocations, setAllocations] = useState<GaugeAllocation[]>([]);
+
+    const handleAddAllocation = (address: string) => {
+        const newAllocation: GaugeAllocation = {
+            gaugeAddress: address,
+            percentage: 0,
+        };
+        setAllocations((prevAllocations) => [...prevAllocations, { ...newAllocation }]);
+    };
+
+    const handlePercentageChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, allocElement: GaugeAllocation) => {
+        const inputPercentage = Number(event.target.value);
+        if (isNaN(inputPercentage) || inputPercentage < 0 || inputPercentage > 100) {
+            // Invalid input, set percentage to 0
+            allocElement.percentage = 0
+        } else {
+            // Valid input, update percentage
+            allocElement.percentage = inputPercentage
+        }
+        setAllocations([...allocations])
+    };
 
     //Load gauge and Staking information
     let fullyDecoratedGauges: BalancerStakingGauges[] = [];
@@ -40,6 +69,21 @@ export default function VeBALVoter() {
     }
     const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);
     const unlockDate = date.toLocaleDateString();
+
+    const userVotingGauges = decoratedVotingGauges.filter((el) => el.userVotingPower ? el.userVotingPower > 0 : false);
+    //Map out active user votes
+    useEffect(() => {
+        // Map out active user votes
+        if (userVotingGauges.length > 0 && allocations.length === 0) {
+            const newAllocations = userVotingGauges.map((vote) => ({
+                gaugeAddress: vote.address,
+                percentage: vote.userVotingPower ? vote.userVotingPower : 0,
+            }));
+            setAllocations([...newAllocations]);
+        }
+    }, [userVotingGauges, allocations]);
+
+    console.log("allocations", allocations)
 
     return (
         <Box sx={{flexGrow: 2}}>
@@ -88,11 +132,47 @@ export default function VeBALVoter() {
                     </Grid>
                 }
                 <Grid item mt={1} xs={11}>
+                    <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column'}}> {/* Apply flexbox display */}
+                        {allocations.map((alloc) => {
+                            const relevantGauge = fullyDecoratedGauges.find((el) => el.address.toLowerCase() === alloc.gaugeAddress.toLowerCase());
+                            console.log("relevantGauge", relevantGauge)
+                            if (relevantGauge && relevantGauge.pool.tokens) {
+                                return (
+                                    <Box p={1} key={alloc.gaugeAddress}>
+                                        <Box style={{ display: 'flex', alignItems: 'center', flexDirection: 'row'}}> {/* Apply flexbox display and align items */}
+
+                                            <PoolCurrencyLogo
+                                                tokens={relevantGauge.pool.tokens.map((token) => ({
+                                                    address: token.address ? token.address.toLowerCase() : '',
+                                                }))}
+                                                size={'25px'}
+                                            />
+
+                                            <GaugeComposition poolData={relevantGauge.pool} />
+                                            <Box ml={2}>
+                                            <TextField
+                                                type="number"
+                                                label="Weight"
+                                                size="small"
+                                                value={alloc.percentage}
+                                                onChange={(e) => handlePercentageChange(e, alloc)}
+                                                inputProps={{ min: 0, max: 100 }} // Set the minimum and maximum values
+                                            />
+                                            </Box>
+                                        </Box>
+                                    </Box>
+                                );
+                            }
+                            return null;
+                        })}
+                    </Box>
+                </Grid>
+                <Grid item mt={1} xs={11}>
                     <Typography>
                         User votes mock:
                     </Typography>
                     {fullyDecoratedGauges && fullyDecoratedGauges.length > 0 ?
-                       <VotingTable gaugeDatas={fullyDecoratedGauges} userVeBal={950} /> : <CircularProgress/>}
+                       <VotingTable gaugeDatas={fullyDecoratedGauges} userVeBal={950} onAddAllocation={handleAddAllocation}/> : <CircularProgress/>}
                 </Grid>
             </Grid>
 

@@ -11,7 +11,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import {Avatar, IconButton, InputBase} from '@mui/material';
+import {Avatar, Button, IconButton, InputBase} from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import {visuallyHidden} from '@mui/utils';
@@ -29,11 +29,14 @@ import {BalancerStakingGauges, SimplePoolData} from "../../../data/balancer/bala
 import {formatNumber} from "../../../utils/numbers";
 import GaugeComposition from "../../GaugeComposition";
 import ClearIcon from '@mui/icons-material/Clear';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import {SimpleGauge} from "../../../data/balancer/useGetSimpleGaugeData";
+import {GaugeAllocation} from "../../../pages/VeBALVoter";
 
 
 
 interface Data {
-    poolComposition: string;
+    gaugeAddress: string;
     network: string;
     isKilled: boolean;
     poolData: SimplePoolData,
@@ -44,7 +47,7 @@ interface Data {
 }
 
 function createData(
-    poolComposition: string,
+    gaugeAddress: string,
     network: string,
     isKilled: boolean,
     poolData: SimplePoolData,
@@ -54,7 +57,7 @@ function createData(
     userRewards: number,
 ): Data {
     return {
-        poolComposition,
+        gaugeAddress,
         network,
         isKilled,
         poolData,
@@ -126,7 +129,7 @@ const headCells: readonly HeadCell[] = [
         isMobileVisible: false,
     },
     {
-        id: 'poolComposition',
+        id: 'gaugeAddress',
         numeric: false,
         disablePadding: false,
         label: 'Composition',
@@ -140,13 +143,6 @@ const headCells: readonly HeadCell[] = [
         isMobileVisible: false,
     },
     {
-        id: 'userVotes',
-        numeric: true,
-        disablePadding: true,
-        label: 'User Votes',
-        isMobileVisible: true,
-    },
-    {
         id: 'votingIncentives',
         numeric: true,
         disablePadding: true,
@@ -158,6 +154,13 @@ const headCells: readonly HeadCell[] = [
         numeric: true,
         disablePadding: true,
         label: 'Estimated rewards ($)',
+        isMobileVisible: true,
+    },
+    {
+        id: 'userVotes',
+        numeric: true,
+        disablePadding: true,
+        label: 'User Votes',
         isMobileVisible: true,
     },
 ];
@@ -211,9 +214,10 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 
-export default function VotingTable({gaugeDatas, userVeBal}: {
+export default function VotingTable({gaugeDatas, userVeBal, onAddAllocation}: {
     gaugeDatas: BalancerStakingGauges[],
     userVeBal: number,
+    onAddAllocation: (address: string) => void;
 }) {
     const [order, setOrder] = React.useState<Order>('desc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('network');
@@ -353,7 +357,7 @@ export default function VotingTable({gaugeDatas, userVeBal}: {
                                             //onClick={() => window.open(`https://balancer.defilytica.com/${getLink(row.network, row.address)}/`, '_blank') }
                                             role="number"
                                             tabIndex={-1}
-                                            key={row.poolComposition + Math.random() * 10}
+                                            key={row.gaugeAddress + Math.random() * 10}
                                             sx={{cursor: 'pointer'}}
                                         >
                                             <TableCell>
@@ -383,13 +387,23 @@ export default function VotingTable({gaugeDatas, userVeBal}: {
                                                 {formatNumber(Number(row.totalVotes ? row.totalVotes : 0),  3)}
                                             </TableCell>
                                             <TableCell align="right">
-                                                {formatNumber(Number(row.userVotes ? row.userVotes : 0),  3)}
-                                            </TableCell>
-                                            <TableCell align="right">
                                                 {formatNumber(Number(row.votingIncentives ? row.votingIncentives : 0),  3)}
                                             </TableCell>
                                             <TableCell align="right">
                                                 {formatNumber(Number(row.userRewards ? row.userRewards : 0),  3)}
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                {row.userVotes ? (
+                                                    formatNumber(Number(row.userVotes), 3)
+                                                ) : (
+                                                    <Button
+                                                        variant="contained"
+                                                        endIcon={<AddCircleIcon
+                                                            onClick={() => onAddAllocation(row.gaugeAddress)}
+                                                        />}>
+                                                        Add
+                                                    </Button>
+                                                )}
                                             </TableCell>
                                         </TableRow>
                                     );
