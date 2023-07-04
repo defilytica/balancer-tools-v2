@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { Grid, Typography, List, ListItem } from '@mui/material';
+import {Grid, Typography} from '@mui/material';
 import {useAccount} from "wagmi";
 import {useUserVeBALLocks} from "../../data/balancer/useUserVeBALLocks";
 import {useGetUserVeBAL} from "../../data/balancer/useGetUserVeBAL";
@@ -11,45 +11,49 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import GenericMetricsCard from "../../components/Cards/GenericMetricCard";
 import LockClockIcon from "@mui/icons-material/LockClock";
 import useDecorateGaugesWithVotes from "../../data/balancer/useDecorateGaugesWithVotes";
-import PoolCurrencyLogo from "../../components/PoolCurrencyLogo";
 import * as React from "react";
-import GaugeBoostTable from "../../components/Tables/GaugeBoostTable";
-
-
-
+import {useGetHHVotingIncentives} from "../../data/hidden-hand/useGetHHVotingIncentives";
+import {decorateGaugesWithIncentives} from "../../data/hidden-hand/helpers";
+import {BalancerStakingGauges} from "../../data/balancer/balancerTypes";
+import VotingTable from '../../components/Tables/VotingTable';
 
 
 export default function VeBALVoter() {
 
     //Load user wallet stats
-    const { isConnected, address } = useAccount();
+    const {isConnected, address} = useAccount();
     const userLocks = useUserVeBALLocks();
-    const userVeBAL = useGetUserVeBAL();
+    const userVeBAL = useGetUserVeBAL(address ? address : '');
+    const hhIncentives = useGetHHVotingIncentives();
+
+    console.log("hhIncentives", hhIncentives)
+    console.log("userVeBAL", userVeBAL)
 
     //Load gauge and Staking information
+    let fullyDecoratedGauges: BalancerStakingGauges[] = [];
     const gaugeData = useGetBalancerStakingGauges();
     const voterAddress = address ? address?.toLowerCase() : ''
     const decoratedVotingGauges = useDecorateGaugesWithVotes(gaugeData, voterAddress)
-    const userVotingGauges = decoratedVotingGauges.filter((el) => el.userVotingPower? el.userVotingPower > 0 : false)
-    console.log("userVotingGauges", userVotingGauges)
-
-
+    // TODO: improve logic, adjust hook?
+    if (hhIncentives && hhIncentives.incentives && hhIncentives.incentives.data) {
+        fullyDecoratedGauges = decorateGaugesWithIncentives(decoratedVotingGauges, hhIncentives.incentives)
+    }
     const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);
     const unlockDate = date.toLocaleDateString();
 
     return (
-        <Box sx={{ flexGrow: 2 }}>
+        <Box sx={{flexGrow: 2}}>
             <Grid
                 container
                 spacing={2}
-                sx={{ justifyContent: 'center' }}
+                sx={{justifyContent: 'center'}}
             >
-                { isConnected ?
+                {isConnected ?
                     <Grid item mt={1} xs={11}>
                         <Grid
                             container
-                            columns={{ xs: 4, sm: 8, md: 12 }}
-                            sx={{ justifyContent: { md: 'flex-start', xs: 'center' }, alignContent: 'center' }}
+                            columns={{xs: 4, sm: 8, md: 12}}
+                            sx={{justifyContent: {md: 'flex-start', xs: 'center'}, alignContent: 'center'}}
                         >
                             <Box m={1}>
                                 <MetricsCard
@@ -78,19 +82,20 @@ export default function VeBALVoter() {
                     </Grid> :
                     <Grid item mt={1} xs={11}>
                         <Box m={1}>
-                            <GenericMetricsCard mainMetric={'-'} metricName={'No wallet connected'} MetricIcon={AccountBalanceWalletIcon} />
+                            <GenericMetricsCard mainMetric={'-'} metricName={'No wallet connected'}
+                                                MetricIcon={AccountBalanceWalletIcon}/>
                         </Box>
                     </Grid>
                 }
                 <Grid item mt={1} xs={11}>
-                <Typography>
-                    User votes mock:
+                    <Typography>
+                        User votes mock:
                     </Typography>
-                    {userVotingGauges && userVotingGauges.length > 0 ?
-                        <GaugeBoostTable gaugeDatas={userVotingGauges} /> : <CircularProgress /> }
+                    {fullyDecoratedGauges && fullyDecoratedGauges.length > 0 ?
+                       <VotingTable gaugeDatas={fullyDecoratedGauges} userVeBal={950} /> : <CircularProgress/>}
                 </Grid>
             </Grid>
-            
+
         </Box>
     );
 }
