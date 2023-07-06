@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
+import {Avatar, Button, Card, Grid, Table, TableBody, TableHead, TableRow, Typography} from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-import {Grid, Typography} from '@mui/material';
 import {useAccount} from "wagmi";
 import {useUserVeBALLocks} from "../../data/balancer/useUserVeBALLocks";
 import {useGetUserVeBAL} from "../../data/balancer/useGetUserVeBAL";
@@ -12,21 +12,28 @@ import GenericMetricsCard from "../../components/Cards/GenericMetricCard";
 import LockClockIcon from "@mui/icons-material/LockClock";
 import useDecorateGaugesWithVotes from "../../data/balancer/useDecorateGaugesWithVotes";
 import * as React from "react";
+import {useEffect, useState} from "react";
 import {useGetHHVotingIncentives} from "../../data/hidden-hand/useGetHHVotingIncentives";
 import {decorateGaugesWithIncentives} from "../../data/hidden-hand/helpers";
-import {BalancerStakingGauges, SimplePoolData} from "../../data/balancer/balancerTypes";
+import {BalancerStakingGauges} from "../../data/balancer/balancerTypes";
 import VotingTable from '../../components/Tables/VotingTable';
-import {useEffect, useState} from "react";
 import PoolCurrencyLogo from "../../components/PoolCurrencyLogo";
 import GaugeComposition from "../../components/GaugeComposition";
 import TextField from "@mui/material/TextField";
-import {SimpleGauge} from "../../data/balancer/useGetSimpleGaugeData";
+import {GaugeAllocation} from '../../data/balancer/balancerGaugeTypes'
+import {ethers} from "ethers";
+import VeBalVoteMany from '../../constants/abis/veBALVoteMany.json'
+import {formatDollarAmount} from "../../utils/numbers";
+import TableCell from "@mui/material/TableCell";
+import HiddenHandCard from "../../components/Cards/HiddenHandCard";
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import ArbitrumLogo from '../../assets/svg/arbitrum.svg'
+import EtherLogo from '../../assets/svg/ethereum.svg'
+import PolygonLogo from '../../assets/svg/polygon.svg'
+import GnosisLogo from '../../assets/svg/gnosis.svg'
+import zkevmLogo from '../../assets/svg/zkevm.svg'
+import OpLogo from '../../assets/svg/optimism.svg'
 
-
-export interface GaugeAllocation {
-    gaugeAddress: string,
-    percentage: number,
-}
 
 export default function VeBALVoter() {
 
@@ -37,61 +44,173 @@ export default function VeBALVoter() {
     const hhIncentives = useGetHHVotingIncentives();
 
     const [allocations, setAllocations] = useState<GaugeAllocation[]>([]);
+    const [totalPercentage, setTotalPercentage] = useState<number>(0);
+
+    //TODO: outsource
+    interface NetworkLogoMap {
+        [networkNumber: number]: string;
+    }
+
+    const networkLogoMap: NetworkLogoMap = {
+        1: EtherLogo,
+        10: OpLogo,
+        137: PolygonLogo,
+        100: GnosisLogo,
+        1101: zkevmLogo,
+        42161: ArbitrumLogo
+    };
 
     const handleAddAllocation = (address: string) => {
         const newAllocation: GaugeAllocation = {
             gaugeAddress: address,
             percentage: 0,
+            rewardInUSD: 0,
+            isNew: true,
         };
-        setAllocations((prevAllocations) => [...prevAllocations, { ...newAllocation }]);
+        setAllocations((prevAllocations) => [...prevAllocations, {...newAllocation}]);
     };
 
     const handlePercentageChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, allocElement: GaugeAllocation) => {
         const inputPercentage = Number(event.target.value);
+        const matchingHiddenHandData = hhIncentives?.incentives?.data?.find(data => data.proposal.toLowerCase() === allocElement.gaugeAddress.toLowerCase());
+
+        if (matchingHiddenHandData) {
+            const currentVoteValue = fullyDecoratedGauges.find(gauge => gauge.address === allocElement.gaugeAddress)?.voteCount ?? 0;
+            const newVoteValue = currentVoteValue + userVeBAL * inputPercentage / 100;
+
+            const updatedGauge = fullyDecoratedGauges.find(gauge => gauge.address === allocElement.gaugeAddress);
+            if (updatedGauge) {
+                updatedGauge.voteCount = newVoteValue;
+                updatedGauge.valuePerVote = matchingHiddenHandData.totalValue / newVoteValue;
+            }
+
+            // Map updated gauge back to fullyDecoratedGauges
+            fullyDecoratedGauges = fullyDecoratedGauges.map(gauge => {
+                if (gauge.address === allocElement.gaugeAddress && updatedGauge) {
+                    return updatedGauge;
+                }
+                return gauge;
+            });
+        }
+        const incentive = fullyDecoratedGauges.find(gauge => gauge.address === allocElement.gaugeAddress);
+
         if (isNaN(inputPercentage) || inputPercentage < 0 || inputPercentage > 100) {
             // Invalid input, set percentage to 0
-            allocElement.percentage = 0
+            allocElement.percentage = 0;
         } else {
             // Valid input, update percentage
-            allocElement.percentage = inputPercentage
+            allocElement.percentage = inputPercentage;
+            allocElement.rewardInUSD = incentive ? userVeBAL * inputPercentage / 100 * incentive.valuePerVote : 0;
         }
-        setAllocations([...allocations])
+        setAllocations([...allocations]);
     };
+
+    const calculateAverageValuePerVote = (gauges: BalancerStakingGauges[]) => {
+        const totalValuePerVote = gauges.reduce((sum, gauge) => sum + gauge.valuePerVote ? gauge.valuePerVote : 0, 0);
+        return totalValuePerVote / gauges.length;
+    };
+
 
     //Load gauge and Staking information
     let fullyDecoratedGauges: BalancerStakingGauges[] = [];
+    let averageValuePerVote = 0
     const gaugeData = useGetBalancerStakingGauges();
     const voterAddress = address ? address?.toLowerCase() : ''
     const decoratedVotingGauges = useDecorateGaugesWithVotes(gaugeData, voterAddress)
     // TODO: improve logic, adjust hook?
     if (hhIncentives && hhIncentives.incentives && hhIncentives.incentives.data) {
         fullyDecoratedGauges = decorateGaugesWithIncentives(decoratedVotingGauges, hhIncentives.incentives)
+        averageValuePerVote = calculateAverageValuePerVote(fullyDecoratedGauges)
     }
+
+
+    console.log("averageValuePerVote", averageValuePerVote)
+
     const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);
     const unlockDate = date.toLocaleDateString();
 
     const userVotingGauges = decoratedVotingGauges.filter((el) => el.userVotingPower ? el.userVotingPower > 0 : false);
-    //Map out active user votes
+
+
+    // Map out active user votes
     useEffect(() => {
-        // Map out active user votes
-        if (userVotingGauges.length > 0 && allocations.length === 0) {
-            const newAllocations = userVotingGauges.map((vote) => ({
-                gaugeAddress: vote.address,
-                percentage: vote.userVotingPower ? vote.userVotingPower : 0,
-            }));
+
+        if (userVotingGauges.length > 0 && allocations.length === 0 && fullyDecoratedGauges.length > 0) {
+            const newAllocations = userVotingGauges.map((vote) => {
+                const matchingGauge = fullyDecoratedGauges.find((gauge) => gauge.address === vote.address);
+                const rewardInUSD = (matchingGauge && vote.userVotingPower) ? vote.userVotingPower * matchingGauge.valuePerVote : 0;
+                return {
+                    gaugeAddress: vote.address,
+                    percentage: vote.userVotingPower ? vote.userVotingPower : 0,
+                    rewardInUSD: rewardInUSD,
+                    isNew: false
+                };
+            });
             setAllocations([...newAllocations]);
         }
     }, [userVotingGauges, allocations]);
 
-    console.log("allocations", allocations)
+    useEffect(() => {
+        const newPercentage = allocations.reduce((sum, allocation) => sum + allocation.percentage, 0)
+        console.log("new percentage", newPercentage);
+        setTotalPercentage(newPercentage)
+    }, [allocations, address])
+
+
+    // TODO: replace with wagmi hook!
+    async function updateVotes(allocations: GaugeAllocation[]) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = await provider.getSigner();
+        const erc20 = new ethers.Contract(address ? address : '', VeBalVoteMany, signer);
+
+        const addresses = Array(8)
+            .fill("0x0000000000000000000000000000000000000000")
+            .map((_, index) =>
+                index < allocations.length
+                    ? allocations[index].gaugeAddress.slice(2, 42)
+                    : "0x0000000000000000000000000000000000000000"
+            );
+
+        const weights = Array(8)
+            .fill(0)
+            .map((_, index) =>
+                index < allocations.length ? allocations[index].percentage : 0
+            );
+
+        await erc20.vote_for_many_gauge_weights(addresses, weights);
+    }
+
+    // Reset voting state
+    const resetVotes = () => {
+        const newAllocations = userVotingGauges.map((vote) => {
+            const matchingGauge = fullyDecoratedGauges.find((gauge) => gauge.address === vote.address);
+            const rewardInUSD = (matchingGauge && vote.userVotingPower) ? vote.userVotingPower * matchingGauge.valuePerVote : 0;
+            return {
+                gaugeAddress: vote.address,
+                percentage: vote.userVotingPower ? vote.userVotingPower : 0,
+                rewardInUSD: rewardInUSD,
+                isNew: false
+            };
+        });
+        setAllocations([...newAllocations]);
+    }
+
+
+
 
     return (
-        <Box sx={{flexGrow: 2}}>
+        <Box key={address? address : 'veBAL'} sx={{flexGrow: 2}}>
             <Grid
                 container
                 spacing={2}
                 sx={{justifyContent: 'center'}}
             >
+                <Grid item mt={1} xs={11}>
+                    <Typography variant={'h5'}>
+                        veBAL Multi-Voter Tool
+                    </Typography>
+                </Grid>
                 {isConnected ?
                     <Grid item mt={1} xs={11}>
                         <Grid
@@ -99,15 +218,7 @@ export default function VeBALVoter() {
                             columns={{xs: 4, sm: 8, md: 12}}
                             sx={{justifyContent: {md: 'flex-start', xs: 'center'}, alignContent: 'center'}}
                         >
-                            <Box m={1}>
-                                <MetricsCard
-                                    mainMetric={userLocks?.lockedBalance ? userLocks.lockedBalance : 0}
-                                    mainMetricInUSD={false}
-                                    metricName={'B-80BAL-20WETH'}
-                                    MetricIcon={LockPersonIcon}
-                                />
-                            </Box>
-                            <Box m={1}>
+                            <Box mr={1} mt={1}>
                                 <MetricsCard
                                     mainMetric={userVeBAL ? userVeBAL : 0}
                                     mainMetricInUSD={false}
@@ -115,7 +226,15 @@ export default function VeBALVoter() {
                                     MetricIcon={AccountBalanceWalletIcon}
                                 />
                             </Box>
-                            <Box m={1}>
+                            <Box mr={1} mt={1}>
+                                <MetricsCard
+                                    mainMetric={userLocks?.lockedBalance ? userLocks.lockedBalance : 0}
+                                    mainMetricInUSD={false}
+                                    metricName={'B-80BAL-20WETH'}
+                                    MetricIcon={LockPersonIcon}
+                                />
+                            </Box>
+                            <Box mr={1} mt={1}>
                                 <GenericMetricsCard
                                     mainMetric={unlockDate}
                                     metricName={'Unlock date'}
@@ -125,54 +244,167 @@ export default function VeBALVoter() {
                         </Grid>
                     </Grid> :
                     <Grid item mt={1} xs={11}>
-                        <Box m={1}>
+                        <Box mr={1} mt={1}>
                             <GenericMetricsCard mainMetric={'-'} metricName={'No wallet connected'}
                                                 MetricIcon={AccountBalanceWalletIcon}/>
                         </Box>
                     </Grid>
                 }
                 <Grid item mt={1} xs={11}>
-                    <Box sx={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column'}}> {/* Apply flexbox display */}
-                        {allocations.map((alloc) => {
-                            const relevantGauge = fullyDecoratedGauges.find((el) => el.address.toLowerCase() === alloc.gaugeAddress.toLowerCase());
-                            console.log("relevantGauge", relevantGauge)
-                            if (relevantGauge && relevantGauge.pool.tokens) {
-                                return (
-                                    <Box p={1} key={alloc.gaugeAddress}>
-                                        <Box style={{ display: 'flex', alignItems: 'center', flexDirection: 'row'}}> {/* Apply flexbox display and align items */}
+                    <Typography variant={'h6'}>
+                        Voting configuration
+                    </Typography>
 
-                                            <PoolCurrencyLogo
-                                                tokens={relevantGauge.pool.tokens.map((token) => ({
-                                                    address: token.address ? token.address.toLowerCase() : '',
-                                                }))}
-                                                size={'25px'}
-                                            />
-
-                                            <GaugeComposition poolData={relevantGauge.pool} />
-                                            <Box ml={2}>
-                                            <TextField
-                                                type="number"
-                                                label="Weight"
-                                                size="small"
-                                                value={alloc.percentage}
-                                                onChange={(e) => handlePercentageChange(e, alloc)}
-                                                inputProps={{ min: 0, max: 100 }} // Set the minimum and maximum values
-                                            />
-                                            </Box>
-                                        </Box>
-                                    </Box>
-                                );
-                            }
-                            return null;
-                        })}
-                    </Box>
                 </Grid>
                 <Grid item mt={1} xs={11}>
-                    <Typography>
-                        User votes mock:
+                    <Grid
+                        container
+                        columns={{xs: 4, sm: 8, md: 12}}
+                        sx={{justifyContent: {md: 'flex-start', xs: 'center'}, alignContent: 'center'}}
+                    >
+                        <Box mr={1} mt={1}>
+                            <MetricsCard
+                                mainMetric={allocations.reduce((sum, allocation) => sum + allocation.rewardInUSD, 0)}
+                                mainMetricInUSD={true}
+                                metricName={'Potential Reward'}
+                                MetricIcon={MonetizationOnIcon}
+                            />
+                        </Box>
+                        <Box mr={1} mt={1}>
+                            <MetricsCard
+                                mainMetric={averageValuePerVote}
+                                mainMetricInUSD={true}
+                                metricName={'Average reward'}
+                                MetricIcon={MonetizationOnIcon}
+                            />
+                        </Box>
+                    </Grid>
+
+                </Grid>
+                <Grid item xs={11}>
+                    <Grid
+                        container
+                        columns={{xs: 4, sm: 8, md: 12}}
+                        sx={{justifyContent: {md: 'flex-start', xs: 'center'}, alignContent: 'center'}}
+                    >
+                        <Box mr={1} mt={1}>
+                            <Card
+                                sx={{border: '1px solid grey'}}
+                            >
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Network</TableCell>
+                                            <TableCell>Tokens</TableCell>
+                                            <TableCell>Composition</TableCell>
+                                            <TableCell>Vote weight</TableCell>
+                                            <TableCell>New $/veBAL</TableCell>
+                                            <TableCell>Incentives</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {allocations.map((alloc) => {
+                                            const relevantGauge = fullyDecoratedGauges.find(
+                                                (el) => el.address.toLowerCase() === alloc.gaugeAddress.toLowerCase()
+                                            );
+                                            if (relevantGauge && relevantGauge.pool.tokens) {
+                                                return (
+                                                    <TableRow key={alloc.gaugeAddress}>
+                                                        <TableCell sx={{maxWidth: '10px'}}>
+                                                            <Avatar
+                                                                sx={{
+                                                                    height: 20,
+                                                                    width: 20
+                                                                }}
+                                                                src={networkLogoMap[Number(relevantGauge.network)]}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Box style={{display: 'flex', alignItems: 'center'}}>
+                                                                <PoolCurrencyLogo
+                                                                    tokens={relevantGauge.pool.tokens.map((token) => ({
+                                                                        address: token.address ? token.address.toLowerCase() : '',
+                                                                    }))}
+                                                                    size={'25px'}
+                                                                />
+                                                            </Box>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <GaugeComposition poolData={relevantGauge.pool}/>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <TextField
+                                                                type="number"
+                                                                label="Weight"
+                                                                size="small"
+                                                                sx={{maxWidth: '90px', textAlign: 'right'}}
+                                                                value={alloc.percentage}
+                                                                onChange={(e) => handlePercentageChange(e, alloc)}
+                                                                inputProps={{
+                                                                    min: 0,
+                                                                    max: 100,
+                                                                }}
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Typography>{formatDollarAmount(relevantGauge.valuePerVote, 3)}</Typography>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Typography>{formatDollarAmount(alloc.rewardInUSD, 2)}</Typography>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            }
+                                            return null;
+                                        })}
+                                    </TableBody>
+                                </Table>
+                            </Card>
+                        </Box>
+                        <Box mr={1} mt={1}>
+                            <HiddenHandCard/>
+                        </Box>
+                    </Grid>
+                </Grid>
+                <Grid item xs={11}>
+                    <Grid
+                        container
+                        columns={{xs: 4, sm: 8, md: 12}}
+                        sx={{justifyContent: {md: 'flex-start', xs: 'center'}, alignContent: 'center'}}
+                    >
+                    <Box mr={1}>
+                        <Button
+                            variant="contained"
+                            onClick={() => updateVotes(allocations)}
+                            disabled={
+                            totalPercentage > 100}
+                        >
+                            Vote for Gauges
+                        </Button>
+                    </Box>
+                    <Box mr={1}>
+                        <Button variant="outlined" onClick={() => resetVotes()} disabled={!allocations.length}>
+                            Clear Selection
+                        </Button>
+                    </Box>
+                    </Grid>
+                </Grid>
+
+                <Grid item mt={1} xs={11}>
+                    <Typography variant={'h6'}>
+                        Gauge browser
                     </Typography>
+                    <Typography variant={'body2'}>Browse and select gauges to earn voting incentives</Typography>
+                </Grid>
+                <Grid item mt={1} xs={11}>
+
                     {fullyDecoratedGauges && fullyDecoratedGauges.length > 0 ?
-                       <VotingTable gaugeDatas={fullyDecoratedGauges} userVeBal={950} onAddAllocation={handleAddAllocation}/> : <CircularProgress/>}
+                        <VotingTable
+                            gaugeDatas={fullyDecoratedGauges}
+                            userVeBal={userVeBAL}
+                            allocations={allocations}
+                            onAddAllocation={handleAddAllocation}/>
+                        : <CircularProgress/>}
                 </Grid>
             </Grid>
 

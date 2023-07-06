@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import Box from '@mui/material/Box';
 import SearchIcon from '@mui/icons-material/Search';
 import TablePagination from '@mui/material/TablePagination';
@@ -19,19 +19,18 @@ import PoolCurrencyLogo from '../../PoolCurrencyLogo';
 import TokensWhite from '../../../assets/svg/tokens_white.svg';
 import TokensBlack from '../../../assets/svg/tokens_black.svg';
 import {useTheme} from '@mui/material/styles'
-import {networkPrefix} from '../../../utils/networkPrefix';
-import {NetworkInfo} from '../../../constants/networks';
 import ArbitrumLogo from '../../../assets/svg/arbitrum.svg'
 import EtherLogo from '../../../assets/svg/ethereum.svg'
 import PolygonLogo from '../../../assets/svg/polygon.svg'
 import GnosisLogo from '../../../assets/svg/gnosis.svg'
+import zkevmLogo from '../../../assets/svg/zkevm.svg'
+import OpLogo from '../../../assets/svg/optimism.svg'
 import {BalancerStakingGauges, SimplePoolData} from "../../../data/balancer/balancerTypes";
 import {formatNumber} from "../../../utils/numbers";
 import GaugeComposition from "../../GaugeComposition";
 import ClearIcon from '@mui/icons-material/Clear';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import {SimpleGauge} from "../../../data/balancer/useGetSimpleGaugeData";
-import {GaugeAllocation} from "../../../pages/VeBALVoter";
+import {GaugeAllocation} from "../../../data/balancer/balancerGaugeTypes";
 
 
 
@@ -138,29 +137,22 @@ const headCells: readonly HeadCell[] = [
     {
         id: 'totalVotes',
         numeric: true,
-        disablePadding: true,
+        disablePadding: false,
         label: 'Total Votes',
         isMobileVisible: false,
     },
     {
         id: 'votingIncentives',
         numeric: true,
-        disablePadding: true,
-        label: 'Rewards/veBAL ($)',
-        isMobileVisible: true,
-    },
-    {
-        id: 'userRewards',
-        numeric: true,
-        disablePadding: true,
-        label: 'Estimated rewards ($)',
+        disablePadding: false,
+        label: '$/veBAL',
         isMobileVisible: true,
     },
     {
         id: 'userVotes',
         numeric: true,
-        disablePadding: true,
-        label: 'User Votes',
+        disablePadding: false,
+        label: 'Allocation',
         isMobileVisible: true,
     },
 ];
@@ -196,7 +188,6 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                             active={orderBy === headCell.id}
                             direction={orderBy === headCell.id ? order : 'asc'}
                             onClick={createSortHandler(headCell.id)}
-                            //sx={{ display: {xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell' }}}
                         >
                             {headCell.label === '' ?
                                 <img src={(theme.palette.mode === 'dark') ? TokensWhite : TokensBlack} alt="Theme Icon"
@@ -214,13 +205,14 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 
-export default function VotingTable({gaugeDatas, userVeBal, onAddAllocation}: {
+export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAllocation}: {
     gaugeDatas: BalancerStakingGauges[],
     userVeBal: number,
+    allocations: GaugeAllocation[],
     onAddAllocation: (address: string) => void;
 }) {
-    const [order, setOrder] = React.useState<Order>('desc');
-    const [orderBy, setOrderBy] = React.useState<keyof Data>('network');
+    const [order, setOrder] = React.useState<Order>('asc');
+    const [orderBy, setOrderBy] = React.useState<keyof Data>('totalVotes');
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(25);
@@ -232,19 +224,28 @@ export default function VotingTable({gaugeDatas, userVeBal, onAddAllocation}: {
         return !!x && !x.isKilled && !seen.has(x.address) && seen.add(x.pool.address);
     });
 
-    const originalRows = filteredPoolDatas.map(el =>
-        createData(
-            el.address,
-            el.network,
-            el.isKilled,
-            el.pool,
-            el.voteCount ? el.voteCount : 0,
-            el.userVotingPower ? el.userVotingPower / 100 * userVeBal : 0,
-            el.valuePerVote ? el.valuePerVote : 0,
-            (el.userVotingPower && el.valuePerVote) ? el.userVotingPower / 100 * el.valuePerVote * userVeBal : 0)
-    )
+    const originalRows = filteredPoolDatas
+        .filter(el => !allocations.some(allocation => allocation.gaugeAddress === el.address))
+        .map(el =>
+            createData(
+                el.address,
+                el.network,
+                el.isKilled,
+                el.pool,
+                el.voteCount ? el.voteCount : 0,
+                el.userVotingPower ? el.userVotingPower / 100 * userVeBal : 0,
+                el.valuePerVote ? el.valuePerVote : 0,
+                (el.userVotingPower && el.valuePerVote) ? el.userVotingPower / 100 * el.valuePerVote * userVeBal : 0
+            )
+        );
+
     const [rows, setRows] = useState<Data[]>(originalRows);
     const [searched, setSearched] = useState<string>("");
+
+    //Update the table if we reset or update the allocations set
+    useEffect(() =>{
+        setRows(originalRows)
+    }, [allocations])
 
 
 
@@ -275,12 +276,6 @@ export default function VotingTable({gaugeDatas, userVeBal, onAddAllocation}: {
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-    const getLink = (activeNetwork: NetworkInfo, id: string) => {
-        return networkPrefix(activeNetwork) + 'pools/' + id;
-    }
-
-
-
     const requestSearch = (searchedVal: string) => {
         const filteredRows = originalRows.filter((row) => {
             const lowerCaseSearchedVal = searchedVal.toLowerCase();
@@ -292,7 +287,6 @@ export default function VotingTable({gaugeDatas, userVeBal, onAddAllocation}: {
         setRows(filteredRows);
         setSearched(searchedVal)
     };
-
     const clearSearch = (): void => {
         setSearched("");
         setRows(originalRows)
@@ -304,10 +298,11 @@ export default function VotingTable({gaugeDatas, userVeBal, onAddAllocation}: {
 
     const networkLogoMap: NetworkLogoMap = {
         1: EtherLogo,
+        10: OpLogo,
         137: PolygonLogo,
         100: GnosisLogo,
+        1101: zkevmLogo,
         42161: ArbitrumLogo
-        // Add as many mappings as needed
     };
 
 
@@ -317,7 +312,7 @@ export default function VotingTable({gaugeDatas, userVeBal, onAddAllocation}: {
         <Box sx={{width: '100%'}}>
             <Paper
                 component="form"
-                sx={{ mb: '5px', p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+                sx={{ mb: '10px', p: '2px 4px', display: 'flex', alignItems: 'center', maxWidth: 500 }}
             >
                 <InputBase
                     sx={{ ml: 1, flex: 1 }}
@@ -334,7 +329,6 @@ export default function VotingTable({gaugeDatas, userVeBal, onAddAllocation}: {
 
                 <TableContainer>
                     <Table
-                        //sx={{ minWidth: 750 }}
                         aria-labelledby="tableTitle"
                         size={dense ? 'small' : 'medium'}
                     >
@@ -344,8 +338,6 @@ export default function VotingTable({gaugeDatas, userVeBal, onAddAllocation}: {
                             onRequestSort={handleRequestSort}
                         />
                         <TableBody>
-                            {/* if you don't need to support IE11, you can replace the `stableSort` call with:
-              rows.sort(getComparator(order, orderBy)).slice() */}
                             {stableSort(rows, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row, index) => {
@@ -354,13 +346,12 @@ export default function VotingTable({gaugeDatas, userVeBal, onAddAllocation}: {
                                     return (
                                         <TableRow
                                             hover
-                                            //onClick={() => window.open(`https://balancer.defilytica.com/${getLink(row.network, row.address)}/`, '_blank') }
                                             role="number"
                                             tabIndex={-1}
                                             key={row.gaugeAddress + Math.random() * 10}
                                             sx={{cursor: 'pointer'}}
                                         >
-                                            <TableCell>
+                                            <TableCell sx={{maxWidth: '10px'}}>
                                                 <Avatar
                                                     sx={{
                                                         height: 20,
@@ -370,7 +361,6 @@ export default function VotingTable({gaugeDatas, userVeBal, onAddAllocation}: {
                                                 />
                                             </TableCell>
                                             <TableCell>
-                                                {/* TODO: fix for token list elements*/}
                                                 <PoolCurrencyLogo
                                                     tokens={row.poolData.tokens.map(token => ({address: token.address ? token.address.toLowerCase() : ''}))}
                                                     size={'25px'}/>
@@ -390,16 +380,18 @@ export default function VotingTable({gaugeDatas, userVeBal, onAddAllocation}: {
                                                 {formatNumber(Number(row.votingIncentives ? row.votingIncentives : 0),  3)}
                                             </TableCell>
                                             <TableCell align="right">
-                                                {formatNumber(Number(row.userRewards ? row.userRewards : 0),  3)}
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                {row.userVotes ? (
+                                                {row.userVotes || allocations.find(alloc => alloc.gaugeAddress === row.gaugeAddress) ? (
                                                     formatNumber(Number(row.userVotes), 3)
                                                 ) : (
                                                     <Button
                                                         variant="contained"
+                                                        disabled={allocations.length > 7}
+                                                        onClick={() => {
+                                                            onAddAllocation(row.gaugeAddress);
+                                                            const updatedRows = rows.filter((rowItem) => rowItem.gaugeAddress !== row.gaugeAddress);
+                                                            setRows(updatedRows);
+                                                        }}
                                                         endIcon={<AddCircleIcon
-                                                            onClick={() => onAddAllocation(row.gaugeAddress)}
                                                         />}>
                                                         Add
                                                     </Button>
