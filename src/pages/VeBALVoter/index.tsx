@@ -175,7 +175,7 @@ export default function VeBALVoter() {
         const weights = Array(8)
             .fill(0)
             .map((_, index) =>
-                index < allocations.length ? allocations[index].percentage : 0
+                index < allocations.length ? allocations[index].percentage * 100 : 0
             );
 
         await erc20.vote_for_many_gauge_weights(addresses, weights);
