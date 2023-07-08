@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import {useContractRead} from 'wagmi'
-import veBAL from '../../constants/abis/veBAL.json'
+import veBoost from '../../constants/abis/veBoost.json'
 
-
+//Adjusted to 0x67F8DF125B796B05895a6dc8Ecf944b9556ecb0B veBoost to include delegations
 export function useGetUserVeBAL(address: string): number {
     const { data, isLoading } = useContractRead({
-        address: '0xc128a9954e6c874ea3d62ce62b468ba073093f25',
-        abi: veBAL,
-        functionName: 'balanceOf',
+        address: '0x67F8DF125B796B05895a6dc8Ecf944b9556ecb0B',
+        abi: veBoost,
+        functionName: 'adjusted_balance_of',
         args: [address?.toLowerCase()]
     })
 

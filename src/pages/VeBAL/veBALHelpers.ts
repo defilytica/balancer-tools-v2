@@ -50,7 +50,7 @@ export function calculateBoostFromGauge(workingBalance: number, workingSupply: n
 //     //Boost calculation depending 2 scenarios: new liquidity or already providing liquidity and adding more
 
      if (Number(workingBalance) > 0.0) {
-         boost = Number((workingBalance / workingSupply) / ((0.4 * userBalance / workingSupply)))
+         boost = (workingBalance / (workingBalance + workingSupply - workingBalance)) / ((0.4 * userBalance) / (0.4 * userBalance + workingSupply - workingBalance))
      }
          //Case 1: current boost
         // boost = (workingBalance / Number(totalSupply)) / ((0.4 * Number(userBalance)) / (Number(totalSupply) - workingBalance + 0.4 * Number(userBalance)))
@@ -81,20 +81,16 @@ export function calculateBoostFromGauge(workingBalance: number, workingSupply: n
 
  export function calculateMaxBoost(workingBalance: number, workingSupply: number, totalSupply: number, userBalance: number) {
 
-     //console.log("vars: ", newVeBAL, lockedVeBAL, totalVeBALStaked, newShare, share, totalShare)
      let max_boost = 0.0;
-     //Calculate working supply:
-//     const liquidity_provided = Number(newShare) + Number(share);
-     // Calculate minveBAL for Max Boost
-//     let minveBAL = (totalVeBALStaked) * (liquidity_provided / ( Number(totalShare)));
-//     //const working_supply_pool = Number(totalShare);
-//     const supply_user_max = 0.4 * liquidity_provided + 0.6 * (Number(totalStakedLiquidity)) * (minveBAL) / (Number(totalVeBALStaked));
-//     //Take the minimum of working supply limit and liquidity provided
-//     let working_supply_user_max = Number(Math.min(supply_user_max, liquidity_provided));
-//     //Non-boosted supply
      if (Number(workingBalance) > 0.0) {
-        max_boost = Number(2.5 * workingSupply / (workingSupply - workingBalance + userBalance))
+        max_boost = Math.min(Number(2.5 * (0.4 * userBalance  + workingSupply - workingBalance) / (userBalance + workingSupply - workingBalance)), Number((1 - (1 - userBalance / totalSupply ) * 0.4) / ((0.4 * userBalance) / (0.4 * userBalance + workingSupply - workingBalance))))
     }
+     // Includes dilutive considerations 
+     // max_boost = Number((1 - (1 - userBalance / totalSupply ) * 0.4) / ((0.4 * userBalance) / (0.4 * userBalance + workingSupply - workingBalance)))
+     // max_boost = Math.min(Number(2.5 * (0.4 * (userBalance + additionalLiquidity) + workingSupply - workingBalance) / (userBalance + workingSupply - workingBalance)), Number((1 - (1 - userBalance / totalSupply ) * 0.4) / ((0.4 * userBalance) / (0.4 * userBalance + workingSupply - workingBalance))))
+     // Need to clean up this logic to consider all impacts of additional liquidity or veBAL in a gauge on max boost
+
+
      //Max working supply for 2.5x
      //const max_working_supply_user = 0.40 * liquidity_provided + 0.60 * (Number(totalStakedLiquidity)) * (Number(newShare) / (Number(totalShare)));
      //Boost calculation depending 2 scenarios: new liquidity or already providing liquidity and adding more
@@ -130,9 +126,7 @@ export function calculateBoostFromGauge(workingBalance: number, workingSupply: n
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export function calculateMinVeBAL(workingBalance: number, workingSupply: number, totalSupply: number, userBalance: number, totalVeBAL: number) {
-     //Calculate working supply:
-//     const liquidity_provided = Number(newShare) + Number(share);
-//     // Calculate minveBAL for Max Boost
+     // Calculate minveBAL for Max Boost
      let min_VeBAL = 0;
      if (Number(workingSupply > 0)) {
         min_VeBAL = totalVeBAL * (userBalance / totalSupply);
@@ -164,58 +158,4 @@ export function calculateMinVeBAL(workingBalance: number, workingSupply: number,
 //     }
 
 //     return remainingVeBAL;
-// }
-
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////
-// /// Helper function to calculate veBAL out when a user defines their BAL & WETH in with Lock time //////
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// export function calculateVeBALOut(veBALArray, SwapFee, lockTime) {
-
-//     const copy = [...veBALArray];
-//     //Step 1: Define each variable relavent to the token to BPT array
-//     //Step 2: Calculate Spot Price, net single deposit, and taxable amount of BPT
-//     //Step 3: Calculate Invariant ratio after taxed value of tokens is converted to BPT
-//     //Step 4: Calculate BPT Out, ratio to the totalSpotBPT to determine Price impact 
-
-//     let bptArray = [];
-//     let bptSpotPrice = 0;
-//     let totalPoolTokens = Number(copy[0].totalShares);
-//     let tokenSpotBPT = 0;
-//     let totalSpotBPT = 0;
-//     let swapFee = SwapFee/100;
-//     let invariantRatio = 1;
-
-//     for (let i = 0; i <copy.length; i++) {
-//       bptSpotPrice = isNaN(copy[i].tokenDeposits) ? 0 : 1/(copy[i].assetBalance * (1 - (1 - 1/totalPoolTokens)**(1/(copy[i].poolWeights/100))));
-//       tokenSpotBPT = bptSpotPrice * copy[i].tokenDeposits;
-//       totalSpotBPT += tokenSpotBPT
-//     }
-
-//       for (let i = 0; i < copy.length; i++) {
-//         bptSpotPrice = isNaN(copy[i].tokenDeposits) ? 0 : 1/(copy[i].assetBalance * (1 - (1 - 1/totalPoolTokens)**(1/(copy[i].poolWeights/100))));
-//         tokenSpotBPT = bptSpotPrice * copy[i].tokenDeposits;
-//         const investEntry = {
-//           depositAmount: Number(copy[i].tokenDeposits),
-//           bptSpotPrice: isNaN(copy[i].tokenDeposits) ? 0 : 1/(copy[i].assetBalance * (1 - (1 - 1/totalPoolTokens)**(1/(copy[i].poolWeights/100)))),
-//           tokenSpotBPT: bptSpotPrice * copy[i].tokenDeposits,
-//           proportionalEntry: totalSpotBPT * copy[i].poolWeights/100,
-//           netSingleDepost: bptSpotPrice * copy[i].tokenDeposits > totalSpotBPT * copy[i].poolWeights/100 ? tokenSpotBPT - totalSpotBPT * copy[i].poolWeights/100 : 0,
-//           depositImpact: isNaN((bptSpotPrice * copy[i].tokenDeposits > totalSpotBPT * copy[i].poolWeights/100 ? tokenSpotBPT - totalSpotBPT * copy[i].poolWeights/100 : 0) / bptSpotPrice * copy[i].tokenDeposits) ? 0 : (bptSpotPrice * copy[i].tokenDeposits > totalSpotBPT * copy[i].poolWeights/100 ? tokenSpotBPT - totalSpotBPT * copy[i].poolWeights/100 : 0) / (bptSpotPrice * copy[i].tokenDeposits === 0 ? 1 : bptSpotPrice * copy[i].tokenDeposits),
-//           newTokenBalance: Number(copy[i].assetBalance) + Number(copy[i].tokenDeposits) - (Number(copy[i].tokenDeposits) * swapFee * (isNaN((bptSpotPrice * copy[i].tokenDeposits > totalSpotBPT * copy[i].poolWeights/100 ? tokenSpotBPT - totalSpotBPT * copy[i].poolWeights/100 : 0) / bptSpotPrice * copy[i].tokenDeposits) ? 0 : (bptSpotPrice * copy[i].tokenDeposits > totalSpotBPT * copy[i].poolWeights/100 ? tokenSpotBPT - totalSpotBPT * copy[i].poolWeights/100 : 0) / (bptSpotPrice * copy[i].tokenDeposits === 0 ? 1 : bptSpotPrice * copy[i].tokenDeposits))),
-//           tokenInvariantRatio: ((Number(copy[i].assetBalance) + Number(copy[i].tokenDeposits) - (Number(copy[i].tokenDeposits) * swapFee * (isNaN((bptSpotPrice * copy[i].tokenDeposits > totalSpotBPT * copy[i].poolWeights/100 ? tokenSpotBPT - totalSpotBPT * copy[i].poolWeights/100 : 0) / bptSpotPrice * copy[i].tokenDeposits) ? 0 : (bptSpotPrice * copy[i].tokenDeposits > totalSpotBPT * copy[i].poolWeights/100 ? tokenSpotBPT - totalSpotBPT * copy[i].poolWeights/100 : 0) / (bptSpotPrice * copy[i].tokenDeposits === 0 ? 1 : bptSpotPrice * copy[i].tokenDeposits)))) ** (copy[i].poolWeights/100)) / (copy[i].assetBalance ** (copy[i].poolWeights/100))
-//         }
-        
-//         bptArray.push(investEntry)
-//       };
-
-//         for (let j=0; j < bptArray.length; j++) {
-//           invariantRatio *= bptArray[j].tokenInvariantRatio
-//           };
-
-//     let bptOut = (invariantRatio - 1) * totalPoolTokens
-//     let veBALPriceImpact = (1 - bptOut / totalSpotBPT) * 100
-//     let veBALOut = bptOut * lockTime / 52
-//     let investmentOutcomes = [bptOut, veBALPriceImpact, veBALOut]
-//   return investmentOutcomes;
 // }

@@ -87,7 +87,7 @@ const useDecorateL2Gauges = (stakingGaugeData: BalancerStakingGauges[]): Balance
                                 workingSupply: workingSupplyHex ? BigInt(workingSupplyHex).toString() : '-',
                                 totalSupply: totalSupplyHex ? BigInt(totalSupplyHex).toString() : '-',
                                 workingBalance: workingBalanceHex ? BigInt(workingBalanceHex).toString() : '-',
-                                userBalance: userBalanceHex ? BigInt(userBalanceHex).toString() : '-',
+                                userBalance: userBalanceHex ? Number(BigInt(userBalanceHex)) : 0,
                                 boost: workingSupplyHex ? String(calculateBoostFromGauge( Number(BigInt(workingBalanceHex).toString()), Number(BigInt(workingSupplyHex).toString()), Number(BigInt(totalSupplyHex).toString()), Number(BigInt(userBalanceHex).toString()))) : "0",
                                 max_boost: workingSupplyHex ? String(calculateMaxBoost( Number(BigInt(workingBalanceHex).toString()), Number(BigInt(workingSupplyHex).toString()), Number(BigInt(totalSupplyHex).toString()), Number(BigInt(userBalanceHex).toString()))) : "1",
                                 min_VeBAL: workingSupplyHex ? String(calculateMinVeBAL( Number(BigInt(workingBalanceHex).toString()), Number(BigInt(workingSupplyHex).toString()), Number(BigInt(totalSupplyHex).toString()), Number(BigInt(userBalanceHex).toString()), Number(totalVeBAL))) : "1",

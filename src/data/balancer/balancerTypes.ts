@@ -200,11 +200,12 @@ export interface AprSet {
     recipient: string;
     boost: string;
     userWorkingBalance: number;
-    userBalance: string;
+    userBalance: number;
     max_boost: string;
     min_VeBAL: string;
     voteCount: number;
     valuePerVote: number;
+    userValue: number;
   }
 
 export interface SimplePoolTokenData {

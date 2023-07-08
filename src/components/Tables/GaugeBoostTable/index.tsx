@@ -37,6 +37,7 @@ interface Data {
     network: string;
     isKilled: boolean;
     poolData: SimplePoolData,
+    userValue: number,
     boost: string;
     max_boost: string,
     min_VeBAL: string,
@@ -47,6 +48,7 @@ function createData(
     network: string,
     isKilled: boolean,
     poolData: SimplePoolData,
+    userValue: number,
     boost: string,
     max_boost: string,
     min_VeBAL: string,
@@ -56,6 +58,7 @@ function createData(
         network,
         isKilled,
         poolData,
+        userValue,
         boost,
         max_boost,
         min_VeBAL,
@@ -127,6 +130,13 @@ const headCells: readonly HeadCell[] = [
         numeric: false,
         disablePadding: false,
         label: 'Composition',
+        isMobileVisible: false,
+    },
+    {
+        id: 'userValue',
+        numeric: false,
+        disablePadding: false,
+        label: 'Balance ($)',
         isMobileVisible: false,
     },
     {
@@ -204,8 +214,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 export default function GaugeBoostTable({gaugeDatas}: {
     gaugeDatas: BalancerStakingGauges[]
 }) {
-    const [order, setOrder] = React.useState<Order>('desc');
-    const [orderBy, setOrderBy] = React.useState<keyof Data>('network');
+    const [order, setOrder] = React.useState<Order>('asc');
+    const [orderBy, setOrderBy] = React.useState<keyof Data>('boost');
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(25);
@@ -218,7 +228,7 @@ export default function GaugeBoostTable({gaugeDatas}: {
     });
 
     const originalRows = filteredPoolDatas.map(el =>
-        createData(el.address, el.network, el.isKilled, el.pool, el.boost, el.max_boost, el.min_VeBAL)
+        createData(el.address, el.network, el.isKilled, el.pool, el.userValue, el.boost, el.max_boost, el.min_VeBAL)
     )
     const [rows, setRows] = useState<Data[]>(originalRows);
     const [searched, setSearched] = useState<string>("");
@@ -359,6 +369,9 @@ export default function GaugeBoostTable({gaugeDatas}: {
                                                 sx={{display: {xs: 'none', md: 'table-cell'}}}
                                             >
                                                 <GaugeComposition poolData={row.poolData} />
+                                            </TableCell>
+                                            <TableCell>
+                                                {formatNumber(Number(row.userValue) / (10**18),  3)}
                                             </TableCell>
                                             <TableCell>
                                                 {formatNumber(Number(row.boost),  3)}
