@@ -12,7 +12,7 @@ import { useBlocksFromTimestamps } from '../../hooks/useBlocksFromTimestamps';
 import { useEffect, useState } from 'react';
 import { unixToDate } from '../../utils/date';
 import { BalancerChartDataItem, PoolData } from './balancerTypes';
-import { CoingeckoSnapshotPriceData } from './useTokens';
+import {CoingeckoRawData, CoingeckoSnapshotPriceData} from './useTokens';
 
 function getPoolValues(
     poolId: string,
@@ -72,7 +72,6 @@ function getEpochSwapFees(
     return { swapFee: snapshotFee };
 }
 
-
 //Poolsnapshots are taken OO:OO UTC. Generate previous snapshot date and previous Thu. Used to calculate weekly sweep fee generators
 const today = new Date();
 //Set timestamps if none is given:
@@ -85,13 +84,15 @@ weekAgo.setUTCHours(0,0,0,0);
 const endTimeStamp = Math.floor(weekAgo.getTime() / 1000)
 
 
-export function useBalancerPools(first = 250, startunixTime = startTimestamp, endunixTime = endTimeStamp): PoolData[] {
+export function useBalancerPools(first = 250, startunixTime = startTimestamp, endunixTime = endTimeStamp, clientUri = ''): PoolData[] {
     const [activeNetwork] = useActiveNetworkVersion();
     const [t24, t48, tWeek] = useDeltaTimestamps();
     const { blocks } = useBlocksFromTimestamps([t24, t48, tWeek]);
     const [block24] = blocks ?? [];
     const [getPoolData, { data }] = useGetPoolDataLazyQuery();
     const feeData = useBalancerSwapFeePoolData(startunixTime, endunixTime);
+    const tokenAddresses: Array<string> = [];
+    const [coingeckoData, setCoingeckoData] = useState<CoingeckoRawData>();
 
 
     useEffect(() => {
@@ -103,11 +104,56 @@ export function useBalancerPools(first = 250, startunixTime = startTimestamp, en
                     first: first,
                 },
                 context: {
-                    uri: activeNetwork.clientUri,
+                    uri: clientUri? clientUri : activeNetwork.clientUri,
                 }
             });
         }
-    }, [block24, first, activeNetwork.clientUri]);
+    }, [block24, first, clientUri, activeNetwork.clientUri]);
+
+    useEffect(() => {
+        //V2: repopulate formatted token data with CoinGecko data
+        if (data && data.pools.length > 10) {
+            data.pools.forEach(pool => {
+                pool.tokens?.forEach(token => {
+                    tokenAddresses.push(token.address);
+                })
+
+            })
+
+            const getTokenPrices = async (addresses: string) => {
+                const baseURI = 'https://api.coingecko.com/api/v3/simple/token_price/';
+                const queryParams = activeNetwork.coingeckoId + '?contract_addresses=' + addresses + '&vs_currencies=usd&include_24hr_change=true';
+                try {
+                    const coingeckoResponse = await fetch(baseURI + queryParams);
+                    const json = await coingeckoResponse.json();
+                    //TODO: find way to append to interface object?
+                    const spread = {
+                        ...coingeckoData,
+                        json
+                    }
+                    setCoingeckoData(json);
+                } catch {
+                    console.log("Coingecko: token_price API not reachable")
+                }
+            }
+            const tokenAddresses1 = tokenAddresses.slice(1, 150);
+            const tokenAddresses2 = tokenAddresses.slice(151, 300);
+            //raw batch call in hook:
+            let addressesString1 = '';
+            tokenAddresses1.forEach(el => {
+                addressesString1 = addressesString1 + el + ','
+            })
+
+            getTokenPrices(addressesString1);
+
+            let addressesString2 = '';
+            tokenAddresses2.forEach(el => {
+                addressesString2 = addressesString2 + el + ','
+            })
+
+            //getTokenPrices(addressesString2);
+        }
+    }, [data]);
 
     if (!data) {
         return [];
@@ -129,8 +175,12 @@ export function useBalancerPools(first = 250, startunixTime = startTimestamp, en
             swapFee: parseFloat(pool.swapFee),
             tokens: (pool.tokens || []).map((token) => {
                 const weight = token.weight ? parseFloat(token.weight) : 0;
-                const price = 0
+                let price = 0
                 const balance = parseFloat(token.balance);
+                if (coingeckoData && coingeckoData[token.address.toLowerCase()]) {
+                    price = coingeckoData[token.address.toLowerCase()].usd
+                }
+
 
                 return {
                     ...token,

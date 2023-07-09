@@ -40,7 +40,7 @@ export default function VeBAL() {
   const balanceGaugeData = useCalculateUserBalancesUSD(decoratedGaugeData, pools, additionalLiquidity, additionalVeBAL);
   // const [balanceGaugeData, setBalanceGaugeData] = useState(useCalculateUserBalancesUSD(decoratedGaugeData, pools, additionalLiquidity, additionalVeBAL));
 
-  
+
   const trimmedGaugeData = useTrimGaugeData(balanceGaugeData);
   const portfolioData = useTrimDataToPortfolio(balanceGaugeData);
   console.log(portfolioData);
