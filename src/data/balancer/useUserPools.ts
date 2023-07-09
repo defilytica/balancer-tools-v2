@@ -35,7 +35,7 @@ export default function useUserPools (address: string, timeStamps?: number[]) {
     if (timeStamps) {
         timeStampSet = timeStamps;
     } else {
-        
+
         timeStampSet = currentTimeStamps;
     }
     const myBlocks = useBlocksFromTimestamps(timeStampSet)
@@ -43,11 +43,11 @@ export default function useUserPools (address: string, timeStamps?: number[]) {
     let currentBlock = 0;
     //console.log("currentTimeStamp", currentTimeStamps)
     //console.log("blocks24", block24);
-    if (myBlocks.blocks && myBlocks.error !== false) {
+    if (myBlocks.blocks && myBlocks.error) {
         currentBlock = myBlocks.blocks[0].number;
     }
 
-    
+
     const [getUserData, { data }] = useGetUserWalletPoolDataLazyQuery();
 
     useEffect(() => {

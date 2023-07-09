@@ -15,16 +15,15 @@ import useDecorateL1Gauges from "../../data/balancer/useDecorateL1Gauges";
 import useDecorateL2Gauges from "../../data/balancer/useDeocrateL2Gauges";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useBalancerPools } from "../../data/balancer/usePools";
-import useTrimDataToPortfolio from "../../data/balancer/useTrimDataToPortfolio";
-import useCalculateUserBalancesUSD from "../../data/balancer/useCalculateUserValue";
+import calculateUserBalancesInUSD from "./calculateUserBalancesInUSD";
 import { useState, useEffect } from "react";
-import useTrimGaugeData from "../../data/balancer/useTrimGaugeData";
-import { BalancerStakingGauges } from "../../data/balancer/balancerTypes";
-// import { calculateBoostFromGauge } from './veBALHelpers';
+import {useActiveNetworkVersion} from "../../state/application/hooks";
+import {BalancerStakingGauges} from "../../data/balancer/balancerTypes";
 
 export default function VeBAL() {
   //Load user wallet stats
   const { isConnected, address } = useAccount();
+  const [ activeNetwork ] = useActiveNetworkVersion();
   const userLocks = useUserVeBALLocks();
   const userVeBAL = useGetUserVeBAL(address ? address : "");
   const pools = useBalancerPools();
@@ -34,43 +33,29 @@ export default function VeBAL() {
   //Load gauge and Staking information
   const gaugeData = useGetBalancerStakingGauges();
   const l1GaugeData = useDecorateL1Gauges(gaugeData);
-  // const [l1GaugeData, setL1GaugeData] = useState(useDecorateL1Gauges(gaugeData, additionalVeBAL, additionalLiquidity));
   const decoratedGaugeData = useDecorateL2Gauges(l1GaugeData);
-  // const [decoratedGaugeData, seDdecoratedGaugeData] = useState(useDecorate21Gauges(gaugeData, additionalVeBAL, additionalLiquidity));
-  const balanceGaugeData = useCalculateUserBalancesUSD(decoratedGaugeData, pools, additionalLiquidity, additionalVeBAL);
-  // const [balanceGaugeData, setBalanceGaugeData] = useState(useCalculateUserBalancesUSD(decoratedGaugeData, pools, additionalLiquidity, additionalVeBAL));
+  const gauges = calculateUserBalancesInUSD(decoratedGaugeData, pools, additionalLiquidity, additionalVeBAL);
+  const [balancerGaugeData, setBalancerGaugeData] = useState<BalancerStakingGauges[]>(gauges);
+  const [trimmedGaugeData, setTrimmedGaugeData] = useState<BalancerStakingGauges[]>([]);
+  const [portfolioData, setPortfolioData] = useState<BalancerStakingGauges[]>([]);
 
-
-  const trimmedGaugeData = useTrimGaugeData(balanceGaugeData);
-  const portfolioData = useTrimDataToPortfolio(balanceGaugeData);
-  console.log(portfolioData);
-  console.log(decoratedGaugeData);
-  console.log(balanceGaugeData);
+  // Recalculate balancerGaugeData whenever additionalVeBAL or additionalLiquidity change
+  useEffect(() => {
+    if (gauges.length > 0 && pools.length > 0) {
+      const updatedGauges = calculateUserBalancesInUSD(decoratedGaugeData, pools, additionalLiquidity, additionalVeBAL);
+      setBalancerGaugeData([...updatedGauges]);
+      const trimmedData = updatedGauges.filter(gauge => gauge.userBalance === 0);
+      const portfolioData = updatedGauges.filter(gauge => gauge.userBalance !== 0);
+      setTrimmedGaugeData([...trimmedData]);
+      setPortfolioData([...portfolioData]);
+    }
+  }, [additionalVeBAL, additionalLiquidity, decoratedGaugeData]);
 
   const date = new Date(
     userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0
   );
   const unlockDate = date.toLocaleDateString();
 
-  // useEffect(() => {
-  //   const updatedL1GaugeData = useDecorateL1Gauges(gaugeData, additionalVeBAL, additionalLiquidity);
-  //   setL1GaugeData(updatedL1GaugeData);
-  // }, [gaugeData, additionalVeBAL, additionalLiquidity]);
-
-  // useEffect(() => {
-  //   setAdditionalLiquidity(0);
-  //   setAdditionalVeBAL(0);
-  // }, [gaugeData]);
-
-  // const handleAdditionalLiquidityChange = (e) => {
-  //   const value = parseInt(e.target.value);
-  //   setAdditionalLiquidity(isNaN(value) ? 0 : value);
-  // };
-
-  // const handleAdditionalVeBALChange = (e) => {
-  //   const value = parseInt(e.target.value);
-  //   setAdditionalVeBAL(isNaN(value) ? 0 : value);
-  // };
 
   return (
     <Box sx={{ flexGrow: 2 }}>
@@ -152,7 +137,7 @@ export default function VeBAL() {
                     value={additionalLiquidity}
                     onChange={(e) => {
                       const value = parseInt(e.target.value);
-                      setAdditionalVeBAL(value);
+                      setAdditionalLiquidity(value);
                     }}
                   />
                 </Box>
@@ -197,8 +182,9 @@ export default function VeBAL() {
           </Box>
           {portfolioData && portfolioData.length > 1 ? (
             <PortfolioBoostTable
+                key={'portfolio' + additionalVeBAL + additionalLiquidity}
               gaugeDatas={portfolioData}
-              userVeBAL={userVeBAL}
+              userVeBAL={userVeBAL+ additionalVeBAL}
             />
           ) : (
             <CircularProgress />
@@ -210,8 +196,9 @@ export default function VeBAL() {
           </Box>
           {trimmedGaugeData && trimmedGaugeData.length > 1 ? (
             <GaugeBoostTable
+                key={'boost' + additionalVeBAL + additionalLiquidity}
               gaugeDatas={trimmedGaugeData}
-              userVeBAL={userVeBAL}
+              userVeBAL={userVeBAL + additionalVeBAL}
             />
           ) : (
             <CircularProgress />

@@ -1,6 +1,6 @@
-import { BalancerStakingGauges, PoolData } from "./balancerTypes";
+import { BalancerStakingGauges, PoolData } from "../../data/balancer/balancerTypes";
 
-const useCalculateUserBalancesUSD = (
+const calculateUserBalancesInUSD = (
   stakingGaugeData: BalancerStakingGauges[],
   pools: PoolData[],
   additionalLiquidity: number,
@@ -12,7 +12,9 @@ const useCalculateUserBalancesUSD = (
     for(const gauge of stakingGaugeData) {
       const pool = pools.find((p) => p.address === gauge.pool.address.toLocaleLowerCase());
       if (pool) {
-        const userValue = gauge.userBalance * pool.liquidity / pool.totalShares + additionalLiquidity;
+        const inferredTVL = pool.tokens.reduce((sum, el) => sum + el.tvl, 0)
+        const tvl = inferredTVL ? inferredTVL : pool.liquidity
+        const userValue = gauge.userBalance * tvl / pool.totalShares + additionalLiquidity;
         const updatedGauge = {
           ...gauge,
           userValue: userValue,
@@ -25,4 +27,4 @@ const useCalculateUserBalancesUSD = (
   return updatedGaugeData;
 };
 
-export default useCalculateUserBalancesUSD;
+export default calculateUserBalancesInUSD;

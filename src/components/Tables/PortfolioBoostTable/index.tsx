@@ -225,6 +225,7 @@ export default function PortfolioBoostTable({gaugeDatas, userVeBAL}: {
     const filteredPoolDatas = gaugeDatas.filter((x) => {
         return !!x && !x.isKilled && !seen.has(x.address) && seen.add(x.pool.address);
     });
+    console.log("do stuff", userVeBAL)
 
     const originalRows = filteredPoolDatas.map(el =>
         createData(el.address, el.network, el.isKilled, el.pool, el.userValue, el.boost, el.max_boost, el.min_VeBAL)
