@@ -31,7 +31,7 @@ const MetricsCard = ({
       maxWidth: '275px',
       minWidth: '250px',
       maxHeight: '150px',
-      boxShadow: 6,
+      boxShadow: 2,
       border: '1px solid grey'
 
     }}
@@ -67,9 +67,9 @@ const MetricsCard = ({
             alignItems: 'center'
           }}
         >
-          {mainMetricChange && mainMetricChange > 0 ? 
-            <ArrowUpwardIcon fontSize="small" sx={{color: green[500]}} /> 
-            : 
+          {mainMetricChange && mainMetricChange > 0 ?
+            <ArrowUpwardIcon fontSize="small" sx={{color: green[500]}} />
+            :
             mainMetricChange ? <ArrowDownwardIcon fontSize="small" color="error" /> : null}
             {mainMetricChange ?
           <Typography
@@ -81,7 +81,7 @@ const MetricsCard = ({
           >
             {Number(mainMetricChange).toFixed(2)} %
           </Typography> : null }
-          {mainMetricChange ? 
+          {mainMetricChange ?
           <Typography
             color="textSecondary"
             variant="caption"

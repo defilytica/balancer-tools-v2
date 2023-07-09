@@ -29,7 +29,7 @@ const GenericMetricsCard = ({
                 maxWidth: '275px',
                 minWidth: '250px',
                 maxHeight: '150px',
-                boxShadow: 6,
+                boxShadow: 3,
                 border: '1px solid grey'
             }}
         >
