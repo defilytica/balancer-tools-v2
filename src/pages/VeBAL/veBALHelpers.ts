@@ -86,8 +86,7 @@ export function calculateBoostFromGauge(workingBalance: number, workingSupply: n
         max_boost = Math.min(Number(2.5 * (0.4 * userBalance  + workingSupply - workingBalance) / (userBalance + workingSupply - workingBalance)), Number((1 - (1 - userBalance / totalSupply ) * 0.4) / ((0.4 * userBalance) / (0.4 * userBalance + workingSupply - workingBalance))))
     }
      // Includes dilutive considerations 
-     // max_boost = Number((1 - (1 - userBalance / totalSupply ) * 0.4) / ((0.4 * userBalance) / (0.4 * userBalance + workingSupply - workingBalance)))
-     // max_boost = Math.min(Number(2.5 * (0.4 * (userBalance + additionalLiquidity) + workingSupply - workingBalance) / (userBalance + workingSupply - workingBalance)), Number((1 - (1 - userBalance / totalSupply ) * 0.4) / ((0.4 * userBalance) / (0.4 * userBalance + workingSupply - workingBalance))))
+     // max_boost = Number((1 - (1 - ((userBalance + additionalLiquidity) / (totalSupply + additionalLiquidity)) ) * 0.4) / ((0.4 * userBalance + additionalLiquidity) / (0.4 * (userBalance + additionalLiquidity) + workingSupply - workingBalance)))
      // Need to clean up this logic to consider all impacts of additional liquidity or veBAL in a gauge on max boost
 
 
@@ -130,6 +129,8 @@ export function calculateMinVeBAL(workingBalance: number, workingSupply: number,
      let min_VeBAL = 0;
      if (Number(workingSupply > 0)) {
         min_VeBAL = totalVeBAL * (userBalance / totalSupply);
+        // Equation below corrects for dilution upon new locking. Equation above assumes totalVeBAL is fixed and is incorrect teechnically. 
+    //  min_VeBAL = (totalVeBAL + addedVeBAL) * (userBalance / totalSupply);
      }
      if (min_VeBAL > 50000000) {
         min_VeBAL = 0;

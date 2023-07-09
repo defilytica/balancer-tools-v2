@@ -9,6 +9,7 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import useGetBalancerStakingGauges from "../../data/balancer/useGetBalancerStakingGauges";
 import { useGetUserVeBAL } from "../../data/balancer/useGetUserVeBAL";
 import GaugeBoostTable from "../../components/Tables/GaugeBoostTable";
+import PortfolioBoostTable from "../../components/Tables/PortfolioBoostTable";
 import { useAccount } from "wagmi";
 import useDecorateL1Gauges from "../../data/balancer/useDecorateL1Gauges";
 import useDecorateL2Gauges from "../../data/balancer/useDeocrateL2Gauges";
@@ -17,6 +18,8 @@ import { useBalancerPools } from "../../data/balancer/usePools";
 import useTrimDataToPortfolio from "../../data/balancer/useTrimDataToPortfolio";
 import useCalculateUserBalancesUSD from "../../data/balancer/useCalculateUserValue";
 import { useState, useEffect } from "react";
+import useTrimGaugeData from "../../data/balancer/useTrimGaugeData";
+import { BalancerStakingGauges } from "../../data/balancer/balancerTypes";
 // import { calculateBoostFromGauge } from './veBALHelpers';
 
 export default function VeBAL() {
@@ -30,13 +33,15 @@ export default function VeBAL() {
 
   //Load gauge and Staking information
   const gaugeData = useGetBalancerStakingGauges();
-  const l1GaugeData = useDecorateL1Gauges(gaugeData, additionalVeBAL, additionalLiquidity);
+  const l1GaugeData = useDecorateL1Gauges(gaugeData);
   // const [l1GaugeData, setL1GaugeData] = useState(useDecorateL1Gauges(gaugeData, additionalVeBAL, additionalLiquidity));
   const decoratedGaugeData = useDecorateL2Gauges(l1GaugeData);
-  const balanceGaugeData = useCalculateUserBalancesUSD(
-    decoratedGaugeData,
-    pools
-  );
+  // const [decoratedGaugeData, seDdecoratedGaugeData] = useState(useDecorate21Gauges(gaugeData, additionalVeBAL, additionalLiquidity));
+  const balanceGaugeData = useCalculateUserBalancesUSD(decoratedGaugeData, pools, additionalLiquidity, additionalVeBAL);
+  // const [balanceGaugeData, setBalanceGaugeData] = useState(useCalculateUserBalancesUSD(decoratedGaugeData, pools, additionalLiquidity, additionalVeBAL));
+
+  
+  const trimmedGaugeData = useTrimGaugeData(balanceGaugeData);
   const portfolioData = useTrimDataToPortfolio(balanceGaugeData);
   console.log(portfolioData);
   console.log(decoratedGaugeData);
@@ -129,63 +134,72 @@ export default function VeBAL() {
             <Typography variant="h5">Calculate your boost</Typography>
           </Box>
           {isConnected ? (
-          <Grid item mt={1} xs={11}>
-            <Grid
-              container
-              columns={{ xs: 4, sm: 8, md: 12 }}
-              sx={{
-                justifyContent: { md: "flex-start", xs: "center" },
-                alignContent: "center",
-              }}
-            >
+            <Grid item mt={1} xs={11}>
+              <Grid
+                container
+                columns={{ xs: 4, sm: 8, md: 12 }}
+                sx={{
+                  justifyContent: { md: "flex-start", xs: "center" },
+                  alignContent: "center",
+                }}
+              >
+                <Box m={1}>
+                  <TextField
+                    type="number"
+                    label="Additional Liquidity"
+                    size="medium"
+                    sx={{ maxWidth: "1000px", textAlign: "right" }}
+                    value={additionalLiquidity}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value);
+                      setAdditionalVeBAL(value);
+                    }}
+                  />
+                </Box>
+                <Box m={1}>
+                  <TextField
+                    type="number"
+                    label="Additional veBAL"
+                    size="medium"
+                    sx={{ maxWidth: "1000px", textAlign: "right" }}
+                    value={additionalVeBAL}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value);
+                      setAdditionalVeBAL(value);
+                    }}
+                  />
+                </Box>
+                <Box m={1}>
+                  <MetricsCard
+                    mainMetric={userVeBAL ? userVeBAL + additionalVeBAL : 0}
+                    mainMetricInUSD={false}
+                    metricName={"New Total veBAL"}
+                    MetricIcon={AccountBalanceWalletIcon}
+                  />
+                </Box>
+              </Grid>
+            </Grid>
+          ) : (
+            <Grid item mt={1} xs={11}>
               <Box m={1}>
-                <TextField
-                type="number"
-                label="Additional Liquidity"
-                size="medium"
-                sx={{maxWidth: '1000px', textAlign: 'right'}}
-                value={additionalLiquidity}
-                onChange={(e) => setAdditionalLiquidity(parseInt(e.target.value))}
-                />
-              </Box>
-              <Box m={1}>
-              <TextField
-                type="number"
-                label="Additional veBAL"
-                size="medium"
-                sx={{maxWidth: '1000px', textAlign: 'right'}}
-                value={additionalVeBAL}
-                onChange={(e) => setAdditionalVeBAL(parseInt(e.target.value))}
-                />
-              </Box>
-              <Box m={1}>
-                <MetricsCard
-                  mainMetric={userVeBAL ? userVeBAL + additionalVeBAL : 0}
-                  mainMetricInUSD={false}
-                  metricName={"New Total veBAL"}
+                <GenericMetricsCard
+                  mainMetric={"-"}
+                  metricName={"No wallet connected"}
                   MetricIcon={AccountBalanceWalletIcon}
                 />
               </Box>
             </Grid>
-          </Grid>
-        ) : (
-          <Grid item mt={1} xs={11}>
-            <Box m={1}>
-              <GenericMetricsCard
-                mainMetric={"-"}
-                metricName={"No wallet connected"}
-                MetricIcon={AccountBalanceWalletIcon}
-              />
-            </Box>
-          </Grid>
-        )}
+          )}
         </Grid>
         <Grid item xs={11}>
           <Box mb={1}>
             <Typography variant="h5">Portfolio Gauge Boosts</Typography>
           </Box>
           {portfolioData && portfolioData.length > 1 ? (
-            <GaugeBoostTable gaugeDatas={portfolioData} />
+            <PortfolioBoostTable
+              gaugeDatas={portfolioData}
+              userVeBAL={userVeBAL}
+            />
           ) : (
             <CircularProgress />
           )}
@@ -194,8 +208,11 @@ export default function VeBAL() {
           <Box mb={1}>
             <Typography variant="h5">Theoretical Boost All Gauges</Typography>
           </Box>
-          {balanceGaugeData && balanceGaugeData.length > 1 ? (
-            <GaugeBoostTable gaugeDatas={balanceGaugeData} />
+          {trimmedGaugeData && trimmedGaugeData.length > 1 ? (
+            <GaugeBoostTable
+              gaugeDatas={trimmedGaugeData}
+              userVeBAL={userVeBAL}
+            />
           ) : (
             <CircularProgress />
           )}

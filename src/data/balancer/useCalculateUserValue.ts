@@ -2,7 +2,9 @@ import { BalancerStakingGauges, PoolData } from "./balancerTypes";
 
 const useCalculateUserBalancesUSD = (
   stakingGaugeData: BalancerStakingGauges[],
-  pools: PoolData[]
+  pools: PoolData[],
+  additionalLiquidity: number,
+  additionalVeBAL: number,
 ): BalancerStakingGauges[] => {
   const updatedGaugeData: BalancerStakingGauges[] = [];
 
@@ -10,7 +12,7 @@ const useCalculateUserBalancesUSD = (
     for(const gauge of stakingGaugeData) {
       const pool = pools.find((p) => p.address === gauge.pool.address.toLocaleLowerCase());
       if (pool) {
-        const userValue = gauge.userBalance * pool.liquidity / pool.totalShares;
+        const userValue = gauge.userBalance * pool.liquidity / pool.totalShares + additionalLiquidity;
         const updatedGauge = {
           ...gauge,
           userValue: userValue,
