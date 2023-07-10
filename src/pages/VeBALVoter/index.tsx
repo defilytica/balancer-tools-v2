@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import {Avatar, Button, Card, Grid, Table, TableBody, TableHead, TableRow, Typography} from '@mui/material';
+import {Avatar, Button, Card, Grid, Table, TableBody, TableHead, TableRow, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions} from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import {useAccount} from "wagmi";
 import {useUserVeBALLocks} from "../../data/balancer/useUserVeBALLocks";
@@ -34,6 +34,7 @@ import GnosisLogo from '../../assets/svg/gnosis.svg'
 import zkevmLogo from '../../assets/svg/zkevm.svg'
 import OpLogo from '../../assets/svg/optimism.svg'
 import {match} from "assert";
+import {veBALVoteAddress} from "../../constants";
 
 
 export default function VeBALVoter() {
@@ -46,6 +47,7 @@ export default function VeBALVoter() {
 
     const [allocations, setAllocations] = useState<GaugeAllocation[]>([]);
     const [totalPercentage, setTotalPercentage] = useState<number>(0);
+    const [open, setOpen] = useState(false);
 
     //TODO: outsource
     interface NetworkLogoMap {
@@ -72,6 +74,14 @@ export default function VeBALVoter() {
         setAllocations((prevAllocations) => [...prevAllocations, {...newAllocation}]);
     };
 
+    const handleDialogOpen = () => {
+        setOpen(true);
+    };
+
+    const handleDialogClose = () => {
+        setOpen(false);
+    };
+
     const handlePercentageChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, allocElement: GaugeAllocation) => {
         const inputPercentage = Number(event.target.value);
         const matchingHiddenHandData = hhIncentives?.incentives?.data?.find(data => data.proposal.toLowerCase() === allocElement.gaugeAddress.toLowerCase());
@@ -93,19 +103,19 @@ export default function VeBALVoter() {
                 }
                 return gauge;
             });
+            if (isNaN(inputPercentage) || inputPercentage < 0 || inputPercentage > 100) {
+                // Invalid input, set percentage to 0
+                allocElement.percentage = 0;
+            } else {
+                // Valid input, update percentage
+                allocElement.percentage = inputPercentage;
+                allocElement.rewardInUSD = matchingHiddenHandData.totalValue / newVoteValue * userVeBAL * inputPercentage / 100 ;
+                allocElement.userValuePerVote = matchingHiddenHandData.totalValue / newVoteValue
+            }
+            setAllocations([...allocations]);
         }
-        const incentive = fullyDecoratedGauges.find(gauge => gauge.address === allocElement.gaugeAddress);
 
-        if (isNaN(inputPercentage) || inputPercentage < 0 || inputPercentage > 100) {
-            // Invalid input, set percentage to 0
-            allocElement.percentage = 0;
-        } else {
-            // Valid input, update percentage
-            allocElement.percentage = inputPercentage;
-            allocElement.rewardInUSD = incentive ? userVeBAL * inputPercentage / 100 * incentive.valuePerVote : 0;
-            allocElement.userValuePerVote = incentive ? incentive.valuePerVote : 0
-        }
-        setAllocations([...allocations]);
+
     };
 
     const calculateAverageValuePerVote = (gauges: BalancerStakingGauges[]) => {
@@ -152,13 +162,13 @@ export default function VeBALVoter() {
                     gaugeAddress: vote.address,
                     percentage: vote.userVotingPower ? vote.userVotingPower : 0,
                     rewardInUSD: rewardInUSD,
-                    userValuePerVote: matchingGauge ? matchingGauge.valuePerVote : 0,
+                    userValuePerVote: (matchingGauge && vote.userVotingPower) ? matchingGauge.valuePerVote * userVeBAL * (vote.userVotingPower / 100) : 0,
                     isNew: false
                 };
             });
             setAllocations([...newAllocations]);
         }
-    }, [userVotingGauges, allocations, address]);
+    }, [userVotingGauges, allocations, userVeBAL, address]);
 
 
     //Total percentage validation hook -> controls vote button disable function
@@ -173,7 +183,7 @@ export default function VeBALVoter() {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         await provider.send("eth_requestAccounts", []);
         const signer = await provider.getSigner();
-        const erc20 = new ethers.Contract(address ? address : '', VeBalVoteMany, signer);
+        const erc20 = new ethers.Contract(veBALVoteAddress, VeBalVoteMany, signer);
 
         const addresses = Array(8)
             .fill("0x0000000000000000000000000000000000000000")
@@ -196,7 +206,7 @@ export default function VeBALVoter() {
     const resetVotes = () => {
         const newAllocations = userVotingGauges.map((vote) => {
             const matchingGauge = fullyDecoratedGauges.find((gauge) => gauge.address === vote.address);
-            const rewardInUSD = (matchingGauge && vote.userVotingPower) ? vote.userVotingPower * matchingGauge.valuePerVote : 0;
+            const rewardInUSD = (matchingGauge && vote.userVotingPower) ? ((vote.userVotingPower / 100) * matchingGauge.valuePerVote * userVeBAL) : 0;
             return {
                 gaugeAddress: vote.address,
                 percentage: vote.userVotingPower ? vote.userVotingPower : 0,
@@ -212,7 +222,7 @@ export default function VeBALVoter() {
 
 
     return (
-        <Box key={address? address : 'veBAL'} sx={{flexGrow: 2}}>
+        <Box key={address? address.toLowerCase() : 'veBAL'} sx={{flexGrow: 2}}>
             <Grid
                 container
                 spacing={2}
@@ -311,7 +321,7 @@ export default function VeBALVoter() {
                                             <TableCell>Tokens</TableCell>
                                             <TableCell>Composition</TableCell>
                                             <TableCell>Vote weight</TableCell>
-                                            <TableCell>New $/veBAL</TableCell>
+                                            <TableCell>Effective $/veBAL</TableCell>
                                             <TableCell>Incentives</TableCell>
                                             <TableCell>Status</TableCell>
                                         </TableRow>
@@ -357,11 +367,12 @@ export default function VeBALVoter() {
                                                                 inputProps={{
                                                                     min: 0,
                                                                     max: 100,
+                                                                    step: 0.01,
                                                                 }}
                                                             />
                                                         </TableCell>
                                                         <TableCell>
-                                                            <Typography>{formatDollarAmount(relevantGauge.valuePerVote, 3)}</Typography>
+                                                            <Typography>{formatDollarAmount(alloc.userValuePerVote, 3)}</Typography>
                                                         </TableCell>
                                                         <TableCell>
                                                             <Typography>{formatDollarAmount(alloc.rewardInUSD, 2)}</Typography>
@@ -392,7 +403,7 @@ export default function VeBALVoter() {
                     <Box mr={1}>
                         <Button
                             variant="contained"
-                            onClick={() => updateVotes(allocations)}
+                            onClick={handleDialogOpen}
                             disabled={
                             totalPercentage > 100}
                         >
@@ -423,6 +434,20 @@ export default function VeBALVoter() {
                         : <CircularProgress/>}
                 </Grid>
             </Grid>
+            <Dialog open={open} onClose={handleDialogClose}>
+                <DialogTitle>Experimental Transaction</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Executing this transaction is experimental and at your discretion. Proceed with caution.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleDialogClose}>Cancel</Button>
+                    <Button onClick={() => updateVotes(allocations)} color="primary" variant="contained">
+                        Proceed
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
         </Box>
     );
