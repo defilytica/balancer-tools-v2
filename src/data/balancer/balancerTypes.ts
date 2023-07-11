@@ -199,7 +199,7 @@ export interface AprSet {
     userVotingPower?: number;
     recipient: string;
     boost: string;
-    userWorkingBalance: number;
+    workingBalance: string;
     userBalance: number;
     max_boost: string;
     min_VeBAL: string;

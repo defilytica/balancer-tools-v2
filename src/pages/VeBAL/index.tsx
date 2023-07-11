@@ -19,6 +19,7 @@ import calculateUserBalancesInUSD from "./calculateUserBalancesInUSD";
 import { useState, useEffect } from "react";
 import {useActiveNetworkVersion} from "../../state/application/hooks";
 import {BalancerStakingGauges} from "../../data/balancer/balancerTypes";
+import { useGetTotalVeBAL } from "../../data/balancer/useGetTotalVeBAL";
 
 export default function VeBAL() {
   //Load user wallet stats
@@ -26,6 +27,9 @@ export default function VeBAL() {
   const [ activeNetwork ] = useActiveNetworkVersion();
   const userLocks = useUserVeBALLocks();
   const userVeBAL = useGetUserVeBAL(address ? address : "");
+  const totalVeBAL = useGetTotalVeBAL();
+  console.log(totalVeBAL);
+  console.log(userVeBAL);
   const pools = useBalancerPools();
   const [additionalVeBAL, setAdditionalVeBAL] = useState<number>(0);
   const [additionalLiquidity, setAdditionalLiquidity] = useState<number>(0);
@@ -34,22 +38,23 @@ export default function VeBAL() {
   const gaugeData = useGetBalancerStakingGauges();
   const l1GaugeData = useDecorateL1Gauges(gaugeData);
   const decoratedGaugeData = useDecorateL2Gauges(l1GaugeData);
-  const gauges = calculateUserBalancesInUSD(decoratedGaugeData, pools, additionalLiquidity, additionalVeBAL);
+  console.log(decoratedGaugeData);
+  const gauges = calculateUserBalancesInUSD(decoratedGaugeData, pools, additionalLiquidity, additionalVeBAL, userVeBAL, totalVeBAL);
   const [balancerGaugeData, setBalancerGaugeData] = useState<BalancerStakingGauges[]>(gauges);
-  const [trimmedGaugeData, setTrimmedGaugeData] = useState<BalancerStakingGauges[]>([]);
-  const [portfolioData, setPortfolioData] = useState<BalancerStakingGauges[]>([]);
+  const [trimmedGaugeData, setTrimmedGaugeData] = useState<BalancerStakingGauges[]>();
+  const [portfolioData, setPortfolioData] = useState<BalancerStakingGauges[]>();
 
   // Recalculate balancerGaugeData whenever additionalVeBAL or additionalLiquidity change
   useEffect(() => {
     if (gauges.length > 0 && pools.length > 0) {
-      const updatedGauges = calculateUserBalancesInUSD(decoratedGaugeData, pools, additionalLiquidity, additionalVeBAL);
+      const updatedGauges = calculateUserBalancesInUSD(decoratedGaugeData, pools, additionalLiquidity, additionalVeBAL, userVeBAL, totalVeBAL);
       setBalancerGaugeData([...updatedGauges]);
       const trimmedData = updatedGauges.filter(gauge => gauge.userBalance === 0);
       const portfolioData = updatedGauges.filter(gauge => gauge.userBalance !== 0);
       setTrimmedGaugeData([...trimmedData]);
       setPortfolioData([...portfolioData]);
     }
-  }, [additionalVeBAL, additionalLiquidity, decoratedGaugeData]);
+  }, [additionalLiquidity, decoratedGaugeData, additionalVeBAL]);
 
   const date = new Date(
     userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0
@@ -131,7 +136,7 @@ export default function VeBAL() {
                 <Box m={1}>
                   <TextField
                     type="number"
-                    label="Additional Liquidity"
+                    label="Additional Liquidity ($)"
                     size="medium"
                     sx={{ maxWidth: "1000px", textAlign: "right" }}
                     value={additionalLiquidity}

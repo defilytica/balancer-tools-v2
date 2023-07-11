@@ -33,10 +33,12 @@
 // //Helper function to calculate Boost for a certain gauge / veBAL configuration /////
 // ////////////////////////////////////////////////////////////////////////////////////
 
-export function calculateBoostFromGauge(workingBalance: number, workingSupply: number, totalSupply: number, userBalance: number) {
+export function calculateBoostFromGauge(workingBalance: number, workingSupply: number, totalSupply: number, userBalance: number, additionalBalance: number, additionalVeBAL: number, userVeBAL: number, totalVeBAL: number) {
 
      //console.log("vars: ", newVeBAL, lockedVeBAL, totalVeBALStaked, newShare, share, totalShare)
      let boost = 0.0;
+     let workingBalanceAdjusted = Math.min(0.4 * (userBalance / 10e17 + additionalBalance) + 0.6 * (totalSupply / 10e17 + additionalBalance) * (userVeBAL + additionalVeBAL) / (totalVeBAL + additionalVeBAL), (userBalance / 10e17 + additionalBalance));
+     let workingSupplyAdjusted = workingSupply - workingBalance + workingBalanceAdjusted * 10e17;
 //     //Calculate working supply:
 //     const liquidity_provided = Number(newShare) + Number(share);
 //     //const working_supply_pool = Number(totalShare);
@@ -49,8 +51,13 @@ export function calculateBoostFromGauge(workingBalance: number, workingSupply: n
 //     //const max_working_supply_user = 0.40 * liquidity_provided + 0.60 * (Number(totalStakedLiquidity)) * (Number(newShare) / (Number(totalShare)));
 //     //Boost calculation depending 2 scenarios: new liquidity or already providing liquidity and adding more
 
-     if (Number(workingBalance) > 0.0) {
-         boost = (workingBalance / (workingBalance + workingSupply - workingBalance)) / ((0.4 * userBalance) / (0.4 * userBalance + workingSupply - workingBalance))
+     if (Number(workingBalanceAdjusted) > 0.0) {
+         if(((workingBalanceAdjusted / (workingBalanceAdjusted + workingSupply / 10e17 - workingBalance / 10e17)) / ((0.4 * (userBalance / 10e17 + additionalBalance) / (0.4 * (userBalance / 10e17 + additionalBalance) + (workingSupply / 10e17 + additionalBalance * 0.4) - workingBalanceAdjusted)))) 
+         < Number((1 - (1 - ((userBalance / 10e17 + additionalBalance) / (totalSupply / 10e17 + additionalBalance))) * 0.4) / ((0.4 * userBalance / 10e17 + additionalBalance) / (0.4 * (userBalance / 10e17 + additionalBalance) + workingSupplyAdjusted / 10e17 - workingBalanceAdjusted)))) {
+             boost = Number((workingBalanceAdjusted / (workingBalanceAdjusted + workingSupply / 10e17 - workingBalance / 10e17)) / ((0.4 * (userBalance / 10e17 + additionalBalance) / (0.4 * (userBalance / 10e17 + additionalBalance) + (workingSupply / 10e17 + additionalBalance * 0.4) - workingBalanceAdjusted))))
+        } else {
+            boost = 1;
+        }
      }
          //Case 1: current boost
         // boost = (workingBalance / Number(totalSupply)) / ((0.4 * Number(userBalance)) / (Number(totalSupply) - workingBalance + 0.4 * Number(userBalance)))
@@ -64,11 +71,11 @@ export function calculateBoostFromGauge(workingBalance: number, workingSupply: n
 //         boost = (working_supply_user / (working_supply_user + Number(totalShare))) / (non_boosted_working_supply_user / (non_boosted_working_supply_user + Number(totalShare)))
 //         //console.log("case3 triggered")
 //     }
-    //   if (boost > 2.5) {
-    //       boost = 2.5
-    //   } else if (boost < 1) {
-    //       boost = 5
-    //   }
+       if (boost > 2.5) {
+           boost = 2.5
+       } else if (boost < 1) {
+           boost = 1
+       }
 
       //console.log("boost", boost);
 
@@ -79,15 +86,19 @@ export function calculateBoostFromGauge(workingBalance: number, workingSupply: n
 // //Helper function to calculate Max Boost for a certain gauge / veBAL configuration /////
 // ////////////////////////////////////////////////////////////////////////////////////////
 
- export function calculateMaxBoost(workingBalance: number, workingSupply: number, totalSupply: number, userBalance: number) {
+ export function calculateMaxBoost(workingBalance: number, workingSupply: number, totalSupply: number, userBalance: number, additionalBalance: number, additionalVeBAL: number, userVeBAL: number, totalVeBAL: number) {
 
      let max_boost = 0.0;
+     let workingBalanceAdjusted = Math.min(0.4 * (userBalance / 10e17 + additionalBalance) + 0.6 * (totalSupply / 10e17 + additionalBalance) * (userVeBAL + additionalVeBAL) / (totalVeBAL + additionalVeBAL), (userBalance / 10e17 + additionalBalance));
+     let workingSupplyAdjusted = workingSupply - workingBalance + workingBalanceAdjusted * 10e17;
+
      if (Number(workingBalance) > 0.0) {
-        max_boost = Math.min(Number(2.5 * (0.4 * userBalance  + workingSupply - workingBalance) / (userBalance + workingSupply - workingBalance)), Number((1 - (1 - userBalance / totalSupply ) * 0.4) / ((0.4 * userBalance) / (0.4 * userBalance + workingSupply - workingBalance))))
+        max_boost = Number((1 - (1 - ((userBalance / 10e17 + additionalBalance) / (totalSupply / 10e17 + additionalBalance))) * 0.4) / ((0.4 * userBalance / 10e17 + additionalBalance) / (0.4 * (userBalance / 10e17 + additionalBalance) + workingSupplyAdjusted / 10e17 - workingBalanceAdjusted)))
     }
      // Includes dilutive considerations 
-     // max_boost = Number((1 - (1 - ((userBalance + additionalLiquidity) / (totalSupply + additionalLiquidity)) ) * 0.4) / ((0.4 * userBalance + additionalLiquidity) / (0.4 * (userBalance + additionalLiquidity) + workingSupply - workingBalance)))
+     // max_boost = Number((1 - (1 - ((userBalance / 10e17 + additionalBalance) / (totalSupply / 10e17 + additionalBalance))) * 0.4) / ((0.4 * userBalance / 10e17 + additionalBalance) / (0.4 * (userBalance / 10e17 + additionalBalance) + workingSupplyAdjusted / 10e17 - workingBalanceAdjusted)))
      // Need to clean up this logic to consider all impacts of additional liquidity or veBAL in a gauge on max boost
+     // max_boost = Number(2.5 * (0.4 * (userBalance + additionalBalance) + workingSupply - workingBalance) / (userBalance + additionalBalance + workingSupply - workingBalance));
 
 
      //Max working supply for 2.5x
