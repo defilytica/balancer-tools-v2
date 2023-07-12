@@ -162,7 +162,7 @@ export default function VeBALVoter() {
                     gaugeAddress: vote.address,
                     percentage: vote.userVotingPower ? vote.userVotingPower : 0,
                     rewardInUSD: rewardInUSD,
-                    userValuePerVote: (matchingGauge && vote.userVotingPower) ? matchingGauge.valuePerVote * userVeBAL * (vote.userVotingPower / 100) : 0,
+                    userValuePerVote: matchingGauge ? matchingGauge.valuePerVote  : 0,
                     isNew: false
                 };
             });
@@ -211,7 +211,7 @@ export default function VeBALVoter() {
                 gaugeAddress: vote.address,
                 percentage: vote.userVotingPower ? vote.userVotingPower : 0,
                 rewardInUSD: rewardInUSD,
-                userValuePerVote: vote.valuePerVote ? vote.valuePerVote : 0,
+                userValuePerVote: matchingGauge ? matchingGauge.valuePerVote : 0,
                 isNew: false
             };
         });
