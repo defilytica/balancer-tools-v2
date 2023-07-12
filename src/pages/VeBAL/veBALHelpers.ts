@@ -1,3 +1,5 @@
+import {BalancerStakingGauges, PoolData} from "../../data/balancer/balancerTypes";
+
 //Provide all necessary helper functions for the veBAL boost calculator here
 
 // ///////////////////////////////////////////////////////////////////////////////////////
@@ -13,7 +15,7 @@
 //             gauge_bpt_price = Number(el.pricePerBPT);
 //         }
 //     });
-    
+
 //     const balEmission = 145000 * 0.84 ;
 //     const shareOneBPT = 0.4 / (Number(gauge_working_supply) + 0.4);
 //     const weeklyReward = shareOneBPT * Number(gauge_relative_weight) * balEmission;
@@ -39,7 +41,7 @@ export function calculateBoostFromGauge(workingBalance: number, workingSupply: n
      let max_boost = 0;
      let boost = 0.0;
      let workingBalanceAdjusted = Math.min(0.4 * (userBalance / 10e17 + additionalBalance) + 0.6 * (totalSupply / 10e17 + additionalBalance) * (userVeBAL + additionalVeBAL) / (totalVeBAL), (userBalance / 10e17 + additionalBalance));
-     let workingSupplyAdjusted = 0.4 * (totalSupply / 10e17 - userBalance / 10e17) * 2.5 * (workingSupply - workingBalance) / (totalSupply - userBalance) * (totalVeBAL) / (totalVeBAL + additionalVeBAL) + Math.min(0.4 * (userBalance / 10e17 + additionalBalance) + 0.6 * (totalSupply / 10e17 + additionalBalance) * (userVeBAL + additionalVeBAL) / (totalVeBAL + additionalVeBAL), (userBalance / 10e17 + additionalBalance)); 
+     let workingSupplyAdjusted = 0.4 * (totalSupply / 10e17 - userBalance / 10e17) * 2.5 * (workingSupply - workingBalance) / (totalSupply - userBalance) * (totalVeBAL) / (totalVeBAL + additionalVeBAL) + Math.min(0.4 * (userBalance / 10e17 + additionalBalance) + 0.6 * (totalSupply / 10e17 + additionalBalance) * (userVeBAL + additionalVeBAL) / (totalVeBAL + additionalVeBAL), (userBalance / 10e17 + additionalBalance));
 //     //Calculate working supply:
 //     const liquidity_provided = Number(newShare) + Number(share);
 //     //const working_supply_pool = Number(totalShare);
@@ -119,11 +121,11 @@ export function calculateBoostFromGauge(workingBalance: number, workingSupply: n
                  workingBalanceAdjusted))
          );
        }
-       console.log(additionalBalance);
+       //console.log(additionalBalance);
      }
 
     //  if (Number(workingBalanceAdjusted) > 0.0) {
-    //      if(((workingBalanceAdjusted / (workingBalanceAdjusted + workingSupplyAdjusted - workingBalance / 10e17)) / ((0.4 * (userBalance / 10e17 + additionalBalance) / (0.4 * (userBalance / 10e17 + additionalBalance) + (workingSupplyAdjusted + additionalBalance * 0.4) - workingBalanceAdjusted)))) 
+    //      if(((workingBalanceAdjusted / (workingBalanceAdjusted + workingSupplyAdjusted - workingBalance / 10e17)) / ((0.4 * (userBalance / 10e17 + additionalBalance) / (0.4 * (userBalance / 10e17 + additionalBalance) + (workingSupplyAdjusted + additionalBalance * 0.4) - workingBalanceAdjusted))))
     //      < Number((1 - (1 - ((userBalance / 10e17 + additionalBalance) / (totalSupply / 10e17 + additionalBalance))) * 0.4) / ((0.4 * userBalance / 10e17 + additionalBalance) / (0.4 * (userBalance / 10e17 + additionalBalance) + workingSupplyAdjusted - workingBalanceAdjusted)))) {
     //          boost = Number((workingBalanceAdjusted / (workingBalanceAdjusted + workingSupplyAdjusted - workingBalance / 10e17)) / ((0.4 * (userBalance / 10e17 + additionalBalance) / (0.4 * (userBalance / 10e17 + additionalBalance) + (workingSupplyAdjusted + additionalBalance * 0.4) - workingBalanceAdjusted))))
     //     } else {
@@ -149,7 +151,7 @@ export function calculateBoostFromGauge(workingBalance: number, workingSupply: n
      }
      if (boost > max_boost) {
        boost = max_boost;
-     } 
+     }
 
       //console.log("boost", boost);
 
@@ -164,12 +166,12 @@ export function calculateBoostFromGauge(workingBalance: number, workingSupply: n
 
      let max_boost = 0.0;
      let workingBalanceAdjusted = Math.min(0.4 * (userBalance / 10e17 + additionalBalance) + 0.6 * (totalSupply / 10e17 + additionalBalance) * (userVeBAL + additionalVeBAL) / (totalVeBAL + additionalVeBAL), (userBalance / 10e17 + additionalBalance));
-     let workingSupplyAdjusted = 0.4 * (totalSupply / 10e17 - userBalance / 10e17) * 2.5 * (workingSupply - workingBalance) / (totalSupply - userBalance) * (totalVeBAL) / (totalVeBAL + additionalVeBAL) + Math.min(0.4 * (userBalance / 10e17 + additionalBalance) + 0.6 * (totalSupply / 10e17 + additionalBalance) * (userVeBAL + additionalVeBAL) / (totalVeBAL + additionalVeBAL), (userBalance / 10e17 + additionalBalance)); 
+     let workingSupplyAdjusted = 0.4 * (totalSupply / 10e17 - userBalance / 10e17) * 2.5 * (workingSupply - workingBalance) / (totalSupply - userBalance) * (totalVeBAL) / (totalVeBAL + additionalVeBAL) + Math.min(0.4 * (userBalance / 10e17 + additionalBalance) + 0.6 * (totalSupply / 10e17 + additionalBalance) * (userVeBAL + additionalVeBAL) / (totalVeBAL + additionalVeBAL), (userBalance / 10e17 + additionalBalance));
      if (Number(workingBalanceAdjusted)) {
         max_boost = Math.max(Number((workingBalanceAdjusted / (workingBalanceAdjusted + workingSupply / 10e17 - workingBalance / 10e17)) / ((0.4 * (userBalance / 10e17 + additionalBalance) / (0.4 * (userBalance / 10e17 + additionalBalance) + (workingSupply / 10e17 + additionalBalance * 0.4) - workingBalanceAdjusted)))),
         Number((1 - (1 - ((userBalance / 10e17 + additionalBalance) / (totalSupply / 10e17 + additionalBalance))) * 0.4) / ((0.4 * userBalance / 10e17 + additionalBalance) / (0.4 * (userBalance / 10e17 + additionalBalance) + workingSupplyAdjusted - workingBalanceAdjusted))))
     }
-     // Includes dilutive considerations 
+     // Includes dilutive considerations
      // max_boost = Number((1 - (1 - ((userBalance / 10e17 + additionalBalance) / (totalSupply / 10e17 + additionalBalance))) * 0.4) / ((0.4 * userBalance / 10e17 + additionalBalance) / (0.4 * (userBalance / 10e17 + additionalBalance) + workingSupplyAdjusted / 10e17 - workingBalanceAdjusted)))
      // Need to clean up this logic to consider all impacts of additional liquidity or veBAL in a gauge on max boost
      // max_boost = Number(2.5 * (0.4 * (userBalance + additionalBalance) + workingSupply - workingBalance) / (userBalance + additionalBalance + workingSupply - workingBalance));
@@ -192,7 +194,7 @@ export function calculateBoostFromGauge(workingBalance: number, workingSupply: n
 //         max_boost = (working_supply_user_max / (working_supply_user_max + Number(totalShare))) / (non_boosted_working_supply_user / (non_boosted_working_supply_user + Number(totalShare)))
 //         //console.log("case3 triggered")
 //     }
-    
+
      if (max_boost > 2.5) {
          max_boost = 2.5
      } else if (max_boost < 1) {
@@ -215,7 +217,7 @@ export function calculateMinVeBAL(workingBalance: number, workingSupply: number,
      let min_VeBAL = 0;
      if (Number(workingSupply > 0)) {
         min_VeBAL = (totalVeBAL) * ((userBalance / 10e17 + additionalBalance) / (totalSupply / 10e17 + additionalBalance));
-        // Equation below corrects for dilution upon new locking. Equation above assumes totalVeBAL is fixed and is incorrect teechnically. 
+        // Equation below corrects for dilution upon new locking. Equation above assumes totalVeBAL is fixed and is incorrect teechnically.
     //  min_VeBAL = (totalVeBAL + addedVeBAL) * (userBalance / totalSupply);
      }
      if (min_VeBAL > 50000000) {
@@ -246,3 +248,44 @@ export function calculateMinVeBAL(workingBalance: number, workingSupply: number,
 
 //     return remainingVeBAL;
 // }
+
+// //////////////////////////////////////////////////////////////
+// ////// Helper function to calculate user Balances in USD /////
+// //////////////////////////////////////////////////////////////
+const calculateUserBalancesInUSD = (
+    stakingGaugeData: BalancerStakingGauges[],
+    pools: PoolData[],
+    additionalLiquidity: number,
+    additionalVeBAL: number,
+    userVeBAL: number,
+    totalVeBAL: number,
+): BalancerStakingGauges[] => {
+    const updatedGaugeData: BalancerStakingGauges[] = [];
+
+    if (stakingGaugeData.length > 0 && pools.length > 0) {
+        for(const gauge of stakingGaugeData) {
+            const pool = pools.find((p) => p.address === gauge.pool.address.toLocaleLowerCase());
+            if (pool) {
+                const inferredTVL = pool.tokens.reduce((sum, el) => sum + el.tvl, 0)
+                const tvl = inferredTVL ? inferredTVL : pool.liquidity
+                const userValue = gauge.userBalance * tvl / pool.totalShares + additionalLiquidity * 10e17;
+                const additionalBalance =  additionalLiquidity / (tvl / pool.totalShares);
+                const boost = calculateBoostFromGauge(Number(gauge.workingBalance), Number(gauge.workingSupply), Number(gauge.totalSupply), gauge.userBalance, additionalBalance, additionalVeBAL, userVeBAL, totalVeBAL).toString();
+                const max_boost = calculateMaxBoost(Number(gauge.workingBalance), Number(gauge.workingSupply), Number(gauge.totalSupply), gauge.userBalance, additionalBalance, additionalVeBAL, userVeBAL, totalVeBAL).toString();
+                const min_VeBAL = calculateMinVeBAL(Number(gauge.workingBalance), Number(gauge.workingSupply), Number(gauge.totalSupply), gauge.userBalance, additionalBalance, additionalVeBAL, userVeBAL, totalVeBAL).toString();
+                const updatedGauge = {
+                    ...gauge,
+                    userValue: userValue,
+                    boost: boost,
+                    max_boost: max_boost,
+                    min_VeBAL: min_VeBAL,
+                };
+                updatedGaugeData.push(updatedGauge);
+            }
+        };
+    }
+
+    return updatedGaugeData;
+};
+
+export default calculateUserBalancesInUSD;

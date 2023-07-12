@@ -8,7 +8,8 @@ export function useGetUserVeBAL(address: string): number {
         address: '0x67F8DF125B796B05895a6dc8Ecf944b9556ecb0B',
         abi: veBoost,
         functionName: 'adjusted_balance_of',
-        args: [address?.toLowerCase()]
+        args: [address?.toLowerCase()],
+        chainId: 1
     })
 
     useEffect(() => {

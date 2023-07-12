@@ -28,6 +28,8 @@ import {BalancerStakingGauges, SimplePoolData} from "../../../data/balancer/bala
 import {formatNumber} from "../../../utils/numbers";
 import GaugeComposition from "../../GaugeComposition";
 import ClearIcon from '@mui/icons-material/Clear';
+import OpLogo from "../../../assets/svg/optimism.svg";
+import zkevmLogo from "../../../assets/svg/zkevm.svg";
 
 
 
@@ -271,10 +273,11 @@ export default function PortfolioBoostTable({gaugeDatas, userVeBALAdjusted}: {
 
     const networkLogoMap: NetworkLogoMap = {
         1: EtherLogo,
+        10: OpLogo,
         137: PolygonLogo,
         100: GnosisLogo,
+        1101: zkevmLogo,
         42161: ArbitrumLogo
-        // Add as many mappings as needed
     };
 
 

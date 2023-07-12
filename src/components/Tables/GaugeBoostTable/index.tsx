@@ -29,6 +29,8 @@ import {BalancerStakingGauges, SimplePoolData} from "../../../data/balancer/bala
 import {formatNumber} from "../../../utils/numbers";
 import GaugeComposition from "../../GaugeComposition";
 import ClearIcon from '@mui/icons-material/Clear';
+import OpLogo from "../../../assets/svg/optimism.svg";
+import zkevmLogo from "../../../assets/svg/zkevm.svg";
 
 
 
@@ -212,7 +214,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 }
 
 export default function GaugeBoostTable({gaugeDatas, userVeBALAdjusted}: {
-    gaugeDatas: BalancerStakingGauges[], userVeBALAdjusted: number
+    gaugeDatas: BalancerStakingGauges[],
+    userVeBALAdjusted: number,
 }) {
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('boost');
@@ -222,7 +225,6 @@ export default function GaugeBoostTable({gaugeDatas, userVeBALAdjusted}: {
 
 
     const seen = new Set();
-
     const filteredPoolDatas = gaugeDatas.filter((x) => {
         return !!x && !x.isKilled && !seen.has(x.address) && seen.add(x.pool.address);
     });
@@ -291,10 +293,11 @@ export default function GaugeBoostTable({gaugeDatas, userVeBALAdjusted}: {
 
     const networkLogoMap: NetworkLogoMap = {
         1: EtherLogo,
+        10: OpLogo,
         137: PolygonLogo,
         100: GnosisLogo,
+        1101: zkevmLogo,
         42161: ArbitrumLogo
-        // Add as many mappings as needed
     };
 
 

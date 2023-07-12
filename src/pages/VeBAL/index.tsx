@@ -15,49 +15,61 @@ import useDecorateL1Gauges from "../../data/balancer/useDecorateL1Gauges";
 import useDecorateL2Gauges from "../../data/balancer/useDeocrateL2Gauges";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useBalancerPools } from "../../data/balancer/usePools";
-import calculateUserBalancesInUSD from "./calculateUserBalancesInUSD";
-import { useState, useEffect } from "react";
-import {useActiveNetworkVersion} from "../../state/application/hooks";
-import {BalancerStakingGauges} from "../../data/balancer/balancerTypes";
+import calculateUserBalancesInUSD from "./veBALHelpers";
+import {useState, useEffect, useRef} from "react";
+import {BalancerStakingGauges, PoolData} from "../../data/balancer/balancerTypes";
 import { useGetTotalVeBAL } from "../../data/balancer/useGetTotalVeBAL";
+import {useActiveNetworkVersion} from "../../state/application/hooks";
+
 
 export default function VeBAL() {
-  //Load user wallet stats
+
   const { isConnected, address } = useAccount();
-  const [ activeNetwork ] = useActiveNetworkVersion();
+  const [activeNetworkVersion] = useActiveNetworkVersion()
   const userLocks = useUserVeBALLocks();
-  const userVeBAL = useGetUserVeBAL(address ? address : "");
+  const userVeBAL = useGetUserVeBAL(address ? address : '');
   const totalVeBAL = useGetTotalVeBAL();
   const pools = useBalancerPools();
   const [additionalVeBAL, setAdditionalVeBAL] = useState<number>(0);
   const [additionalLiquidity, setAdditionalLiquidity] = useState<number>(0);
 
-  //Load gauge and Staking information
   const gaugeData = useGetBalancerStakingGauges();
   const l1GaugeData = useDecorateL1Gauges(gaugeData);
   const decoratedGaugeData = useDecorateL2Gauges(l1GaugeData);
-  const gauges = calculateUserBalancesInUSD(decoratedGaugeData, pools, additionalLiquidity, additionalVeBAL, userVeBAL, totalVeBAL);
-  const [balancerGaugeData, setBalancerGaugeData] = useState<BalancerStakingGauges[]>(gauges);
-  const [trimmedGaugeData, setTrimmedGaugeData] = useState<BalancerStakingGauges[]>();
-  const [portfolioData, setPortfolioData] = useState<BalancerStakingGauges[]>();
+  const [trimmedGaugeData, setTrimmedGaugeData] = useState<BalancerStakingGauges[]>([]);
+  const [portfolioData, setPortfolioData] = useState<BalancerStakingGauges[]>([]);
 
-  // Recalculate balancerGaugeData whenever additionalVeBAL or additionalLiquidity change
+  const poolsRef = useRef<PoolData[]>([]);
+
   useEffect(() => {
-    if (gauges.length > 0 && pools.length > 0) {
-      setTimeout(() => {
-      const updatedGauges = calculateUserBalancesInUSD(decoratedGaugeData, pools, additionalLiquidity, additionalVeBAL, userVeBAL, totalVeBAL);
-      setBalancerGaugeData([...updatedGauges]);
+    if (JSON.stringify(poolsRef.current) !== JSON.stringify(pools)) {
+      poolsRef.current = pools;
+    }
+  }, [pools]);
+
+  useEffect(() => {
+    const calculateGauges = () => {
+      const updatedGauges = calculateUserBalancesInUSD(
+          decoratedGaugeData,
+          poolsRef.current,
+          additionalLiquidity,
+          additionalVeBAL,
+          userVeBAL,
+          totalVeBAL
+      );
+      console.log("updatedGauges", updatedGauges)
       const trimmedData = updatedGauges.filter(gauge => gauge.userBalance === 0);
       const portfolioData = updatedGauges.filter(gauge => gauge.userBalance !== 0);
-      setTrimmedGaugeData([...trimmedData]);
-      setPortfolioData([...portfolioData]);
-    } , 1000)
-  }
-  }, [additionalLiquidity, decoratedGaugeData, additionalVeBAL]);
+      setTrimmedGaugeData(trimmedData);
+      setPortfolioData(portfolioData);
+    };
 
-  const date = new Date(
-    userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0
-  );
+    const timeoutId = setTimeout(calculateGauges, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, [poolsRef.current, additionalLiquidity, decoratedGaugeData, additionalVeBAL, userVeBAL, totalVeBAL, activeNetworkVersion.chainId]);
+
+  const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);
   const unlockDate = date.toLocaleDateString();
 
 
@@ -134,13 +146,12 @@ export default function VeBAL() {
               >
                 <Box m={1}>
                   <TextField
-                    type="number"
                     label="Additional Liquidity ($)"
                     size="medium"
                     sx={{ maxWidth: "1000px", textAlign: "right" }}
                     value={additionalLiquidity}
                     onChange={(e) => {
-                      const value = parseInt(e.target.value);
+                      const value = parseFloat(e.target.value);
                       setAdditionalLiquidity(value);
                     }}
                   />
@@ -153,7 +164,7 @@ export default function VeBAL() {
                     sx={{ maxWidth: "1000px", textAlign: "right" }}
                     value={additionalVeBAL}
                     onChange={(e) => {
-                      const value = parseInt(e.target.value);
+                      const value = parseFloat(e.target.value);
                       setAdditionalVeBAL(value);
                     }}
                   />
@@ -184,25 +195,26 @@ export default function VeBAL() {
           <Box mb={1}>
             <Typography variant="h5">Portfolio Gauge Boosts</Typography>
           </Box>
-          {portfolioData && portfolioData.length > 1 ? (
+          {portfolioData && portfolioData.length > 0 ? (
             <PortfolioBoostTable
                 key={'portfolio' + additionalVeBAL + additionalLiquidity}
               gaugeDatas={portfolioData}
               userVeBALAdjusted={userVeBAL+ additionalVeBAL}
             />
           ) : (
-            <CircularProgress />
+              <Typography>No position found </Typography>
           )}
         </Grid>
         <Grid item xs={11}>
           <Box mb={1}>
-            <Typography variant="h5">Theoretical Boost All Gauges</Typography>
+            <Typography variant="h5">Theoretical Boost for {activeNetworkVersion.name} Gauges</Typography>
           </Box>
-          {trimmedGaugeData && trimmedGaugeData.length > 1 ? (
+          {(JSON.stringify(poolsRef.current) == JSON.stringify(pools)) && pools && pools.length > 1 && trimmedGaugeData && trimmedGaugeData.length > 1 ? (
             <GaugeBoostTable
-                key={'boost' + additionalVeBAL + additionalLiquidity}
-              gaugeDatas={trimmedGaugeData}
-              userVeBALAdjusted={userVeBAL + additionalVeBAL}
+                key={'boost' + additionalVeBAL + additionalLiquidity + activeNetworkVersion.name}
+                gaugeDatas={trimmedGaugeData}
+                userVeBALAdjusted={userVeBAL + additionalVeBAL}
+
             />
           ) : (
             <CircularProgress />
