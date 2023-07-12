@@ -28,8 +28,6 @@ export default function VeBAL() {
   const userLocks = useUserVeBALLocks();
   const userVeBAL = useGetUserVeBAL(address ? address : "");
   const totalVeBAL = useGetTotalVeBAL();
-  console.log(totalVeBAL);
-  console.log(userVeBAL);
   const pools = useBalancerPools();
   const [additionalVeBAL, setAdditionalVeBAL] = useState<number>(0);
   const [additionalLiquidity, setAdditionalLiquidity] = useState<number>(0);
@@ -38,7 +36,6 @@ export default function VeBAL() {
   const gaugeData = useGetBalancerStakingGauges();
   const l1GaugeData = useDecorateL1Gauges(gaugeData);
   const decoratedGaugeData = useDecorateL2Gauges(l1GaugeData);
-  console.log(decoratedGaugeData);
   const gauges = calculateUserBalancesInUSD(decoratedGaugeData, pools, additionalLiquidity, additionalVeBAL, userVeBAL, totalVeBAL);
   const [balancerGaugeData, setBalancerGaugeData] = useState<BalancerStakingGauges[]>(gauges);
   const [trimmedGaugeData, setTrimmedGaugeData] = useState<BalancerStakingGauges[]>();
@@ -47,13 +44,15 @@ export default function VeBAL() {
   // Recalculate balancerGaugeData whenever additionalVeBAL or additionalLiquidity change
   useEffect(() => {
     if (gauges.length > 0 && pools.length > 0) {
+      setTimeout(() => {
       const updatedGauges = calculateUserBalancesInUSD(decoratedGaugeData, pools, additionalLiquidity, additionalVeBAL, userVeBAL, totalVeBAL);
       setBalancerGaugeData([...updatedGauges]);
       const trimmedData = updatedGauges.filter(gauge => gauge.userBalance === 0);
       const portfolioData = updatedGauges.filter(gauge => gauge.userBalance !== 0);
       setTrimmedGaugeData([...trimmedData]);
       setPortfolioData([...portfolioData]);
-    }
+    } , 1000)
+  }
   }, [additionalLiquidity, decoratedGaugeData, additionalVeBAL]);
 
   const date = new Date(
@@ -189,7 +188,7 @@ export default function VeBAL() {
             <PortfolioBoostTable
                 key={'portfolio' + additionalVeBAL + additionalLiquidity}
               gaugeDatas={portfolioData}
-              userVeBAL={userVeBAL+ additionalVeBAL}
+              userVeBALAdjusted={userVeBAL+ additionalVeBAL}
             />
           ) : (
             <CircularProgress />
@@ -203,7 +202,7 @@ export default function VeBAL() {
             <GaugeBoostTable
                 key={'boost' + additionalVeBAL + additionalLiquidity}
               gaugeDatas={trimmedGaugeData}
-              userVeBAL={userVeBAL + additionalVeBAL}
+              userVeBALAdjusted={userVeBAL + additionalVeBAL}
             />
           ) : (
             <CircularProgress />

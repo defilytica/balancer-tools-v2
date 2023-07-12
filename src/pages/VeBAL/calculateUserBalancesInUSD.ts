@@ -1,5 +1,5 @@
 import { BalancerStakingGauges, PoolData } from "../../data/balancer/balancerTypes";
-import { calculateBoostFromGauge, calculateMaxBoost } from "./veBALHelpers";
+import { calculateBoostFromGauge, calculateMaxBoost, calculateMinVeBAL } from "./veBALHelpers";
 
 const calculateUserBalancesInUSD = (
   stakingGaugeData: BalancerStakingGauges[],
@@ -21,11 +21,13 @@ const calculateUserBalancesInUSD = (
         const additionalBalance =  additionalLiquidity / (tvl / pool.totalShares);
         const boost = calculateBoostFromGauge(Number(gauge.workingBalance), Number(gauge.workingSupply), Number(gauge.totalSupply), gauge.userBalance, additionalBalance, additionalVeBAL, userVeBAL, totalVeBAL).toString();
         const max_boost = calculateMaxBoost(Number(gauge.workingBalance), Number(gauge.workingSupply), Number(gauge.totalSupply), gauge.userBalance, additionalBalance, additionalVeBAL, userVeBAL, totalVeBAL).toString();
+        const min_VeBAL = calculateMinVeBAL(Number(gauge.workingBalance), Number(gauge.workingSupply), Number(gauge.totalSupply), gauge.userBalance, additionalBalance, additionalVeBAL, userVeBAL, totalVeBAL).toString();
         const updatedGauge = {
           ...gauge,
           userValue: userValue,
           boost: boost,
           max_boost: max_boost,
+          min_VeBAL: min_VeBAL,
         };
         updatedGaugeData.push(updatedGauge);
       }

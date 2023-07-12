@@ -211,8 +211,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 
-export default function GaugeBoostTable({gaugeDatas, userVeBAL}: {
-    gaugeDatas: BalancerStakingGauges[], userVeBAL: number
+export default function GaugeBoostTable({gaugeDatas, userVeBALAdjusted}: {
+    gaugeDatas: BalancerStakingGauges[], userVeBALAdjusted: number
 }) {
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('boost');
@@ -410,9 +410,9 @@ export default function GaugeBoostTable({gaugeDatas, userVeBAL}: {
                                         <span
                                             style={{
                                               textShadow:
-                                                Number(row.min_VeBAL) > userVeBAL
+                                                Number(row.min_VeBAL) > userVeBALAdjusted
                                                   ? "0 0 2px #DC143C"
-                                                  : Number(row.min_VeBAL) < userVeBAL
+                                                  : Number(row.min_VeBAL) < userVeBALAdjusted
                                                   ? "0 0 2px green"
                                                   : "white",
                                             }}
@@ -422,7 +422,7 @@ export default function GaugeBoostTable({gaugeDatas, userVeBAL}: {
                                               3
                                             )}
                                          <div>
-                                           {formatNumber(Math.abs(userVeBAL - Number(row.min_VeBAL)), 3)}
+                                           {formatNumber(Math.abs(userVeBALAdjusted - Number(row.min_VeBAL)), 3)}
                                          </div>
                                           </span>{" "}
                                         </TableCell>
