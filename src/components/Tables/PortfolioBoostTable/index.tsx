@@ -120,13 +120,6 @@ const headCells: readonly HeadCell[] = [
         isMobileVisible: true,
     },
     {
-        id: 'poolData',
-        numeric: false,
-        disablePadding: false,
-        label: 'Composition',
-        isMobileVisible: false,
-    },
-    {
         id: 'poolComposition',
         numeric: false,
         disablePadding: false,
@@ -325,18 +318,16 @@ export default function PortfolioBoostTable({gaugeDatas, userVeBALAdjusted}: {
                                                 />
                                             </TableCell>
                                             <TableCell>
-                                                {/* TODO: fix for token list elements*/}
-                                                <PoolCurrencyLogo
-                                                    tokens={row.poolData.tokens.map(token => ({address: token.address ? token.address.toLowerCase() : ''}))}
-                                                    size={'25px'}/>
-                                            </TableCell>
-                                            <TableCell
-                                                component="th"
-                                                id={labelId}
-                                                scope="row"
-                                                sx={{display: {xs: 'none', md: 'table-cell'}}}
-                                            >
-                                                <GaugeComposition poolData={row.poolData} />
+                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                    <Box mr={1}>
+                                                        <PoolCurrencyLogo
+                                                            tokens={row.poolData.tokens.map(token => ({address: token.address ? token.address.toLowerCase() : ''}))}
+                                                            size={'25px'}/>
+                                                    </Box>
+                                                    <Box>
+                                                        <GaugeComposition poolData={row.poolData} />
+                                                    </Box>
+                                                </Box>
                                             </TableCell>
                                             <TableCell>
                                                 {formatNumber(Number(row.userValue) / (10**18),  3)}
