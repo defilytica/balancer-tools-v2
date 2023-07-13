@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import { Grid, Paper, TextField, Typography } from "@mui/material";
+import {Button, Grid, Paper, TextField, Tooltip, Typography} from "@mui/material";
 import { useUserVeBALLocks } from "../../data/balancer/useUserVeBALLocks";
 import MetricsCard from "../../components/Cards/MetricsCard";
 import LockPersonIcon from "@mui/icons-material/LockPerson";
@@ -42,7 +42,10 @@ export default function VeBAL() {
   const [portfolioData, setPortfolioData] = useState<BalancerStakingGauges[]>([]);
   const [additionalVeBAL, setAdditionalVeBAL] = useState<number>(0);
   const [additionalLiquidity, setAdditionalLiquidity] = useState<number>(0);
+  const [calculationTriggered, setCalculationTriggered] = useState<boolean>(false);
   const poolsRef = useRef<PoolData[]>([]);
+  const additionalLiquidityRef = useRef<number>(0)
+  const [loading, setLoading] = useState<boolean>(false); // Loading state
 
   // gauge list ref
   useEffect(() => {
@@ -51,44 +54,47 @@ export default function VeBAL() {
     }
   }, [pools]);
 
-  // State handling
+  // Liquidity ref
   useEffect(() => {
-    const calculateGauges = () => {
-      const updatedGauges = calculateUserBalancesInUSD(
-          decoratedGaugeData,
-          poolsRef.current,
-          additionalLiquidity,
-          additionalVeBAL,
-          userVeBAL,
-          totalVeBAL
-      );
-      const trimmedData = updatedGauges.filter(gauge => gauge.userBalance === 0 && Number(gauge.network) === Number(activeNetworkVersion.chainId));
-      const portfolioData = updatedGauges.filter(gauge => gauge.userBalance !== 0);
-      setTrimmedGaugeData(trimmedData);
-      setPortfolioData(portfolioData);
-    };
+    if (additionalLiquidityRef.current !== additionalLiquidity) {
+      additionalLiquidityRef.current = additionalLiquidity;
+    }
+  }, [additionalLiquidity]);
 
-    const timeoutId = setTimeout(calculateGauges, 1000);
+  // Reset calculationTriggered when network changes
+  useEffect(() => {
+    setCalculationTriggered(false);
+    setLoading(true)
+  }, [activeNetworkVersion.chainId, additionalLiquidity, additionalVeBAL] );
 
-    return () => clearTimeout(timeoutId);
-  }, [decoratedGaugeData, additionalVeBAL, additionalLiquidity, userVeBAL, totalVeBAL, activeNetworkVersion.chainId]);
+  // State handling
+  const calculateGauges = () => {
+    const updatedGauges = calculateUserBalancesInUSD(
+        decoratedGaugeData,
+        poolsRef.current,
+        additionalLiquidityRef.current,
+        additionalVeBAL,
+        userVeBAL,
+        totalVeBAL
+    );
+    const trimmedData = updatedGauges.filter((gauge) => gauge.userBalance === 0 && Number(gauge.network) === Number(activeNetworkVersion.chainId));
+    const portfolioData = updatedGauges.filter((gauge) => gauge.userBalance !== 0 && Number(gauge.network) === Number(activeNetworkVersion.chainId));
+    setTrimmedGaugeData(trimmedData);
+    setPortfolioData(portfolioData);
+    if (trimmedData.length > 1) {
+      setLoading(false)
+    }
+  };
 
+  const handleCalculate = () => {
+    calculateGauges();
+    setCalculationTriggered(true);
+  };
 
 
   return (
     <Box sx={{ flexGrow: 2 }}>
       <Grid mt={2} container sx={{ justifyContent: "center" }}>
-        <Paper
-            sx={{
-              backgroundColor: 'rgba(255, 0, 0, 0.2)', // Slight red background color
-              padding: '10px',
-              marginBottom: '10px',
-            }}
-        >
-          <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-            Warning: This is an experimental preview build and may contain bugs.
-          </Typography>
-        </Paper>
         <Grid mt={2} item xs={11}>
           <Box>
             <Typography variant="h5">My veBAL Stats</Typography>
@@ -193,7 +199,6 @@ export default function VeBAL() {
                   />
                 </Box>
 
-
               </Grid>
             </Grid>
           ) : (
@@ -209,19 +214,33 @@ export default function VeBAL() {
           )}
         </Grid>
         <Grid item xs={11}>
+          <Box>
+
+          </Box>
+          <Box m={1}>
+          <Button
+              variant="contained"
+              onClick={handleCalculate}>
+            Calculate
+          </Button>
+          </Box>
+        </Grid>
+        { calculationTriggered ?
+        <Grid item xs={11}>
           <Box mb={1}>
             <Typography variant="h5">Boost Across Wallet Portfolio</Typography>
           </Box>
           {portfolioData && portfolioData.length > 0 ? (
             <PortfolioBoostTable
-                key={'portfolio' + additionalVeBAL + additionalLiquidity}
+                key={'portfolio'}
               gaugeDatas={portfolioData}
               userVeBALAdjusted={userVeBAL+ additionalVeBAL}
             />
           ) : (
               <Typography>No position(s) found </Typography>
           )}
-        </Grid>
+        </Grid> : null }
+        {calculationTriggered && !loading ?
         <Grid item xs={11}>
           <Box mb={1}>
             <Typography variant="h5">Theoretical Boost Across {activeNetworkVersion.name} Gauges</Typography>
@@ -229,9 +248,9 @@ export default function VeBAL() {
           <Box mb={1}>
             <Typography variant="caption">Switch Networks in the Menu Header the top right to see the corresponding gauges</Typography>
           </Box>
-          {(JSON.stringify(poolsRef.current) == JSON.stringify(pools)) && pools && pools.length > 1 && trimmedGaugeData && trimmedGaugeData.length > 1 ? (
+          {(JSON.stringify(poolsRef.current) === JSON.stringify(pools)) && pools && pools.length > 1 && trimmedGaugeData && trimmedGaugeData.length > 1 ? (
             <GaugeBoostTable
-                key={'boost' + additionalVeBAL + additionalLiquidity + activeNetworkVersion.name}
+                key={'boost' + activeNetworkVersion.name}
                 gaugeDatas={trimmedGaugeData}
                 userVeBALAdjusted={userVeBAL + additionalVeBAL}
 
@@ -239,7 +258,7 @@ export default function VeBAL() {
           ) : (
             <CircularProgress />
           )}
-        </Grid>
+        </Grid> : null }
       </Grid>
     </Box>
   );

@@ -82,18 +82,18 @@ const MenuDrawer = ({
                 <ListItem>
                     <Typography sx={{ fontWeight: 'bold' }}>Balancer</Typography>
                 </ListItem>
-                <ListItemButton key={'veBAL'} component={NavLink} to={'/veBAL'}>
+                <ListItemButton key={'veBAL Boost'} component={NavLink} to={'/veBALBoost'}>
                     <ListItemIcon>
                         <AccountBalanceIcon />
                     </ListItemIcon>
-                    <ListItemText primary={'veBAL'} />
+                    <ListItemText primary={'veBAL Boost'} />
                 </ListItemButton>
 
-                <ListItemButton key={'veBAL Voter'} component={NavLink} to={networkPrefix(activeNetwork) + 'veBalVoter'}>
+                <ListItemButton key={'veBAL Multi-Voter'} component={NavLink} to={networkPrefix(activeNetwork) + 'veBALMultiVoter'}>
                     <ListItemIcon>
                         <LinkIcon />
                     </ListItemIcon>
-                    <ListItemText primary={'veBAL Voter'} />
+                    <ListItemText primary={'veBAL Multi-Voter'} />
                 </ListItemButton>
 
 
