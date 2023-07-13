@@ -262,7 +262,7 @@ const calculateUserBalancesInUSD = (
 ): BalancerStakingGauges[] => {
     const updatedGaugeData: BalancerStakingGauges[] = [];
 
-    if (stakingGaugeData.length > 0 && pools.length > 0) {
+    if (stakingGaugeData.length > 0 && pools.length > 0 && additionalLiquidity) {
         for(const gauge of stakingGaugeData) {
             const pool = pools.find((p) => p.address === gauge.pool.address.toLocaleLowerCase());
             if (pool) {

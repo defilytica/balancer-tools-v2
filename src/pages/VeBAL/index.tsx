@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import { Grid, TextField, Typography } from "@mui/material";
+import { Grid, Paper, TextField, Typography } from "@mui/material";
 import { useUserVeBALLocks } from "../../data/balancer/useUserVeBALLocks";
 import MetricsCard from "../../components/Cards/MetricsCard";
 import LockPersonIcon from "@mui/icons-material/LockPerson";
@@ -24,29 +24,34 @@ import {useActiveNetworkVersion} from "../../state/application/hooks";
 
 export default function VeBAL() {
 
+  // Data fetching
   const { isConnected, address } = useAccount();
   const [activeNetworkVersion] = useActiveNetworkVersion()
   const userLocks = useUserVeBALLocks();
   const userVeBAL = useGetUserVeBAL(address ? address : '');
   const totalVeBAL = useGetTotalVeBAL();
   const pools = useBalancerPools();
-  const [additionalVeBAL, setAdditionalVeBAL] = useState<number>(0);
-  const [additionalLiquidity, setAdditionalLiquidity] = useState<number>(0);
-
   const gaugeData = useGetBalancerStakingGauges();
   const l1GaugeData = useDecorateL1Gauges(gaugeData);
   const decoratedGaugeData = useDecorateL2Gauges(l1GaugeData);
+  const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);
+  const unlockDate = date.toLocaleDateString();
+
+  // State variables
   const [trimmedGaugeData, setTrimmedGaugeData] = useState<BalancerStakingGauges[]>([]);
   const [portfolioData, setPortfolioData] = useState<BalancerStakingGauges[]>([]);
-
+  const [additionalVeBAL, setAdditionalVeBAL] = useState<number>(0);
+  const [additionalLiquidity, setAdditionalLiquidity] = useState<number>(0);
   const poolsRef = useRef<PoolData[]>([]);
 
+  // gauge list ref
   useEffect(() => {
     if (JSON.stringify(poolsRef.current) !== JSON.stringify(pools)) {
       poolsRef.current = pools;
     }
   }, [pools]);
 
+  // State handling
   useEffect(() => {
     const calculateGauges = () => {
       const updatedGauges = calculateUserBalancesInUSD(
@@ -57,8 +62,7 @@ export default function VeBAL() {
           userVeBAL,
           totalVeBAL
       );
-      console.log("updatedGauges", updatedGauges)
-      const trimmedData = updatedGauges.filter(gauge => gauge.userBalance === 0);
+      const trimmedData = updatedGauges.filter(gauge => gauge.userBalance === 0 && Number(gauge.network) === Number(activeNetworkVersion.chainId));
       const portfolioData = updatedGauges.filter(gauge => gauge.userBalance !== 0);
       setTrimmedGaugeData(trimmedData);
       setPortfolioData(portfolioData);
@@ -67,15 +71,24 @@ export default function VeBAL() {
     const timeoutId = setTimeout(calculateGauges, 1000);
 
     return () => clearTimeout(timeoutId);
-  }, [poolsRef.current, additionalLiquidity, decoratedGaugeData, additionalVeBAL, userVeBAL, totalVeBAL, activeNetworkVersion.chainId]);
+  }, [decoratedGaugeData, additionalVeBAL, additionalLiquidity, userVeBAL, totalVeBAL, activeNetworkVersion.chainId]);
 
-  const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);
-  const unlockDate = date.toLocaleDateString();
 
 
   return (
     <Box sx={{ flexGrow: 2 }}>
-      <Grid container spacing={2} sx={{ justifyContent: "center" }}>
+      <Grid mt={2} container sx={{ justifyContent: "center" }}>
+        <Paper
+            sx={{
+              backgroundColor: 'rgba(255, 0, 0, 0.2)', // Slight red background color
+              padding: '10px',
+              marginBottom: '10px',
+            }}
+        >
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+            Warning: This is an experimental preview build and may contain bugs.
+          </Typography>
+        </Paper>
         <Grid mt={2} item xs={11}>
           <Box>
             <Typography variant="h5">My veBAL Stats</Typography>
@@ -83,7 +96,7 @@ export default function VeBAL() {
         </Grid>
 
         {isConnected ? (
-          <Grid item mt={1} xs={11}>
+          <Grid item xs={11}>
             <Grid
               container
               columns={{ xs: 4, sm: 8, md: 12 }}
@@ -145,8 +158,31 @@ export default function VeBAL() {
                 }}
               >
                 <Box m={1}>
+                  <MetricsCard
+                      mainMetric={userVeBAL ? userVeBAL + additionalVeBAL : 0}
+                      mainMetricInUSD={false}
+                      metricName={"New Total veBAL"}
+                      MetricIcon={AccountBalanceWalletIcon}
+                  />
+                </Box>
+                <Box m={1}>
+                  <TextField
+                      type="number"
+                      key={'userAddveBAL'}
+                      label="Additional veBAL"
+                      size="medium"
+                      sx={{ maxWidth: "1000px", textAlign: "right" }}
+                      value={additionalVeBAL}
+                      onChange={(e) => {
+                        const value = parseFloat(e.target.value);
+                        setAdditionalVeBAL(value);
+                      }}
+                  />
+                </Box>
+                <Box m={1}>
                   <TextField
                     label="Additional Liquidity ($)"
+                    key={'userAddvLiq'}
                     size="medium"
                     sx={{ maxWidth: "1000px", textAlign: "right" }}
                     value={additionalLiquidity}
@@ -156,27 +192,8 @@ export default function VeBAL() {
                     }}
                   />
                 </Box>
-                <Box m={1}>
-                  <TextField
-                    type="number"
-                    label="Additional veBAL"
-                    size="medium"
-                    sx={{ maxWidth: "1000px", textAlign: "right" }}
-                    value={additionalVeBAL}
-                    onChange={(e) => {
-                      const value = parseFloat(e.target.value);
-                      setAdditionalVeBAL(value);
-                    }}
-                  />
-                </Box>
-                <Box m={1}>
-                  <MetricsCard
-                    mainMetric={userVeBAL ? userVeBAL + additionalVeBAL : 0}
-                    mainMetricInUSD={false}
-                    metricName={"New Total veBAL"}
-                    MetricIcon={AccountBalanceWalletIcon}
-                  />
-                </Box>
+
+
               </Grid>
             </Grid>
           ) : (
@@ -193,7 +210,7 @@ export default function VeBAL() {
         </Grid>
         <Grid item xs={11}>
           <Box mb={1}>
-            <Typography variant="h5">Portfolio Gauge Boosts</Typography>
+            <Typography variant="h5">Boost Across Wallet Portfolio</Typography>
           </Box>
           {portfolioData && portfolioData.length > 0 ? (
             <PortfolioBoostTable
@@ -202,12 +219,15 @@ export default function VeBAL() {
               userVeBALAdjusted={userVeBAL+ additionalVeBAL}
             />
           ) : (
-              <Typography>No position found </Typography>
+              <Typography>No position(s) found </Typography>
           )}
         </Grid>
         <Grid item xs={11}>
           <Box mb={1}>
-            <Typography variant="h5">Theoretical Boost for {activeNetworkVersion.name} Gauges</Typography>
+            <Typography variant="h5">Theoretical Boost Across {activeNetworkVersion.name} Gauges</Typography>
+          </Box>
+          <Box mb={1}>
+            <Typography variant="caption">Switch Networks in the Menu Header the top right to see the corresponding gauges</Typography>
           </Box>
           {(JSON.stringify(poolsRef.current) == JSON.stringify(pools)) && pools && pools.length > 1 && trimmedGaugeData && trimmedGaugeData.length > 1 ? (
             <GaugeBoostTable
