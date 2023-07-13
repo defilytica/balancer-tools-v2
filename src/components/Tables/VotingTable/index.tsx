@@ -26,7 +26,7 @@ import GnosisLogo from '../../../assets/svg/gnosis.svg'
 import zkevmLogo from '../../../assets/svg/zkevm.svg'
 import OpLogo from '../../../assets/svg/optimism.svg'
 import {BalancerStakingGauges, SimplePoolData} from "../../../data/balancer/balancerTypes";
-import {formatNumber} from "../../../utils/numbers";
+import {formatDollarAmount, formatNumber} from "../../../utils/numbers";
 import GaugeComposition from "../../GaugeComposition";
 import ClearIcon from '@mui/icons-material/Clear';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -384,13 +384,13 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
                                                 </Box>
                                             </TableCell>
                                             <TableCell align="right">
-                                                {formatNumber(Number(row.totalRewards ? row.totalRewards : 0),  3)}
+                                                {formatDollarAmount(Number(row.totalRewards ? row.totalRewards : 0),  3)}
                                             </TableCell>
                                             <TableCell align="right">
                                                 {formatNumber(Number(row.totalVotes ? row.totalVotes : 0),  3)}
                                             </TableCell>
                                             <TableCell align="right">
-                                                {formatNumber(Number(row.votingIncentives ? row.votingIncentives : 0),  3)}
+                                                {formatDollarAmount(Number(row.votingIncentives ? row.votingIncentives : 0),  3)}
                                             </TableCell>
                                             <TableCell align="right">
                                                 {row.userVotes || allocations.find(alloc => alloc.gaugeAddress === row.gaugeAddress) ? (

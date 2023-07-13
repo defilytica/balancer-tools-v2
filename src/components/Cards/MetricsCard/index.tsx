@@ -54,7 +54,7 @@ const MetricsCard = ({
               color="textPrimary"
               variant="h5"
             >
-              {mainMetricInUSD ? formatDollarAmount(mainMetric) : formatNumber(mainMetric, 2) + metricUnit}
+              {mainMetricInUSD ? formatDollarAmount(mainMetric) + metricUnit : formatNumber(mainMetric, 2) + metricUnit}
             </Typography>
           </Grid>
           <Grid item>

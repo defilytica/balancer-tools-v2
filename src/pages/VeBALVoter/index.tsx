@@ -1,5 +1,22 @@
 import Box from '@mui/material/Box';
-import {Avatar, Button, Card, Grid, Table, TableBody, TableHead, TableRow, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions} from '@mui/material';
+import {
+    Avatar,
+    Button,
+    Card,
+    Grid,
+    Table,
+    TableBody,
+    TableHead,
+    TableRow,
+    Typography,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions, alpha,
+} from '@mui/material';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import {useAccount} from "wagmi";
 import {useUserVeBALLocks} from "../../data/balancer/useUserVeBALLocks";
@@ -12,7 +29,7 @@ import GenericMetricsCard from "../../components/Cards/GenericMetricCard";
 import LockClockIcon from "@mui/icons-material/LockClock";
 import useDecorateGaugesWithVotes from "../../data/balancer/useDecorateGaugesWithVotes";
 import * as React from "react";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useGetHHVotingIncentives} from "../../data/hidden-hand/useGetHHVotingIncentives";
 import {decorateGaugesWithIncentives} from "../../data/hidden-hand/helpers";
 import {BalancerStakingGauges} from "../../data/balancer/balancerTypes";
@@ -33,21 +50,36 @@ import PolygonLogo from '../../assets/svg/polygon.svg'
 import GnosisLogo from '../../assets/svg/gnosis.svg'
 import zkevmLogo from '../../assets/svg/zkevm.svg'
 import OpLogo from '../../assets/svg/optimism.svg'
-import {match} from "assert";
 import {veBALVoteAddress} from "../../constants";
 
+
+
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+    props,
+    ref,
+) {
+    return <MuiAlert
+        elevation={6}
+        ref={ref}
+        variant="filled"
+        {...props} />;
+});
 
 export default function VeBALVoter() {
 
     //Load user wallet stats
     const {isConnected, address} = useAccount();
     const userLocks = useUserVeBALLocks();
+    console.log("userLocks", userLocks)
     const userVeBAL = useGetUserVeBAL(address ? address : '');
     const hhIncentives = useGetHHVotingIncentives();
 
+    //States
     const [allocations, setAllocations] = useState<GaugeAllocation[]>([]);
     const [totalPercentage, setTotalPercentage] = useState<number>(0);
     const [open, setOpen] = useState(false);
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     //TODO: outsource
     interface NetworkLogoMap {
@@ -82,6 +114,13 @@ export default function VeBALVoter() {
         setOpen(false);
     };
 
+    const handleAlertClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setAlertOpen(false);
+    };
+
     const handlePercentageChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, allocElement: GaugeAllocation) => {
         const inputPercentage = Number(event.target.value);
         const matchingHiddenHandData = hhIncentives?.incentives?.data?.find(data => data.proposal.toLowerCase() === allocElement.gaugeAddress.toLowerCase());
@@ -114,40 +153,41 @@ export default function VeBALVoter() {
             }
             setAllocations([...allocations]);
         }
-
-
     };
 
     const calculateAverageValuePerVote = (gauges: BalancerStakingGauges[]) => {
         const totalRewards = gauges.reduce((sum, gauge) => sum + (gauge.totalRewards || 0), 0);
         const totalVotes = gauges.reduce((sum, gauge) => sum + (gauge.totalRewards ? gauge.voteCount : 0), 0);
-        console.log("totalRewards", totalRewards);
-        console.log("totalVotes", totalVotes);
         return totalRewards / totalVotes;
     };
-
-
 
 
     //Load gauge and Staking information
     let fullyDecoratedGauges: BalancerStakingGauges[] = [];
     let averageValuePerVote = 0
     const gaugeData = useGetBalancerStakingGauges();
-    const voterAddress = address ? address?.toLowerCase() : ''
-    const decoratedVotingGauges = useDecorateGaugesWithVotes(gaugeData, voterAddress)
+    const decoratedVotingGauges = useDecorateGaugesWithVotes(gaugeData, address ? address?.toLowerCase() : '')
     // TODO: improve logic, adjust hook?
-    if (hhIncentives && hhIncentives.incentives && hhIncentives.incentives.data) {
+    if (hhIncentives && hhIncentives.incentives && hhIncentives.incentives.data && decoratedVotingGauges && decoratedVotingGauges.length > 0) {
         fullyDecoratedGauges = decorateGaugesWithIncentives(decoratedVotingGauges, hhIncentives.incentives)
         averageValuePerVote = calculateAverageValuePerVote(fullyDecoratedGauges)
     }
-
-
-    console.log("averageValuePerVote", averageValuePerVote)
 
     const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);
     const unlockDate = date.toLocaleDateString();
 
     const userVotingGauges = decoratedVotingGauges.filter((el) => el.userVotingPower ? el.userVotingPower > 0 : false);
+    console.log("userVotingGauges", userVotingGauges)
+
+    const prevAddress = useRef<`0x${string}` | undefined>(undefined);
+
+    // Reset allocations array when the address changes
+    useEffect(() => {
+        if (prevAddress.current !== null && prevAddress.current !== address && allocations.length > 0) {
+            setAllocations([]);
+        }
+        prevAddress.current = address;
+    }, [address, allocations]);
 
 
     // Map out active user votes
@@ -168,7 +208,7 @@ export default function VeBALVoter() {
             });
             setAllocations([...newAllocations]);
         }
-    }, [userVotingGauges, allocations, userVeBAL, address]);
+    }, [userVotingGauges, allocations, userVeBAL, address, fullyDecoratedGauges]);
 
 
     //Total percentage validation hook -> controls vote button disable function
@@ -199,7 +239,14 @@ export default function VeBALVoter() {
                 index < allocations.length ? allocations[index].percentage * 100 : 0
             );
 
-        await erc20.vote_for_many_gauge_weights(addresses, weights);
+        try {
+            const tx = await erc20.vote_for_many_gauge_weights(addresses, weights);
+            console.log("Transaction sent: ", tx.hash);
+        } catch(error: any) {
+            console.log(error.reason)
+            setError(error.reason)
+            setAlertOpen(true)
+        }
     }
 
     // Reset voting state
@@ -223,6 +270,7 @@ export default function VeBALVoter() {
 
     return (
         <Box key={address? address.toLowerCase() : 'veBAL'} sx={{flexGrow: 2}}>
+
             <Grid
                 container
                 spacing={2}
@@ -259,7 +307,7 @@ export default function VeBALVoter() {
                             <Box mr={0.5} mt={0.5}>
                                 <GenericMetricsCard
                                     mainMetric={unlockDate}
-                                    metricName={'Unlock date'}
+                                    metricName={'Unlock Date'}
                                     MetricIcon={LockClockIcon}
                                 />
                             </Box>
@@ -274,7 +322,7 @@ export default function VeBALVoter() {
                 }
                 <Grid item mt={1} xs={11}>
                     <Typography variant={'h6'}>
-                        Voting configuration
+                        Voting Configuration
                     </Typography>
 
                 </Grid>
@@ -295,9 +343,9 @@ export default function VeBALVoter() {
                         <Box mr={0.5} mt={0.5}>
                             <MetricsCard
                                 mainMetric={averageValuePerVote}
-                                mainMetricInUSD={false}
+                                mainMetricInUSD={true}
                                 mainMetricUnit={' $/veBAL'}
-                                metricName={'Average reward'}
+                                metricName={'Average Reward'}
                                 MetricIcon={MonetizationOnIcon}
                             />
                         </Box>
@@ -322,7 +370,7 @@ export default function VeBALVoter() {
                                             <TableCell>Composition</TableCell>
                                             <TableCell>Vote weight</TableCell>
                                             <TableCell>Effective $/veBAL</TableCell>
-                                            <TableCell>Incentives</TableCell>
+                                            <TableCell>Rewards</TableCell>
                                             <TableCell>Status</TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -416,6 +464,7 @@ export default function VeBALVoter() {
                         </Button>
                     </Box>
                     </Grid>
+
                 </Grid>
 
                 <Grid item mt={1} xs={11}>
@@ -443,12 +492,27 @@ export default function VeBALVoter() {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleDialogClose}>Cancel</Button>
-                    <Button onClick={() => updateVotes(allocations)} color="primary" variant="contained">
+                    <Button onClick={() => {
+                        updateVotes(allocations)
+                        handleDialogClose()
+                    }} color="primary" variant="contained">
                         Proceed
                     </Button>
                 </DialogActions>
             </Dialog>
-
+            {error &&
+                <Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleAlertClose}>
+                    <Alert
+                        onClose={handleAlertClose}
+                        severity="error"
+                        sx={{
+                            width: '100%',
+                            backgroundColor: (theme) => alpha(theme.palette.error.main, 0.8),
+                    }}>
+                        {error}
+                    </Alert>
+                </Snackbar>
+            }
         </Box>
     );
 }
