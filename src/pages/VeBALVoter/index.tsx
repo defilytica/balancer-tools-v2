@@ -71,7 +71,7 @@ export default function VeBALVoter() {
     const {isConnected, address} = useAccount();
     const userLocks = useUserVeBALLocks();
     console.log("userLocks", userLocks)
-    const userVeBAL = useGetUserVeBAL(address ? address : '');
+    const userVeBAL = useGetUserVeBAL(address ? address.toLowerCase() : '');
     const hhIncentives = useGetHHVotingIncentives();
 
     //States

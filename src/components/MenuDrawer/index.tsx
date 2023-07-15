@@ -95,21 +95,6 @@ const MenuDrawer = ({
                     </ListItemIcon>
                     <ListItemText primary={'veBAL Voter'} />
                 </ListItemButton>
-
-
-                <ListItemButton key={'Price Impact'} component={NavLink} to={networkPrefix(activeNetwork) + 'priceImpact'}>
-                    <ListItemIcon>
-                        <WavesIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={'Price Impact'} />
-                </ListItemButton>
-
-                <ListItemButton key={'Impermanent Loss'} component={NavLink} to={networkPrefix(activeNetwork) + 'impermanentLoss'}>
-                    <ListItemIcon>
-                        <TokenIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={'Impermanent Loss'} />
-                </ListItemButton>
             </List>
             <List>
                 <Divider />
@@ -184,7 +169,7 @@ const MenuDrawer = ({
                             href="https://coingecko.com">
                             <Box display="flex" alignItems="center" alignContent="center">
                                 <Box
-                                    //sx={{ display: { xs: 'none', md: 'flex' } }} 
+                                    //sx={{ display: { xs: 'none', md: 'flex' } }}
                                     >
                                     <img src={CoingeckoColor} alt="Coingecko Logo" width="25" />
                                 </Box>
@@ -235,7 +220,7 @@ const MenuDrawer = ({
                             </Box>
                         </Link>
                     </ IconButton>
-                    
+
                 </Box>
             </Box>
         </Drawer>
