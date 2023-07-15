@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import {Backdrop, Button, Grid, Paper, TextField, Tooltip, Typography} from "@mui/material";
+import {Backdrop, Button, Card, CardContent, Grid, Paper, TextField, Tooltip, Typography} from "@mui/material";
 import { useUserVeBALLocks } from "../../data/balancer/useUserVeBALLocks";
 import MetricsCard from "../../components/Cards/MetricsCard";
 import LockPersonIcon from "@mui/icons-material/LockPerson";
@@ -20,6 +20,8 @@ import {useState, useEffect, useRef} from "react";
 import {BalancerStakingGauges, PoolData} from "../../data/balancer/balancerTypes";
 import { useGetTotalVeBAL } from "../../data/balancer/useGetTotalVeBAL";
 import {useActiveNetworkVersion} from "../../state/application/hooks";
+import SelfImprovementIcon from "@mui/icons-material/SelfImprovement";
+import * as React from "react";
 
 
 export default function VeBAL() {
@@ -31,6 +33,7 @@ export default function VeBAL() {
   const userVeBAL = useGetUserVeBAL(address ? address : '');
   const totalVeBAL = useGetTotalVeBAL();
   const pools = useBalancerPools();
+  console.log("pools", pools)
   const gaugeData = useGetBalancerStakingGauges();
   const l1GaugeData = useDecorateL1Gauges(gaugeData);
   const decoratedGaugeData = useDecorateL2Gauges(l1GaugeData);
@@ -51,6 +54,7 @@ export default function VeBAL() {
   useEffect(() => {
     if (JSON.stringify(poolsRef.current) !== JSON.stringify(pools)) {
       poolsRef.current = pools;
+      setLoading(true)
     }
     setLoading(false)
   }, [pools]);
@@ -89,10 +93,6 @@ export default function VeBAL() {
     }
   };
 
-  console.log("portfolioData", portfolioData)
-  console.log("networkID", activeNetworkVersion.chainId)
-  //console.log("trimmedGaugeData", trimmedGaugeData)
-
   const handleCalculate = () => {
     calculateGauges();
     setCalculationTriggered(true);
@@ -105,6 +105,35 @@ export default function VeBAL() {
 
 
   return (
+      !isConnected ?
+          <Box
+              sx={{
+                flexGrow: 2,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '100vh'
+              }}
+          >
+            <Card sx={{
+              maxWidth: '250px',
+              minHeight: '100px'
+            }}><CardContent>
+              <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  height="100%"
+              >
+                <SelfImprovementIcon sx={{ fontSize: 48 }} />
+                <Typography variant="h5" align="center">
+                  Pleaes connect your Wallet
+                </Typography>
+              </Box>
+            </CardContent>
+            </Card>
+          </Box> :
     <Box sx={{ flexGrow: 2 }}>
       <Grid mt={2} container sx={{ justifyContent: "center" }}>
         <Grid mt={2} item xs={11}>
@@ -260,7 +289,7 @@ export default function VeBAL() {
           <Box mb={1}>
             <Typography variant="caption">Switch Networks in the Menu Header the top right to see the corresponding gauges</Typography>
           </Box>
-          {(JSON.stringify(poolsRef.current) === JSON.stringify(pools)) && pools && pools.length > 1 && trimmedGaugeData && trimmedGaugeData.length > 1 ? (
+          {(JSON.stringify(poolsRef.current) === JSON.stringify(pools)) && pools && pools.length >= 1 && trimmedGaugeData && trimmedGaugeData.length >= 1 ? (
             <GaugeBoostTable
                 key={'boost' + activeNetworkVersion.name}
                 gaugeDatas={trimmedGaugeData}

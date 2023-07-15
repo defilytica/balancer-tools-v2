@@ -13,7 +13,7 @@ import {
     DialogTitle,
     DialogContent,
     DialogContentText,
-    DialogActions, alpha,
+    DialogActions, alpha, CardContent,
 } from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
@@ -51,6 +51,7 @@ import GnosisLogo from '../../assets/svg/gnosis.svg'
 import zkevmLogo from '../../assets/svg/zkevm.svg'
 import OpLogo from '../../assets/svg/optimism.svg'
 import {veBALVoteAddress} from "../../constants";
+import SelfImprovementIcon from "@mui/icons-material/SelfImprovement";
 
 
 
@@ -269,8 +270,35 @@ export default function VeBALVoter() {
 
 
     return (
+         !isConnected ?
+             <Box
+                 sx={{
+                     flexGrow: 2,
+                     display: 'flex',
+                     justifyContent: 'center',
+                     alignItems: 'center',
+                 }}
+             >
+            <Card sx={{
+                maxWidth: '250px',
+                minHeight: '100px'
+            }}><CardContent>
+                <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                    justifyContent="center"
+                    height="100%"
+                >
+                    <SelfImprovementIcon sx={{ fontSize: 48 }} />
+                    <Typography variant="h5" align="center">
+                        Pleaes connect your Wallet
+                    </Typography>
+                </Box>
+            </CardContent>
+            </Card>
+        </Box> :
         <Box key={address? address.toLowerCase() : 'veBAL'} sx={{flexGrow: 2}}>
-
             <Grid
                 container
                 spacing={2}
