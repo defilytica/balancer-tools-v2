@@ -9,6 +9,7 @@ export function decorateGaugesWithIncentives(balancerGauges: BalancerStakingGaug
                 ...gauge,
                 voteCount: matchingIncentive.voteCount,
                 valuePerVote: matchingIncentive.valuePerVote,
+                totalRewards: matchingIncentive.totalValue,
             };
         } else {
             return gauge;

@@ -8,18 +8,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
     maxWidth: 400,
     border: '1px solid grey',
     padding: theme.spacing(1),
-    '&::before': {
-        content: '""',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundImage: `url(${OrbBg})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'right',
-        opacity: 0.2,
-    },
+
     pointerEvents: 'auto',
 }));
 
@@ -42,6 +31,8 @@ const LogoImage = styled('img')({
     height: '80px',
     objectFit: 'contain',
     alignSelf: 'flex-end',
+    backgroundImage: `url(${OrbBg})`,
+    backgroundSize: 'cover',
 });
 
 const LogoContainer = styled(Grid)({

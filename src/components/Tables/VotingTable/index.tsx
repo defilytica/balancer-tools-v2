@@ -26,7 +26,7 @@ import GnosisLogo from '../../../assets/svg/gnosis.svg'
 import zkevmLogo from '../../../assets/svg/zkevm.svg'
 import OpLogo from '../../../assets/svg/optimism.svg'
 import {BalancerStakingGauges, SimplePoolData} from "../../../data/balancer/balancerTypes";
-import {formatNumber} from "../../../utils/numbers";
+import {formatDollarAmount, formatNumber} from "../../../utils/numbers";
 import GaugeComposition from "../../GaugeComposition";
 import ClearIcon from '@mui/icons-material/Clear';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -42,6 +42,7 @@ interface Data {
     totalVotes: number,
     userVotes: number,
     votingIncentives: number,
+    totalRewards: number,
     userRewards: number,
 }
 
@@ -53,6 +54,7 @@ function createData(
     totalVotes: number,
     userVotes: number,
     votingIncentives: number,
+    totalRewards: number,
     userRewards: number,
 ): Data {
     return {
@@ -63,6 +65,7 @@ function createData(
         totalVotes,
         userVotes,
         votingIncentives,
+        totalRewards,
         userRewards,
     };
 }
@@ -86,7 +89,7 @@ function getComparator<Key extends keyof any>(
     a: { [key in Key]: number | string | SimplePoolData | boolean },
     b: { [key in Key]: number | string | SimplePoolData | boolean },
 ) => number {
-    return order === 'asc'
+    return order === 'desc'
         ? (a, b) => descendingComparator(a, b, orderBy)
         : (a, b) => -descendingComparator(a, b, orderBy);
 }
@@ -128,17 +131,17 @@ const headCells: readonly HeadCell[] = [
         isMobileVisible: false,
     },
     {
-        id: 'gaugeAddress',
-        numeric: false,
+        id: 'totalRewards',
+        numeric: true,
         disablePadding: false,
-        label: 'Composition',
-        isMobileVisible: false,
+        label: 'Rewards',
+        isMobileVisible: true,
     },
     {
         id: 'totalVotes',
         numeric: true,
         disablePadding: false,
-        label: 'Total Votes',
+        label: 'Votes',
         isMobileVisible: false,
     },
     {
@@ -152,7 +155,7 @@ const headCells: readonly HeadCell[] = [
         id: 'userVotes',
         numeric: true,
         disablePadding: false,
-        label: 'Allocation',
+        label: 'Action',
         isMobileVisible: true,
     },
 ];
@@ -211,8 +214,8 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
     allocations: GaugeAllocation[],
     onAddAllocation: (address: string) => void;
 }) {
-    const [order, setOrder] = React.useState<Order>('asc');
-    const [orderBy, setOrderBy] = React.useState<keyof Data>('totalVotes');
+    const [order, setOrder] = React.useState<Order>('desc');
+    const [orderBy, setOrderBy] = React.useState<keyof Data>('totalRewards');
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(25);
@@ -235,9 +238,12 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
                 el.voteCount ? el.voteCount : 0,
                 el.userVotingPower ? el.userVotingPower / 100 * userVeBal : 0,
                 el.valuePerVote ? el.valuePerVote : 0,
+                el.totalRewards ? el.totalRewards : 0,
                 (el.userVotingPower && el.valuePerVote) ? el.userVotingPower / 100 * el.valuePerVote * userVeBal : 0
             )
-        );
+        )
+        .sort((a, b) => b.totalRewards - a.totalRewards);
+
 
     const [rows, setRows] = useState<Data[]>(originalRows);
     const [searched, setSearched] = useState<string>("");
@@ -360,24 +366,31 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
                                                     src={networkLogoMap[Number(row.network)]}
                                                 />
                                             </TableCell>
-                                            <TableCell>
-                                                <PoolCurrencyLogo
-                                                    tokens={row.poolData.tokens.map(token => ({address: token.address ? token.address.toLowerCase() : ''}))}
-                                                    size={'25px'}/>
-                                            </TableCell>
                                             <TableCell
                                                 component="th"
                                                 id={labelId}
                                                 scope="row"
                                                 sx={{display: {xs: 'none', md: 'table-cell'}}}
                                             >
-                                                <GaugeComposition poolData={row.poolData} />
+                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                    <Box mr={1}>
+                                                        <PoolCurrencyLogo
+                                                            tokens={row.poolData.tokens.map(token => ({address: token.address ? token.address.toLowerCase() : ''}))}
+                                                            size={'25px'}/>
+                                                    </Box>
+                                                    <Box>
+                                                        <GaugeComposition poolData={row.poolData} />
+                                                    </Box>
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                {formatDollarAmount(Number(row.totalRewards ? row.totalRewards : 0),  3)}
                                             </TableCell>
                                             <TableCell align="right">
                                                 {formatNumber(Number(row.totalVotes ? row.totalVotes : 0),  3)}
                                             </TableCell>
                                             <TableCell align="right">
-                                                {formatNumber(Number(row.votingIncentives ? row.votingIncentives : 0),  3)}
+                                                {formatDollarAmount(Number(row.votingIncentives ? row.votingIncentives : 0),  3)}
                                             </TableCell>
                                             <TableCell align="right">
                                                 {row.userVotes || allocations.find(alloc => alloc.gaugeAddress === row.gaugeAddress) ? (

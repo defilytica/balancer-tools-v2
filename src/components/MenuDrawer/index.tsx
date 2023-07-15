@@ -95,21 +95,6 @@ const MenuDrawer = ({
                     </ListItemIcon>
                     <ListItemText primary={'veBAL Multi-Voter'} />
                 </ListItemButton>
-
-
-                <ListItemButton key={'Price Impact'} component={NavLink} to={networkPrefix(activeNetwork) + 'priceImpact'}>
-                    <ListItemIcon>
-                        <WavesIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={'Price Impact'} />
-                </ListItemButton>
-
-                <ListItemButton key={'Impermanent Loss'} component={NavLink} to={networkPrefix(activeNetwork) + 'impermanentLoss'}>
-                    <ListItemIcon>
-                        <TokenIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={'Impermanent Loss'} />
-                </ListItemButton>
             </List>
             <List>
                 <Divider />

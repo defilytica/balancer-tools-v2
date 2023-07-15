@@ -205,6 +205,7 @@ export interface AprSet {
     min_VeBAL: string;
     voteCount: number;
     valuePerVote: number;
+    totalRewards: number;
     userValue: number;
   }
 

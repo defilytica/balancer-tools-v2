@@ -1,5 +1,22 @@
 import Box from '@mui/material/Box';
-import {Avatar, Button, Card, Grid, Table, TableBody, TableHead, TableRow, Typography} from '@mui/material';
+import {
+    Avatar,
+    Button,
+    Card,
+    Grid,
+    Table,
+    TableBody,
+    TableHead,
+    TableRow,
+    Typography,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions, alpha,
+} from '@mui/material';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import {useAccount} from "wagmi";
 import {useUserVeBALLocks} from "../../data/balancer/useUserVeBALLocks";
@@ -12,7 +29,7 @@ import GenericMetricsCard from "../../components/Cards/GenericMetricCard";
 import LockClockIcon from "@mui/icons-material/LockClock";
 import useDecorateGaugesWithVotes from "../../data/balancer/useDecorateGaugesWithVotes";
 import * as React from "react";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useGetHHVotingIncentives} from "../../data/hidden-hand/useGetHHVotingIncentives";
 import {decorateGaugesWithIncentives} from "../../data/hidden-hand/helpers";
 import {BalancerStakingGauges} from "../../data/balancer/balancerTypes";
@@ -33,18 +50,36 @@ import PolygonLogo from '../../assets/svg/polygon.svg'
 import GnosisLogo from '../../assets/svg/gnosis.svg'
 import zkevmLogo from '../../assets/svg/zkevm.svg'
 import OpLogo from '../../assets/svg/optimism.svg'
+import {veBALVoteAddress} from "../../constants";
 
+
+
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+    props,
+    ref,
+) {
+    return <MuiAlert
+        elevation={6}
+        ref={ref}
+        variant="filled"
+        {...props} />;
+});
 
 export default function VeBALVoter() {
 
     //Load user wallet stats
     const {isConnected, address} = useAccount();
     const userLocks = useUserVeBALLocks();
-    const userVeBAL = useGetUserVeBAL(address ? address : '');
+    console.log("userLocks", userLocks)
+    const userVeBAL = useGetUserVeBAL(address ? address.toLowerCase() : '');
     const hhIncentives = useGetHHVotingIncentives();
 
+    //States
     const [allocations, setAllocations] = useState<GaugeAllocation[]>([]);
     const [totalPercentage, setTotalPercentage] = useState<number>(0);
+    const [open, setOpen] = useState(false);
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     //TODO: outsource
     interface NetworkLogoMap {
@@ -65,9 +100,25 @@ export default function VeBALVoter() {
             gaugeAddress: address,
             percentage: 0,
             rewardInUSD: 0,
+            userValuePerVote: 0,
             isNew: true,
         };
         setAllocations((prevAllocations) => [...prevAllocations, {...newAllocation}]);
+    };
+
+    const handleDialogOpen = () => {
+        setOpen(true);
+    };
+
+    const handleDialogClose = () => {
+        setOpen(false);
+    };
+
+    const handleAlertClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setAlertOpen(false);
     };
 
     const handlePercentageChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, allocElement: GaugeAllocation) => {
@@ -91,23 +142,23 @@ export default function VeBALVoter() {
                 }
                 return gauge;
             });
+            if (isNaN(inputPercentage) || inputPercentage < 0 || inputPercentage > 100) {
+                // Invalid input, set percentage to 0
+                allocElement.percentage = 0;
+            } else {
+                // Valid input, update percentage
+                allocElement.percentage = inputPercentage;
+                allocElement.rewardInUSD = matchingHiddenHandData.totalValue / newVoteValue * userVeBAL * inputPercentage / 100 ;
+                allocElement.userValuePerVote = matchingHiddenHandData.totalValue / newVoteValue
+            }
+            setAllocations([...allocations]);
         }
-        const incentive = fullyDecoratedGauges.find(gauge => gauge.address === allocElement.gaugeAddress);
-
-        if (isNaN(inputPercentage) || inputPercentage < 0 || inputPercentage > 100) {
-            // Invalid input, set percentage to 0
-            allocElement.percentage = 0;
-        } else {
-            // Valid input, update percentage
-            allocElement.percentage = inputPercentage;
-            allocElement.rewardInUSD = incentive ? userVeBAL * inputPercentage / 100 * incentive.valuePerVote : 0;
-        }
-        setAllocations([...allocations]);
     };
 
     const calculateAverageValuePerVote = (gauges: BalancerStakingGauges[]) => {
-        const totalValuePerVote = gauges.reduce((sum, gauge) => sum + gauge.valuePerVote ? gauge.valuePerVote : 0, 0);
-        return totalValuePerVote / gauges.length;
+        const totalRewards = gauges.reduce((sum, gauge) => sum + (gauge.totalRewards || 0), 0);
+        const totalVotes = gauges.reduce((sum, gauge) => sum + (gauge.totalRewards ? gauge.voteCount : 0), 0);
+        return totalRewards / totalVotes;
     };
 
 
@@ -115,44 +166,54 @@ export default function VeBALVoter() {
     let fullyDecoratedGauges: BalancerStakingGauges[] = [];
     let averageValuePerVote = 0
     const gaugeData = useGetBalancerStakingGauges();
-    const voterAddress = address ? address?.toLowerCase() : ''
-    const decoratedVotingGauges = useDecorateGaugesWithVotes(gaugeData, voterAddress)
+    const decoratedVotingGauges = useDecorateGaugesWithVotes(gaugeData, address ? address?.toLowerCase() : '')
     // TODO: improve logic, adjust hook?
-    if (hhIncentives && hhIncentives.incentives && hhIncentives.incentives.data) {
+    if (hhIncentives && hhIncentives.incentives && hhIncentives.incentives.data && decoratedVotingGauges && decoratedVotingGauges.length > 0) {
         fullyDecoratedGauges = decorateGaugesWithIncentives(decoratedVotingGauges, hhIncentives.incentives)
         averageValuePerVote = calculateAverageValuePerVote(fullyDecoratedGauges)
     }
-
-
-    console.log("averageValuePerVote", averageValuePerVote)
 
     const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);
     const unlockDate = date.toLocaleDateString();
 
     const userVotingGauges = decoratedVotingGauges.filter((el) => el.userVotingPower ? el.userVotingPower > 0 : false);
+    console.log("userVotingGauges", userVotingGauges)
+
+    const prevAddress = useRef<`0x${string}` | undefined>(undefined);
+
+    // Reset allocations array when the address changes
+    useEffect(() => {
+        if (prevAddress.current !== null && prevAddress.current !== address && allocations.length > 0) {
+            setAllocations([]);
+        }
+        prevAddress.current = address;
+    }, [address, allocations]);
 
 
     // Map out active user votes
     useEffect(() => {
-
+        //For the initial load we can take the currently active valuePerVote as a baseline as the user doesn't dilute its vote
         if (userVotingGauges.length > 0 && allocations.length === 0 && fullyDecoratedGauges.length > 0) {
             const newAllocations = userVotingGauges.map((vote) => {
                 const matchingGauge = fullyDecoratedGauges.find((gauge) => gauge.address === vote.address);
-                const rewardInUSD = (matchingGauge && vote.userVotingPower) ? vote.userVotingPower * matchingGauge.valuePerVote : 0;
+                const rewardInUSD = matchingGauge ? userVeBAL  * matchingGauge.valuePerVote : 0;
+                console.log("rewardInUsd", rewardInUSD)
                 return {
                     gaugeAddress: vote.address,
                     percentage: vote.userVotingPower ? vote.userVotingPower : 0,
                     rewardInUSD: rewardInUSD,
+                    userValuePerVote: matchingGauge ? matchingGauge.valuePerVote  : 0,
                     isNew: false
                 };
             });
             setAllocations([...newAllocations]);
         }
-    }, [userVotingGauges, allocations]);
+    }, [userVotingGauges, allocations, userVeBAL, address, fullyDecoratedGauges]);
 
+
+    //Total percentage validation hook -> controls vote button disable function
     useEffect(() => {
         const newPercentage = allocations.reduce((sum, allocation) => sum + allocation.percentage, 0)
-        console.log("new percentage", newPercentage);
         setTotalPercentage(newPercentage)
     }, [allocations, address])
 
@@ -162,7 +223,7 @@ export default function VeBALVoter() {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         await provider.send("eth_requestAccounts", []);
         const signer = await provider.getSigner();
-        const erc20 = new ethers.Contract(address ? address : '', VeBalVoteMany, signer);
+        const erc20 = new ethers.Contract(veBALVoteAddress, VeBalVoteMany, signer);
 
         const addresses = Array(8)
             .fill("0x0000000000000000000000000000000000000000")
@@ -178,18 +239,26 @@ export default function VeBALVoter() {
                 index < allocations.length ? allocations[index].percentage * 100 : 0
             );
 
-        await erc20.vote_for_many_gauge_weights(addresses, weights);
+        try {
+            const tx = await erc20.vote_for_many_gauge_weights(addresses, weights);
+            console.log("Transaction sent: ", tx.hash);
+        } catch(error: any) {
+            console.log(error.reason)
+            setError(error.reason)
+            setAlertOpen(true)
+        }
     }
 
     // Reset voting state
     const resetVotes = () => {
         const newAllocations = userVotingGauges.map((vote) => {
             const matchingGauge = fullyDecoratedGauges.find((gauge) => gauge.address === vote.address);
-            const rewardInUSD = (matchingGauge && vote.userVotingPower) ? vote.userVotingPower * matchingGauge.valuePerVote : 0;
+            const rewardInUSD = (matchingGauge && vote.userVotingPower) ? ((vote.userVotingPower / 100) * matchingGauge.valuePerVote * userVeBAL) : 0;
             return {
                 gaugeAddress: vote.address,
                 percentage: vote.userVotingPower ? vote.userVotingPower : 0,
                 rewardInUSD: rewardInUSD,
+                userValuePerVote: matchingGauge ? matchingGauge.valuePerVote : 0,
                 isNew: false
             };
         });
@@ -200,7 +269,8 @@ export default function VeBALVoter() {
 
 
     return (
-        <Box key={address? address : 'veBAL'} sx={{flexGrow: 2}}>
+        <Box key={address? address.toLowerCase() : 'veBAL'} sx={{flexGrow: 2}}>
+
             <Grid
                 container
                 spacing={2}
@@ -212,13 +282,13 @@ export default function VeBALVoter() {
                     </Typography>
                 </Grid>
                 {isConnected ?
-                    <Grid item mt={1} xs={11}>
+                    <Grid item xs={11}>
                         <Grid
                             container
                             columns={{xs: 4, sm: 8, md: 12}}
                             sx={{justifyContent: {md: 'flex-start', xs: 'center'}, alignContent: 'center'}}
                         >
-                            <Box mr={1} mt={1}>
+                            <Box mr={0.5} mt={0.5}>
                                 <MetricsCard
                                     mainMetric={userVeBAL ? userVeBAL : 0}
                                     mainMetricInUSD={false}
@@ -226,7 +296,7 @@ export default function VeBALVoter() {
                                     MetricIcon={AccountBalanceWalletIcon}
                                 />
                             </Box>
-                            <Box mr={1} mt={1}>
+                            <Box mr={0.5} mt={0.5}>
                                 <MetricsCard
                                     mainMetric={userLocks?.lockedBalance ? userLocks.lockedBalance : 0}
                                     mainMetricInUSD={false}
@@ -234,17 +304,17 @@ export default function VeBALVoter() {
                                     MetricIcon={LockPersonIcon}
                                 />
                             </Box>
-                            <Box mr={1} mt={1}>
+                            <Box mr={0.5} mt={0.5}>
                                 <GenericMetricsCard
                                     mainMetric={unlockDate}
-                                    metricName={'Unlock date'}
+                                    metricName={'Unlock Date'}
                                     MetricIcon={LockClockIcon}
                                 />
                             </Box>
                         </Grid>
                     </Grid> :
                     <Grid item mt={1} xs={11}>
-                        <Box mr={1} mt={1}>
+                        <Box mr={0.5} mt={0.5}>
                             <GenericMetricsCard mainMetric={'-'} metricName={'No wallet connected'}
                                                 MetricIcon={AccountBalanceWalletIcon}/>
                         </Box>
@@ -252,17 +322,17 @@ export default function VeBALVoter() {
                 }
                 <Grid item mt={1} xs={11}>
                     <Typography variant={'h6'}>
-                        Voting configuration
+                        Voting Configuration
                     </Typography>
 
                 </Grid>
-                <Grid item mt={1} xs={11}>
+                <Grid item xs={11}>
                     <Grid
                         container
                         columns={{xs: 4, sm: 8, md: 12}}
                         sx={{justifyContent: {md: 'flex-start', xs: 'center'}, alignContent: 'center'}}
                     >
-                        <Box mr={1} mt={1}>
+                        <Box mr={0.5} mt={0.5}>
                             <MetricsCard
                                 mainMetric={allocations.reduce((sum, allocation) => sum + allocation.rewardInUSD, 0)}
                                 mainMetricInUSD={true}
@@ -270,11 +340,12 @@ export default function VeBALVoter() {
                                 MetricIcon={MonetizationOnIcon}
                             />
                         </Box>
-                        <Box mr={1} mt={1}>
+                        <Box mr={0.5} mt={0.5}>
                             <MetricsCard
                                 mainMetric={averageValuePerVote}
                                 mainMetricInUSD={true}
-                                metricName={'Average reward'}
+                                mainMetricUnit={' $/veBAL'}
+                                metricName={'Average Reward'}
                                 MetricIcon={MonetizationOnIcon}
                             />
                         </Box>
@@ -298,8 +369,9 @@ export default function VeBALVoter() {
                                             <TableCell>Tokens</TableCell>
                                             <TableCell>Composition</TableCell>
                                             <TableCell>Vote weight</TableCell>
-                                            <TableCell>New $/veBAL</TableCell>
-                                            <TableCell>Incentives</TableCell>
+                                            <TableCell>Effective $/veBAL</TableCell>
+                                            <TableCell>Rewards</TableCell>
+                                            <TableCell>Status</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -343,14 +415,18 @@ export default function VeBALVoter() {
                                                                 inputProps={{
                                                                     min: 0,
                                                                     max: 100,
+                                                                    step: 0.01,
                                                                 }}
                                                             />
                                                         </TableCell>
                                                         <TableCell>
-                                                            <Typography>{formatDollarAmount(relevantGauge.valuePerVote, 3)}</Typography>
+                                                            <Typography>{formatDollarAmount(alloc.userValuePerVote, 3)}</Typography>
                                                         </TableCell>
                                                         <TableCell>
                                                             <Typography>{formatDollarAmount(alloc.rewardInUSD, 2)}</Typography>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Typography>{alloc.isNew? 'New' : 'Current'}</Typography>
                                                         </TableCell>
                                                     </TableRow>
                                                 );
@@ -375,7 +451,7 @@ export default function VeBALVoter() {
                     <Box mr={1}>
                         <Button
                             variant="contained"
-                            onClick={() => updateVotes(allocations)}
+                            onClick={handleDialogOpen}
                             disabled={
                             totalPercentage > 100}
                         >
@@ -388,6 +464,7 @@ export default function VeBALVoter() {
                         </Button>
                     </Box>
                     </Grid>
+
                 </Grid>
 
                 <Grid item mt={1} xs={11}>
@@ -396,8 +473,7 @@ export default function VeBALVoter() {
                     </Typography>
                     <Typography variant={'body2'}>Browse and select gauges to earn voting incentives</Typography>
                 </Grid>
-                <Grid item mt={1} xs={11}>
-
+                <Grid item xs={11}>
                     {fullyDecoratedGauges && fullyDecoratedGauges.length > 0 ?
                         <VotingTable
                             gaugeDatas={fullyDecoratedGauges}
@@ -407,7 +483,36 @@ export default function VeBALVoter() {
                         : <CircularProgress/>}
                 </Grid>
             </Grid>
-
+            <Dialog open={open} onClose={handleDialogClose}>
+                <DialogTitle>Experimental Transaction</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Executing this transaction is experimental and at your discretion. Proceed with caution.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleDialogClose}>Cancel</Button>
+                    <Button onClick={() => {
+                        updateVotes(allocations)
+                        handleDialogClose()
+                    }} color="primary" variant="contained">
+                        Proceed
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            {error &&
+                <Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleAlertClose}>
+                    <Alert
+                        onClose={handleAlertClose}
+                        severity="error"
+                        sx={{
+                            width: '100%',
+                            backgroundColor: (theme) => alpha(theme.palette.error.main, 0.8),
+                    }}>
+                        {error}
+                    </Alert>
+                </Snackbar>
+            }
         </Box>
     );
 }
