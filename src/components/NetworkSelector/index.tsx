@@ -34,10 +34,8 @@ export default function NetworkSelector() {
             update(GnosisNetworkInfo)
         } else if (chainId === PolygonZkEVMNetworkInfo.chainId) {
         update(PolygonZkEVMNetworkInfo)
-        navigate('/zkevm/chain');
         } else if (chainId === OptimismNetworkInfo.chainId) {
             update(OptimismNetworkInfo)
-            navigate('/optimism/chain');
         }
     };
 
@@ -126,7 +124,7 @@ export default function NetworkSelector() {
                         </Box>
                     </Box>
                 </MenuItem>
-                <MenuItem value={GnosisNetworkInfo.chainId} key="arb">
+                <MenuItem value={GnosisNetworkInfo.chainId} key="gnosis">
                     <Box display="flex" alignItems="center">
                         <Box mr={0.5}>
                             <Avatar

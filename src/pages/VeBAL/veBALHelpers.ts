@@ -1,3 +1,5 @@
+import {BalancerStakingGauges, PoolData} from "../../data/balancer/balancerTypes";
+
 //Provide all necessary helper functions for the veBAL boost calculator here
 
 // ///////////////////////////////////////////////////////////////////////////////////////
@@ -13,7 +15,7 @@
 //             gauge_bpt_price = Number(el.pricePerBPT);
 //         }
 //     });
-    
+
 //     const balEmission = 145000 * 0.84 ;
 //     const shareOneBPT = 0.4 / (Number(gauge_working_supply) + 0.4);
 //     const weeklyReward = shareOneBPT * Number(gauge_relative_weight) * balEmission;
@@ -33,44 +35,24 @@
 // //Helper function to calculate Boost for a certain gauge / veBAL configuration /////
 // ////////////////////////////////////////////////////////////////////////////////////
 
-export function calculateBoostFromGauge(workingBalance: number, workingSupply: number, totalSupply: number, userBalance: number) {
+export function calculateBoostFromGauge(workingBalance: number, workingSupply: number, totalSupply: number, userBalance: number, additionalBalance: number, additionalVeBAL: number, userVeBAL: number, totalVeBAL: number) {
 
-     //console.log("vars: ", newVeBAL, lockedVeBAL, totalVeBALStaked, newShare, share, totalShare)
+     // initializes variables for max boost and boost
      let boost = 0.0;
-//     //Calculate working supply:
-//     const liquidity_provided = Number(newShare) + Number(share);
-//     //const working_supply_pool = Number(totalShare);
-//     const supply_user = 0.4 * liquidity_provided + 0.6 * (Number(totalStakedLiquidity)) * ((Number(lockedVeBAL) + Number(newVeBAL)) / (Number(totalVeBALStaked) + Number(newVeBAL)));
-//     //Take the minimum of working supply limit and liquidity provided
-//     let working_supply_user = Number(Math.min(supply_user, liquidity_provided));
-//     //Non-boosted supply
-//     let non_boosted_working_supply_user = 0.4 * liquidity_provided;
-//     //Max working supply for 2.5x
-//     //const max_working_supply_user = 0.40 * liquidity_provided + 0.60 * (Number(totalStakedLiquidity)) * (Number(newShare) / (Number(totalShare)));
-//     //Boost calculation depending 2 scenarios: new liquidity or already providing liquidity and adding more
+     // considers new veBAL share and total in circulation when a new user simulates locking veBAL
+     let newVeBALShareAdjusted = (userVeBAL + additionalVeBAL) / (totalVeBAL + additionalVeBAL);
+     let newVeBALRatio = totalVeBAL / (totalVeBAL + additionalVeBAL);
+     // considers new user balance after additional liquidity is provided, based on BPT price
+     let userBalanceAdjusted = userBalance / 10e17 + additionalBalance;
+     // Takes into account the above changes on the working balance and working supply due to additional veBAL or liquidity
+     // This can only be an approximation without pulling in the actual veBAL balance of all users to determine
+     // if those with max boost would be moved below the max boost threshhold. 
+     let workingBalanceAdjusted = Math.min(0.4 * userBalanceAdjusted + 0.6 * (totalSupply / 10e17 + additionalBalance) * newVeBALShareAdjusted, (userBalance / 10e17 + additionalBalance));
+     let workingSupplyAdjusted = (workingSupply - workingBalance - (totalSupply - userBalance) * 0.4 * newVeBALRatio + (totalSupply - userBalance) * 0.4) / 10e17 + workingBalanceAdjusted; 
 
-     if (Number(workingBalance) > 0.0) {
-         boost = Number((workingBalance / workingSupply) / ((0.4 * userBalance / workingSupply)))
+     if (Number(workingBalanceAdjusted)) {
+         boost = Number((workingBalanceAdjusted / workingSupplyAdjusted) / (0.4 * userBalanceAdjusted / (0.4 * userBalanceAdjusted + workingSupplyAdjusted - workingBalanceAdjusted)));
      }
-         //Case 1: current boost
-        // boost = (workingBalance / Number(totalSupply)) / ((0.4 * Number(userBalance)) / (Number(totalSupply) - workingBalance + 0.4 * Number(userBalance)))
-//         //console.log("case1 triggered")
-//     } else if (Number(share) !== 0.0 || Number(lockedVeBAL) !== 0.0) {
-//         //Case 2: user boost when adjusting current position (share !== 0)
-//         boost = (working_supply_user / (working_supply_user + Number(totalShare) - Number(share))) / ((non_boosted_working_supply_user) / (non_boosted_working_supply_user + Number(totalShare) - Number(share)));
-//         //console.log("case2 triggered")
-//     } else {
-//         //Case 3: user boost when entering (share = 0)
-//         boost = (working_supply_user / (working_supply_user + Number(totalShare))) / (non_boosted_working_supply_user / (non_boosted_working_supply_user + Number(totalShare)))
-//         //console.log("case3 triggered")
-//     }
-    //   if (boost > 2.5) {
-    //       boost = 2.5
-    //   } else if (boost < 1) {
-    //       boost = 5
-    //   }
-
-      //console.log("boost", boost);
 
       return boost;
   }
@@ -79,47 +61,37 @@ export function calculateBoostFromGauge(workingBalance: number, workingSupply: n
 // //Helper function to calculate Max Boost for a certain gauge / veBAL configuration /////
 // ////////////////////////////////////////////////////////////////////////////////////////
 
- export function calculateMaxBoost(workingBalance: number, workingSupply: number, totalSupply: number, userBalance: number) {
+ export function calculateMaxBoost(workingBalance: number, workingSupply: number, totalSupply: number, userBalance: number, additionalBalance: number, additionalVeBAL: number, userVeBAL: number, totalVeBAL: number) {
 
-     //console.log("vars: ", newVeBAL, lockedVeBAL, totalVeBALStaked, newShare, share, totalShare)
-     let max_boost = 0.0;
-     //Calculate working supply:
-//     const liquidity_provided = Number(newShare) + Number(share);
-     // Calculate minveBAL for Max Boost
-//     let minveBAL = (totalVeBALStaked) * (liquidity_provided / ( Number(totalShare)));
-//     //const working_supply_pool = Number(totalShare);
-//     const supply_user_max = 0.4 * liquidity_provided + 0.6 * (Number(totalStakedLiquidity)) * (minveBAL) / (Number(totalVeBALStaked));
-//     //Take the minimum of working supply limit and liquidity provided
-//     let working_supply_user_max = Number(Math.min(supply_user_max, liquidity_provided));
-//     //Non-boosted supply
-     if (Number(workingBalance) > 0.0) {
-        max_boost = Number(2.5 * workingSupply / (workingSupply - workingBalance + userBalance))
+  let max_boost = 0;
+  // considers new veBAL share and total in circulation when a new user simulates locking veBAL
+  let newVeBALRatio = totalVeBAL / (totalVeBAL + additionalVeBAL);
+  // considers new user balance after additional liquidity is provided, based on BPT price
+  let userBalanceAdjusted = userBalance / 10e17 + additionalBalance;
+  // Takes into account the above changes on the working balance and working supply due to additional veBAL or liquidity
+  // This can only be an approximation without pulling in the actual veBAL balance of all users to determine
+  // if those with max boost would be moved below the max boost threshhold.
+  // key change of workingBalance adjusted not using newVeBALShareAdjusted, just 1 for max condition 
+  // This considers a user owning a proportional amount of veBAL to their pool share as the most
+  // economic and realistic circumstance. If the user mints a substantial amount of veBAL they can
+  // increase their "max" by diluting others boost in the pool.
+  let workingBalanceAdjusted = Math.min(0.4 * userBalanceAdjusted + 0.6 * (totalSupply / 10e17 + additionalBalance) * 1, (userBalance / 10e17 + additionalBalance));
+  let workingSupplyAdjusted = (workingSupply - workingBalance - (totalSupply - userBalance) * 0.4 * newVeBALRatio + (totalSupply - userBalance) * 0.4) / 10e17 + workingBalanceAdjusted; 
+     if (Number(workingBalanceAdjusted)) {
+        max_boost = Number((workingBalanceAdjusted / workingSupplyAdjusted) / (0.4 * userBalanceAdjusted / (0.4 * userBalanceAdjusted + workingSupplyAdjusted - workingBalanceAdjusted)));
+
     }
-     //Max working supply for 2.5x
-     //const max_working_supply_user = 0.40 * liquidity_provided + 0.60 * (Number(totalStakedLiquidity)) * (Number(newShare) / (Number(totalShare)));
-     //Boost calculation depending 2 scenarios: new liquidity or already providing liquidity and adding more
+     // Includes dilutive considerations
+     // Number((1 - (1 - ((userBalance / 10e17 + additionalBalance) / (totalSupply / 10e17 + additionalBalance))) * 0.4) / ((0.4 * userBalance / 10e17 + additionalBalance) / (0.4 * (userBalance / 10e17 + additionalBalance) + workingSupplyAdjusted - workingBalanceAdjusted))))
+     // max_boost = Number((1 - (1 - ((userBalance / 10e17 + additionalBalance) / (totalSupply / 10e17 + additionalBalance))) * 0.4) / ((0.4 * userBalance / 10e17 + additionalBalance) / (0.4 * (userBalance / 10e17 + additionalBalance) + workingSupplyAdjusted / 10e17 - workingBalanceAdjusted)))
+     // Would require various if statements and is not realistic to implement without pulling in every holders veBAL balance and pool share
+     // in each individual pool.
 
-//     if (Number(newShare) === 0.0 && Number(newVeBAL) === 0.0) {
-//         //Case 1: current boost
-//         max_boost = (working_supply_user_max / Number(totalShare)) / ((0.4 * Number(share)) / (Number(totalShare) - working_supply_user_max + 0.4 * Number(share)))
-//         //console.log("case1 triggered")
-//     } else if (Number(share) !== 0.0 || Number(lockedVeBAL) !== 0.0) {
-//         //Case 2: user boost when adjusting current position (share !== 0)
-//         max_boost = (working_supply_user_max / (working_supply_user_max + Number(totalShare) - Number(share))) / ((non_boosted_working_supply_user) / (non_boosted_working_supply_user + Number(totalShare) - Number(share)));
-//         //console.log("case2 triggered")
-//     } else {
-//         //Case 3: user boost when entering (share = 0)
-//         max_boost = (working_supply_user_max / (working_supply_user_max + Number(totalShare))) / (non_boosted_working_supply_user / (non_boosted_working_supply_user + Number(totalShare)))
-//         //console.log("case3 triggered")
-//     }
-    
      if (max_boost > 2.5) {
          max_boost = 2.5
      } else if (max_boost < 1) {
          max_boost = 1.0
      }
-
-     // console.log("max_boost", max_boost);
 
      return max_boost;
 
@@ -129,13 +101,22 @@ export function calculateBoostFromGauge(workingBalance: number, workingSupply: n
 // //Helper function to calculate minimum veBAL for Max Boost for a certain gauge / veBAL configuration /////
 // //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export function calculateMinVeBAL(workingBalance: number, workingSupply: number, totalSupply: number, userBalance: number, totalVeBAL: number) {
-     //Calculate working supply:
-//     const liquidity_provided = Number(newShare) + Number(share);
-//     // Calculate minveBAL for Max Boost
+export function calculateMinVeBAL(workingBalance: number, workingSupply: number, totalSupply: number, userBalance: number, additionalBalance: number, additionalVeBAL: number, userVeBAL: number, totalVeBAL: number) {
+
+     // Calculate minveBAL for Max Boost
+     // minveBAL in this considers a user owning a proportional amount of veBAL to their pool share as the most
+     // economic and realistic circumstance. If the user mints a substantial amount of veBAL they can
+     // increase their "max" by diluting others boost in the pool. 
      let min_VeBAL = 0;
-     if (Number(workingSupply > 0)) {
-        min_VeBAL = totalVeBAL * (userBalance / totalSupply);
+     let min_VeBAL_Additional = 0;
+     let userBalanceAdjusted = userBalance / 10e17 + additionalBalance;
+     let totalSupplyAdjusted = totalSupply / 10e17 + additionalBalance;
+     let userPoolRatio = userBalanceAdjusted / totalSupplyAdjusted;
+
+     if (Number(userBalanceAdjusted > 0)) {
+        min_VeBAL_Additional = (userPoolRatio * totalVeBAL - userVeBAL) / (1 - userPoolRatio);
+        min_VeBAL = userVeBAL + min_VeBAL_Additional;
+
      }
      if (min_VeBAL > 50000000) {
         min_VeBAL = 0;
@@ -143,79 +124,43 @@ export function calculateMinVeBAL(workingBalance: number, workingSupply: number,
      return min_VeBAL;
  }
 
-// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ////// Helper function to calculate the amount of additional veBAL a user needs to lock to reach max boost. /////
-// /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////
+// ////// Helper function to calculate user Balances in USD /////
+// //////////////////////////////////////////////////////////////
+const calculateUserBalancesInUSD = (
+    stakingGaugeData: BalancerStakingGauges[],
+    pools: PoolData[],
+    additionalLiquidity: number,
+    additionalVeBAL: number,
+    userVeBAL: number,
+    totalVeBAL: number,
+): BalancerStakingGauges[] => {
+    const updatedGaugeData: BalancerStakingGauges[] = [];
 
-// export function calculateRemainingVeBAL(newVeBAL, lockedVeBAL, totalVeBALStaked, newShare, share, totalShare, totalStakedLiquidity) {
+    if (stakingGaugeData.length > 0 && pools.length > 0) {
+        for(const gauge of stakingGaugeData) {
+            const pool = pools.find((p) => p.address === gauge.pool.address.toLocaleLowerCase());
+            if (pool) {
+                const inferredTVL = pool.tokens.reduce((sum, el) => sum + el.tvl, 0)
+                const tvl = inferredTVL ? inferredTVL : pool.liquidity
+                const userValue = gauge.userBalance * tvl / pool.totalShares + additionalLiquidity * 10e17;
+                const additionalBalance =  additionalLiquidity / (tvl / pool.totalShares);
+                const boost = calculateBoostFromGauge(Number(gauge.workingBalance), Number(gauge.workingSupply), Number(gauge.totalSupply), gauge.userBalance, additionalBalance, additionalVeBAL, userVeBAL, totalVeBAL).toString();
+                const max_boost = calculateMaxBoost(Number(gauge.workingBalance), Number(gauge.workingSupply), Number(gauge.totalSupply), gauge.userBalance, additionalBalance, additionalVeBAL, userVeBAL, totalVeBAL).toString();
+                const min_VeBAL = calculateMinVeBAL(Number(gauge.workingBalance), Number(gauge.workingSupply), Number(gauge.totalSupply), gauge.userBalance, additionalBalance, additionalVeBAL, userVeBAL, totalVeBAL).toString();
+                const updatedGauge = {
+                    ...gauge,
+                    userValue: userValue,
+                    boost: boost,
+                    max_boost: max_boost,
+                    min_VeBAL: min_VeBAL,
+                };
+                updatedGaugeData.push(updatedGauge);
+            }
+        }
+    }
 
-//     let remainingVeBAL = 0;
-//     const liquidity_provided = Number(newShare) + Number(share);
-//     // Calculate minveBAL for Max Boost
-//     let minveBAL = (totalVeBALStaked) * (liquidity_provided / ( Number(totalStakedLiquidity) + Number(newShare)));
-//     if (minveBAL > 50000000) {
-//         minveBAL = 0;
-//     }
+    return updatedGaugeData;
+};
 
-//     remainingVeBAL = minveBAL - newVeBAL - lockedVeBAL;
-
-//     if (remainingVeBAL < 0) {
-//          remainingVeBAL = 0;
-//     }
-
-//     return remainingVeBAL;
-// }
-
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////
-// /// Helper function to calculate veBAL out when a user defines their BAL & WETH in with Lock time //////
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// export function calculateVeBALOut(veBALArray, SwapFee, lockTime) {
-
-//     const copy = [...veBALArray];
-//     //Step 1: Define each variable relavent to the token to BPT array
-//     //Step 2: Calculate Spot Price, net single deposit, and taxable amount of BPT
-//     //Step 3: Calculate Invariant ratio after taxed value of tokens is converted to BPT
-//     //Step 4: Calculate BPT Out, ratio to the totalSpotBPT to determine Price impact 
-
-//     let bptArray = [];
-//     let bptSpotPrice = 0;
-//     let totalPoolTokens = Number(copy[0].totalShares);
-//     let tokenSpotBPT = 0;
-//     let totalSpotBPT = 0;
-//     let swapFee = SwapFee/100;
-//     let invariantRatio = 1;
-
-//     for (let i = 0; i <copy.length; i++) {
-//       bptSpotPrice = isNaN(copy[i].tokenDeposits) ? 0 : 1/(copy[i].assetBalance * (1 - (1 - 1/totalPoolTokens)**(1/(copy[i].poolWeights/100))));
-//       tokenSpotBPT = bptSpotPrice * copy[i].tokenDeposits;
-//       totalSpotBPT += tokenSpotBPT
-//     }
-
-//       for (let i = 0; i < copy.length; i++) {
-//         bptSpotPrice = isNaN(copy[i].tokenDeposits) ? 0 : 1/(copy[i].assetBalance * (1 - (1 - 1/totalPoolTokens)**(1/(copy[i].poolWeights/100))));
-//         tokenSpotBPT = bptSpotPrice * copy[i].tokenDeposits;
-//         const investEntry = {
-//           depositAmount: Number(copy[i].tokenDeposits),
-//           bptSpotPrice: isNaN(copy[i].tokenDeposits) ? 0 : 1/(copy[i].assetBalance * (1 - (1 - 1/totalPoolTokens)**(1/(copy[i].poolWeights/100)))),
-//           tokenSpotBPT: bptSpotPrice * copy[i].tokenDeposits,
-//           proportionalEntry: totalSpotBPT * copy[i].poolWeights/100,
-//           netSingleDepost: bptSpotPrice * copy[i].tokenDeposits > totalSpotBPT * copy[i].poolWeights/100 ? tokenSpotBPT - totalSpotBPT * copy[i].poolWeights/100 : 0,
-//           depositImpact: isNaN((bptSpotPrice * copy[i].tokenDeposits > totalSpotBPT * copy[i].poolWeights/100 ? tokenSpotBPT - totalSpotBPT * copy[i].poolWeights/100 : 0) / bptSpotPrice * copy[i].tokenDeposits) ? 0 : (bptSpotPrice * copy[i].tokenDeposits > totalSpotBPT * copy[i].poolWeights/100 ? tokenSpotBPT - totalSpotBPT * copy[i].poolWeights/100 : 0) / (bptSpotPrice * copy[i].tokenDeposits === 0 ? 1 : bptSpotPrice * copy[i].tokenDeposits),
-//           newTokenBalance: Number(copy[i].assetBalance) + Number(copy[i].tokenDeposits) - (Number(copy[i].tokenDeposits) * swapFee * (isNaN((bptSpotPrice * copy[i].tokenDeposits > totalSpotBPT * copy[i].poolWeights/100 ? tokenSpotBPT - totalSpotBPT * copy[i].poolWeights/100 : 0) / bptSpotPrice * copy[i].tokenDeposits) ? 0 : (bptSpotPrice * copy[i].tokenDeposits > totalSpotBPT * copy[i].poolWeights/100 ? tokenSpotBPT - totalSpotBPT * copy[i].poolWeights/100 : 0) / (bptSpotPrice * copy[i].tokenDeposits === 0 ? 1 : bptSpotPrice * copy[i].tokenDeposits))),
-//           tokenInvariantRatio: ((Number(copy[i].assetBalance) + Number(copy[i].tokenDeposits) - (Number(copy[i].tokenDeposits) * swapFee * (isNaN((bptSpotPrice * copy[i].tokenDeposits > totalSpotBPT * copy[i].poolWeights/100 ? tokenSpotBPT - totalSpotBPT * copy[i].poolWeights/100 : 0) / bptSpotPrice * copy[i].tokenDeposits) ? 0 : (bptSpotPrice * copy[i].tokenDeposits > totalSpotBPT * copy[i].poolWeights/100 ? tokenSpotBPT - totalSpotBPT * copy[i].poolWeights/100 : 0) / (bptSpotPrice * copy[i].tokenDeposits === 0 ? 1 : bptSpotPrice * copy[i].tokenDeposits)))) ** (copy[i].poolWeights/100)) / (copy[i].assetBalance ** (copy[i].poolWeights/100))
-//         }
-        
-//         bptArray.push(investEntry)
-//       };
-
-//         for (let j=0; j < bptArray.length; j++) {
-//           invariantRatio *= bptArray[j].tokenInvariantRatio
-//           };
-
-//     let bptOut = (invariantRatio - 1) * totalPoolTokens
-//     let veBALPriceImpact = (1 - bptOut / totalSpotBPT) * 100
-//     let veBALOut = bptOut * lockTime / 52
-//     let investmentOutcomes = [bptOut, veBALPriceImpact, veBALOut]
-//   return investmentOutcomes;
-// }
+export default calculateUserBalancesInUSD;

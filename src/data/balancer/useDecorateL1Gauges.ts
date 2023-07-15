@@ -7,15 +7,13 @@ import {Multicall} from 'ethereum-multicall';
 import {EthereumNetworkInfo} from "../../constants/networks";
 import {useAccount} from 'wagmi';
 import { calculateBoostFromGauge, calculateMaxBoost, calculateMinVeBAL } from "../../pages/VeBAL/veBALHelpers";
-import { useGetTotalVeBAL } from "./useGetTotalVeBAL";
-
 
 const useDecorateL1Gauges = (stakingGaugeData: BalancerStakingGauges[]): BalancerStakingGauges[] => {
 
     const [decoratedGauges, setDecoratedGauges] = useState<BalancerStakingGauges[]>()
     const [isLoading, setIsLoading] = useState(true)
     const {address} = useAccount();
-    const totalVeBAL = useGetTotalVeBAL();
+
     const fetchVotingGaugesWorkingSupply = async (gaugeData: BalancerStakingGauges[] | undefined): Promise<BalancerStakingGauges[]> => {
         const updatedGaugeData: BalancerStakingGauges[] = [];
         if (gaugeData && gaugeData.length > 0) {
@@ -86,10 +84,7 @@ const useDecorateL1Gauges = (stakingGaugeData: BalancerStakingGauges[]): Balance
                                 workingSupply: workingSupplyHex ? BigInt(workingSupplyHex).toString() : '-',
                                 totalSupply: totalSupplyHex ? BigInt(totalSupplyHex).toString() : '-',
                                 workingBalance: workingBalanceHex ? BigInt(workingBalanceHex).toString() : '-',
-                                userBalance: userBalanceHex ? BigInt(userBalanceHex).toString() : '-',
-                                boost: workingSupplyHex ? String(calculateBoostFromGauge( Number(BigInt(workingBalanceHex).toString()), Number(BigInt(workingSupplyHex).toString()), Number(BigInt(totalSupplyHex).toString()), Number(BigInt(userBalanceHex).toString()))) : "1",
-                                max_boost: workingSupplyHex ? String(calculateMaxBoost( Number(BigInt(workingBalanceHex).toString()), Number(BigInt(workingSupplyHex).toString()), Number(BigInt(totalSupplyHex).toString()), Number(BigInt(userBalanceHex).toString()))) : "1",
-                                min_VeBAL: workingSupplyHex ? String(calculateMinVeBAL( Number(BigInt(workingBalanceHex).toString()), Number(BigInt(workingSupplyHex).toString()), Number(BigInt(totalSupplyHex).toString()), Number(BigInt(userBalanceHex).toString()), Number(totalVeBAL))) : "1",
+                                userBalance: userBalanceHex ? Number(BigInt(userBalanceHex)) : 0,
                             };
                             updatedGaugeData.push(updatedGauge);
                         }

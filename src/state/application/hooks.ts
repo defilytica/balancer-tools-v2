@@ -7,7 +7,7 @@ import {
   polygonBlockClient,
   polygonClient,
   gnosisBlockClient,
-  gnosisClient,
+  gnosisClient, polygonZKEVMClient, optimismClient, polygonZKEVMBlockClient, optimismBlockClient,
 } from '../../apollo/client'
 import { NetworkInfo, SupportedNetwork } from '../../constants/networks'
 import { useCallback } from 'react'
@@ -70,8 +70,12 @@ export function useDataClient(): ApolloClient<NormalizedCacheObject> {
       return arbitrumClient
     case SupportedNetwork.POLYGON:
       return polygonClient
+    case SupportedNetwork.ZKEVM:
+      return polygonZKEVMClient
       case SupportedNetwork.GNOSIS:
         return gnosisClient
+    case SupportedNetwork.OPTIMISM:
+      return optimismClient;
     default:
       return client
   }
@@ -87,8 +91,12 @@ export function useBlockClient(): ApolloClient<NormalizedCacheObject> {
       return arbitrumBlockClient
     case SupportedNetwork.POLYGON:
       return polygonBlockClient
+    case SupportedNetwork.ZKEVM:
+      return polygonZKEVMBlockClient
       case SupportedNetwork.GNOSIS:
         return gnosisBlockClient
+    case SupportedNetwork.OPTIMISM:
+      return optimismBlockClient
     default:
       return blockClient
   }

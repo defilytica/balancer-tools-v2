@@ -65,7 +65,7 @@ const useDecorateGaugesWithVotes = (stakingGaugeData: BalancerStakingGauges[], v
             setIsLoading(false);
             fetchUserVotes(stakingGaugeData, voterAddress)
                 .then((decoratedData) => {
-                    setDecoratedGauges(decoratedData);
+                    setDecoratedGauges([...decoratedData]);
                     setIsLoading(false);
                 })
                 .catch((error) => {

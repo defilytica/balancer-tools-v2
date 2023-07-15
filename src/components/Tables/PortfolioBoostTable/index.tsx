@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useState } from "react";
 import Box from '@mui/material/Box';
-import SearchIcon from '@mui/icons-material/Search';
 import TablePagination from '@mui/material/TablePagination';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Table from '@mui/material/Table';
@@ -31,7 +30,6 @@ import GaugeComposition from "../../GaugeComposition";
 import ClearIcon from '@mui/icons-material/Clear';
 import OpLogo from "../../../assets/svg/optimism.svg";
 import zkevmLogo from "../../../assets/svg/zkevm.svg";
-import {useActiveNetworkVersion} from "../../../state/application/hooks";
 
 
 
@@ -122,7 +120,7 @@ const headCells: readonly HeadCell[] = [
         isMobileVisible: true,
     },
     {
-        id: 'poolData',
+        id: 'poolComposition',
         numeric: false,
         disablePadding: false,
         label: 'Composition',
@@ -153,7 +151,7 @@ const headCells: readonly HeadCell[] = [
         id: 'min_VeBAL',
         numeric: false,
         disablePadding: false,
-        label: 'Min VeBAL for Max Boost',
+        label: 'VeBAL for Max Boost',
         isMobileVisible: false,
     },
 ];
@@ -207,9 +205,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 
-export default function GaugeBoostTable({gaugeDatas, userVeBALAdjusted}: {
-    gaugeDatas: BalancerStakingGauges[],
-    userVeBALAdjusted: number,
+export default function PortfolioBoostTable({gaugeDatas, userVeBALAdjusted}: {
+    gaugeDatas: BalancerStakingGauges[], userVeBALAdjusted: number
 }) {
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('boost');
@@ -219,16 +216,15 @@ export default function GaugeBoostTable({gaugeDatas, userVeBALAdjusted}: {
 
 
     const seen = new Set();
+
     const filteredPoolDatas = gaugeDatas.filter((x) => {
         return !!x && !x.isKilled && !seen.has(x.address) && seen.add(x.pool.address);
     });
 
     const originalRows = filteredPoolDatas.map(el =>
         createData(el.address, el.network, el.isKilled, el.pool, el.userValue, el.boost, el.max_boost, el.min_VeBAL)
-
     )
     const [rows, setRows] = useState<Data[]>(originalRows);
-    const [searched, setSearched] = useState<string>("");
 
 
 
@@ -264,24 +260,6 @@ export default function GaugeBoostTable({gaugeDatas, userVeBALAdjusted}: {
     }
 
 
-
-    const requestSearch = (searchedVal: string) => {
-        const filteredRows = originalRows.filter((row) => {
-            const lowerCaseSearchedVal = searchedVal.toLowerCase();
-            const hasPartialMatchInAddress = row.poolData.address.toLowerCase().includes(lowerCaseSearchedVal);
-            const hasPartialMatchInSymbol = row.poolData.symbol.toLowerCase().includes(lowerCaseSearchedVal);
-            const hasPartialMatchInTokens = row.poolData.tokens.some((token) => token.symbol.toLowerCase().includes(lowerCaseSearchedVal));
-            return hasPartialMatchInAddress || hasPartialMatchInSymbol || hasPartialMatchInTokens;
-        });
-        setRows(filteredRows);
-        setSearched(searchedVal)
-    };
-
-    const clearSearch = (): void => {
-        setSearched("");
-        setRows(originalRows)
-    };
-
     interface NetworkLogoMap {
         [networkNumber: number]: string;
     }
@@ -300,21 +278,6 @@ export default function GaugeBoostTable({gaugeDatas, userVeBALAdjusted}: {
 
     return (
         <Box sx={{width: '100%'}}>
-            <Paper
-                component="form"
-                sx={{ mb: '5px', p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
-            >
-                <InputBase
-                    sx={{ ml: 1, flex: 1 }}
-                    placeholder="Search for Gauge"
-                    inputProps={{ 'aria-label': 'search Balancer gauges' }}
-                    value={searched}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => requestSearch(event.target.value)}
-                />
-                <IconButton onClick={clearSearch} type="button" sx={{ p: '10px' }} aria-label="search">
-                    {searched !== "" ? <ClearIcon /> : <SearchIcon />}
-                </IconButton>
-            </Paper>
             <Paper sx={{mb: 2, boxShadow: 3}}>
 
                 <TableContainer>
@@ -329,64 +292,54 @@ export default function GaugeBoostTable({gaugeDatas, userVeBALAdjusted}: {
                             onRequestSort={handleRequestSort}
                         />
                         <TableBody>
+                            {/* if you don't need to support IE11, you can replace the `stableSort` call with:
+              rows.sort(getComparator(order, orderBy)).slice() */}
                             {stableSort(rows, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row, index) => {
                                     const labelId = `enhanced-table-checkbox-${index}`;
+
                                     return (
-                                      <TableRow
-                                        hover
-                                        //onClick={() => window.open(`https://balancer.defilytica.com/${getLink(row.network, row.address)}/`, '_blank') }
-                                        role="number"
-                                        tabIndex={-1}
-                                        key={
-                                          row.poolComposition +
-                                          Math.random() * 10 + row.userValue
-                                        }
-                                        sx={{ cursor: "pointer" }}
-                                      >
-                                        <TableCell>
-                                          <Avatar
-                                            sx={{
-                                              height: 20,
-                                              width: 20,
-                                            }}
-                                            src={
-                                              networkLogoMap[
-                                                Number(row.network)
-                                              ]
-                                            }
-                                          />
-                                        </TableCell>
-                                        <TableCell>
-                                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                <Box mr={1}>
-                                                    <PoolCurrencyLogo
-                                                        tokens={row.poolData.tokens.map(token => ({address: token.address ? token.address.toLowerCase() : ''}))}
-                                                        size={'25px'}/>
+                                        <TableRow
+                                            hover
+                                            //onClick={() => window.open(`https://balancer.defilytica.com/${getLink(row.network, row.address)}/`, '_blank') }
+                                            role="number"
+                                            tabIndex={-1}
+                                            key={row.poolComposition + Math.random() * 10}
+                                            sx={{cursor: 'pointer'}}
+                                        >
+                                            <TableCell>
+                                                <Avatar
+                                                    sx={{
+                                                        height: 20,
+                                                        width: 20
+                                                    }}
+                                                    src={networkLogoMap[Number(row.network)]}
+                                                />
+                                            </TableCell>
+                                            <TableCell>
+                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                    <Box mr={1}>
+                                                        <PoolCurrencyLogo
+                                                            tokens={row.poolData.tokens.map(token => ({address: token.address ? token.address.toLowerCase() : ''}))}
+                                                            size={'25px'}/>
+                                                    </Box>
+                                                    <Box>
+                                                        <GaugeComposition poolData={row.poolData} />
+                                                    </Box>
                                                 </Box>
-                                                <Box>
-                                                    <GaugeComposition poolData={row.poolData} />
-                                                </Box>
-                                            </Box>
-                                        </TableCell>
-                                        <TableCell>
-                                          {formatNumber(
-                                            Number(row.userValue) / 10 ** 18,
-                                            3
-                                          )}
-                                        </TableCell>
-                                        <TableCell>
-                                          {formatNumber(Number(row.boost), 3)}
-                                        </TableCell>
-                                        <TableCell>
-                                          {formatNumber(
-                                            Number(row.max_boost),
-                                            3
-                                          )}
-                                        </TableCell>
-                                        <TableCell>
-                                        <span
+                                            </TableCell>
+                                            <TableCell>
+                                                {formatNumber(Number(row.userValue) / (10**18),  3)}
+                                            </TableCell>
+                                            <TableCell>
+                                                {formatNumber(Number(row.boost),  3)}
+                                            </TableCell>
+                                            <TableCell>
+                                                {formatNumber(Number(row.max_boost),  3)}
+                                            </TableCell>
+                                            <TableCell>
+                                            <span
                                             style={{
                                               textShadow:
                                                 Number(row.min_VeBAL) > userVeBALAdjusted
@@ -404,8 +357,8 @@ export default function GaugeBoostTable({gaugeDatas, userVeBALAdjusted}: {
                                            {formatNumber(Math.abs(userVeBALAdjusted - Number(row.min_VeBAL)), 3)}
                                          </div>
                                           </span>{" "}
-                                        </TableCell>
-                                      </TableRow>
+                                            </TableCell>
+                                        </TableRow>
                                     );
                                 })}
                             {emptyRows > 0 && (

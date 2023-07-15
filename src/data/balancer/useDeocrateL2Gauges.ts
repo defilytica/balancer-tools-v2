@@ -25,7 +25,6 @@ const useDecorateL2Gauges = (stakingGaugeData: BalancerStakingGauges[]): Balance
     const [decoratedGauges, setDecoratedGauges] = useState<BalancerStakingGauges[]>()
     const [isLoading, setIsLoading] = useState(true)
     const {address} = useAccount();
-    const totalVeBAL = useGetTotalVeBAL();
 
     const fetchL2Supplies = async (gaugeData: BalancerStakingGauges[] | undefined): Promise<BalancerStakingGauges[]> => {
         const updatedGaugeData: BalancerStakingGauges[] = [];
@@ -87,10 +86,7 @@ const useDecorateL2Gauges = (stakingGaugeData: BalancerStakingGauges[]): Balance
                                 workingSupply: workingSupplyHex ? BigInt(workingSupplyHex).toString() : '-',
                                 totalSupply: totalSupplyHex ? BigInt(totalSupplyHex).toString() : '-',
                                 workingBalance: workingBalanceHex ? BigInt(workingBalanceHex).toString() : '-',
-                                userBalance: userBalanceHex ? BigInt(userBalanceHex).toString() : '-',
-                                boost: workingSupplyHex ? String(calculateBoostFromGauge( Number(BigInt(workingBalanceHex).toString()), Number(BigInt(workingSupplyHex).toString()), Number(BigInt(totalSupplyHex).toString()), Number(BigInt(userBalanceHex).toString()))) : "0",
-                                max_boost: workingSupplyHex ? String(calculateMaxBoost( Number(BigInt(workingBalanceHex).toString()), Number(BigInt(workingSupplyHex).toString()), Number(BigInt(totalSupplyHex).toString()), Number(BigInt(userBalanceHex).toString()))) : "1",
-                                min_VeBAL: workingSupplyHex ? String(calculateMinVeBAL( Number(BigInt(workingBalanceHex).toString()), Number(BigInt(workingSupplyHex).toString()), Number(BigInt(totalSupplyHex).toString()), Number(BigInt(userBalanceHex).toString()), Number(totalVeBAL))) : "1",
+                                userBalance: userBalanceHex ? Number(BigInt(userBalanceHex)) : 0,
                             };
 
                             updatedGaugeData.push(updatedGauge);

@@ -82,33 +82,18 @@ const MenuDrawer = ({
                 <ListItem>
                     <Typography sx={{ fontWeight: 'bold' }}>Balancer</Typography>
                 </ListItem>
-                <ListItemButton key={'veBAL'} component={NavLink} to={'/veBAL'}>
+                <ListItemButton key={'veBAL Boost'} component={NavLink} to={'/balancer/veBALBoost'}>
                     <ListItemIcon>
                         <AccountBalanceIcon />
                     </ListItemIcon>
-                    <ListItemText primary={'veBAL'} />
+                    <ListItemText primary={'veBAL Boost'} />
                 </ListItemButton>
 
-                <ListItemButton key={'veBAL Voter'} component={NavLink} to={networkPrefix(activeNetwork) + 'veBalVoter'}>
+                <ListItemButton key={'veBAL Multi-Voter'} component={NavLink} to={'/balancer/veBALMultiVoter'}>
                     <ListItemIcon>
                         <LinkIcon />
                     </ListItemIcon>
-                    <ListItemText primary={'veBAL Voter'} />
-                </ListItemButton>
-
-
-                <ListItemButton key={'Price Impact'} component={NavLink} to={networkPrefix(activeNetwork) + 'priceImpact'}>
-                    <ListItemIcon>
-                        <WavesIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={'Price Impact'} />
-                </ListItemButton>
-
-                <ListItemButton key={'Impermanent Loss'} component={NavLink} to={networkPrefix(activeNetwork) + 'impermanentLoss'}>
-                    <ListItemIcon>
-                        <TokenIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={'Impermanent Loss'} />
+                    <ListItemText primary={'veBAL Multi-Voter'} />
                 </ListItemButton>
             </List>
             <List>
@@ -184,7 +169,7 @@ const MenuDrawer = ({
                             href="https://coingecko.com">
                             <Box display="flex" alignItems="center" alignContent="center">
                                 <Box
-                                    //sx={{ display: { xs: 'none', md: 'flex' } }} 
+                                    //sx={{ display: { xs: 'none', md: 'flex' } }}
                                     >
                                     <img src={CoingeckoColor} alt="Coingecko Logo" width="25" />
                                 </Box>
@@ -235,7 +220,7 @@ const MenuDrawer = ({
                             </Box>
                         </Link>
                     </ IconButton>
-                    
+
                 </Box>
             </Box>
         </Drawer>

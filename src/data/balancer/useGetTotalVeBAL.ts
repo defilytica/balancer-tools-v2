@@ -8,7 +8,8 @@ export function useGetTotalVeBAL(): number {
         address: '0xc128a9954e6c874ea3d62ce62b468ba073093f25',
         abi: veBAL,
         functionName: 'totalSupply',
-        args: []
+        args: [],
+        chainId: 1
     })
 
     useEffect(() => {
