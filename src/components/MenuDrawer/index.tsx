@@ -82,14 +82,14 @@ const MenuDrawer = ({
                 <ListItem>
                     <Typography sx={{ fontWeight: 'bold' }}>Balancer</Typography>
                 </ListItem>
-                <ListItemButton key={'veBAL Boost'} component={NavLink} to={'/veBALBoost'}>
+                <ListItemButton key={'veBAL Boost'} component={NavLink} to={'/balancer/veBALBoost'}>
                     <ListItemIcon>
                         <AccountBalanceIcon />
                     </ListItemIcon>
                     <ListItemText primary={'veBAL Boost'} />
                 </ListItemButton>
 
-                <ListItemButton key={'veBAL Multi-Voter'} component={NavLink} to={networkPrefix(activeNetwork) + 'veBALMultiVoter'}>
+                <ListItemButton key={'veBAL Multi-Voter'} component={NavLink} to={'/balancer/veBALMultiVoter'}>
                     <ListItemIcon>
                         <LinkIcon />
                     </ListItemIcon>
@@ -184,7 +184,7 @@ const MenuDrawer = ({
                             href="https://coingecko.com">
                             <Box display="flex" alignItems="center" alignContent="center">
                                 <Box
-                                    //sx={{ display: { xs: 'none', md: 'flex' } }} 
+                                    //sx={{ display: { xs: 'none', md: 'flex' } }}
                                     >
                                     <img src={CoingeckoColor} alt="Coingecko Logo" width="25" />
                                 </Box>
@@ -235,7 +235,7 @@ const MenuDrawer = ({
                             </Box>
                         </Link>
                     </ IconButton>
-                    
+
                 </Box>
             </Box>
         </Drawer>

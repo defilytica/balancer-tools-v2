@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import {Button, Grid, Paper, TextField, Tooltip, Typography} from "@mui/material";
+import {Backdrop, Button, Grid, Paper, TextField, Tooltip, Typography} from "@mui/material";
 import { useUserVeBALLocks } from "../../data/balancer/useUserVeBALLocks";
 import MetricsCard from "../../components/Cards/MetricsCard";
 import LockPersonIcon from "@mui/icons-material/LockPerson";
@@ -52,6 +52,7 @@ export default function VeBAL() {
     if (JSON.stringify(poolsRef.current) !== JSON.stringify(pools)) {
       poolsRef.current = pools;
     }
+    setLoading(false)
   }, [pools]);
 
   // Liquidity ref
@@ -69,6 +70,7 @@ export default function VeBAL() {
 
   // State handling
   const calculateGauges = () => {
+    setLoading(true)
     const updatedGauges = calculateUserBalancesInUSD(
         decoratedGaugeData,
         poolsRef.current,
@@ -77,6 +79,7 @@ export default function VeBAL() {
         userVeBAL,
         totalVeBAL
     );
+    console.log("updatedGauges", updatedGauges)
     const trimmedData = updatedGauges.filter((gauge) => gauge.userBalance === 0 && Number(gauge.network) === Number(activeNetworkVersion.chainId));
     const portfolioData = updatedGauges.filter((gauge) => gauge.userBalance !== 0 && Number(gauge.network) === Number(activeNetworkVersion.chainId));
     setTrimmedGaugeData(trimmedData);
@@ -86,9 +89,18 @@ export default function VeBAL() {
     }
   };
 
+  console.log("portfolioData", portfolioData)
+  console.log("networkID", activeNetworkVersion.chainId)
+  //console.log("trimmedGaugeData", trimmedGaugeData)
+
   const handleCalculate = () => {
     calculateGauges();
     setCalculationTriggered(true);
+  };
+
+  const handleBackDropClose = () => {
+    //Option to reset backdrop
+    setLoading(false);
   };
 
 
@@ -260,6 +272,13 @@ export default function VeBAL() {
           )}
         </Grid> : null }
       </Grid>
+      <Backdrop
+          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={loading}
+          onClick={handleBackDropClose}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Box>
   );
 }

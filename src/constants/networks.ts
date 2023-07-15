@@ -187,4 +187,5 @@ export const SUPPORTED_NETWORK_VERSIONS: NetworkInfo[] = [
   PolygonNetworkInfo,
   GnosisNetworkInfo,
   PolygonZkEVMNetworkInfo,
+    OptimismNetworkInfo
 ]

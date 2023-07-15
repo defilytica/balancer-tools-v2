@@ -1,8 +1,6 @@
 import * as React from 'react';
 import Cookies from 'universal-cookie';
 import {Route, Routes, useLocation} from 'react-router-dom';
-import BalancerLogoWhite from '../../assets/svg/logo-light.svg'
-import BalancerLogoBlack from '../../assets/svg/logo-dark.svg'
 import DefilyticaIcon from '../../assets/png/defilytica.png'
 import MoonIcon from '../../assets/svg/MoonIcon.svg';
 import SunIcon from '../../assets/svg/SunIcon.svg';
@@ -252,8 +250,8 @@ function Dashboard() {
                                     <Route path="/" element={<VeBAL/>}/>
                                     <Route path={networkPrefix(activeNetwork) + 'priceImpact'}
                                            element={<PriceImpact/>}/>
-                                    <Route path={networkPrefix(activeNetwork) + 'veBALBoost'} element={<VeBAL/>}/>
-                                    <Route path={networkPrefix(activeNetwork) + 'veBALMultiVoter'} element={<VeBALVoter/>}/>
+                                    <Route path={networkPrefix(activeNetwork) + 'balancer/veBALBoost'} element={<VeBAL/>}/>
+                                    <Route path={networkPrefix(activeNetwork) + 'balancer/veBALMultiVoter'} element={<VeBALVoter/>}/>
                                     <Route path={networkPrefix(activeNetwork) + 'impermanentLoss'}
                                            element={<ImpermanentLoss/>}/>
                                     <Route path={networkPrefix(activeNetwork) + 'authorizations'}
