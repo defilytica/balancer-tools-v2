@@ -11,10 +11,10 @@ import { publicProvider } from 'wagmi/providers/public';
 import {ALCHEMY_KEY} from "../data/balancer/constants";
 import {
     argentWallet,
-    injectedWallet, ledgerWallet,
+    ledgerWallet,
     metaMaskWallet,
     rabbyWallet,
-    rainbowWallet, trustWallet,
+    trustWallet,
     walletConnectWallet
 } from "@rainbow-me/rainbowkit/wallets";
 

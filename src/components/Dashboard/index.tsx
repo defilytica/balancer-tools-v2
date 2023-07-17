@@ -250,8 +250,8 @@ function Dashboard() {
                                     <Route path="/" element={<VeBAL/>}/>
                                     <Route path={networkPrefix(activeNetwork) + 'priceImpact'}
                                            element={<PriceImpact/>}/>
-                                    <Route path={networkPrefix(activeNetwork) + 'balancer/veBALBoost'} element={<VeBAL/>}/>
-                                    <Route path={networkPrefix(activeNetwork) + 'balancer/veBALMultiVoter'} element={<VeBALVoter/>}/>
+                                    <Route path={'balancer/veBALBoost'} element={<VeBAL/>}/>
+                                    <Route path={'balancer/veBALMultiVoter'} element={<VeBALVoter/>}/>
                                     <Route path={networkPrefix(activeNetwork) + 'impermanentLoss'}
                                            element={<ImpermanentLoss/>}/>
                                     <Route path={networkPrefix(activeNetwork) + 'authorizations'}

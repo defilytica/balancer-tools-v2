@@ -32,7 +32,7 @@ import * as React from "react";
 import {useEffect, useRef, useState} from "react";
 import {useGetHHVotingIncentives} from "../../data/hidden-hand/useGetHHVotingIncentives";
 import {decorateGaugesWithIncentives} from "../../data/hidden-hand/helpers";
-import {BalancerStakingGauges} from "../../data/balancer/balancerTypes";
+import {BalancerStakingGauges, PoolData} from "../../data/balancer/balancerTypes";
 import VotingTable from '../../components/Tables/VotingTable';
 import PoolCurrencyLogo from "../../components/PoolCurrencyLogo";
 import GaugeComposition from "../../components/GaugeComposition";
@@ -71,7 +71,6 @@ export default function VeBALVoter() {
     //Load user wallet stats
     const {isConnected, address} = useAccount();
     const userLocks = useUserVeBALLocks();
-    console.log("userLocks", userLocks)
     const userVeBAL = useGetUserVeBAL(address ? address.toLowerCase() : '');
     const hhIncentives = useGetHHVotingIncentives();
 
@@ -81,6 +80,17 @@ export default function VeBALVoter() {
     const [open, setOpen] = useState(false);
     const [alertOpen, setAlertOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [userVotingGauges, setUserVotingGauges] = useState<BalancerStakingGauges[]>([]);
+
+    useEffect(() => {
+        // reset state
+        setAllocations([]);
+        setTotalPercentage(0);
+        setOpen(false);
+        setAlertOpen(false);
+        setError(null);
+        setUserVotingGauges([])
+    }, [address]);
 
     //TODO: outsource
     interface NetworkLogoMap {
@@ -164,21 +174,27 @@ export default function VeBALVoter() {
 
 
     //Load gauge and Staking information
+    const gaugeData = useGetBalancerStakingGauges();
+    const decoratedVotingGauges = useDecorateGaugesWithVotes(gaugeData)
+    const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);
+    const unlockDate = date.toLocaleDateString();
+
+    // Update userVotingGauges when the address changes
+    useEffect(() => {
+        const updatedUserVotingGauges = decoratedVotingGauges.filter(
+            (el) => el.userVotingPower ? el.userVotingPower > 0 : false
+        );
+        setUserVotingGauges(updatedUserVotingGauges);
+    }, [address, decoratedVotingGauges]);
+
     let fullyDecoratedGauges: BalancerStakingGauges[] = [];
     let averageValuePerVote = 0
-    const gaugeData = useGetBalancerStakingGauges();
-    const decoratedVotingGauges = useDecorateGaugesWithVotes(gaugeData, address ? address?.toLowerCase() : '')
+
     // TODO: improve logic, adjust hook?
     if (hhIncentives && hhIncentives.incentives && hhIncentives.incentives.data && decoratedVotingGauges && decoratedVotingGauges.length > 0) {
         fullyDecoratedGauges = decorateGaugesWithIncentives(decoratedVotingGauges, hhIncentives.incentives)
         averageValuePerVote = calculateAverageValuePerVote(fullyDecoratedGauges)
     }
-
-    const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);
-    const unlockDate = date.toLocaleDateString();
-
-    const userVotingGauges = decoratedVotingGauges.filter((el) => el.userVotingPower ? el.userVotingPower > 0 : false);
-    console.log("userVotingGauges", userVotingGauges)
 
     const prevAddress = useRef<`0x${string}` | undefined>(undefined);
 
@@ -186,6 +202,8 @@ export default function VeBALVoter() {
     useEffect(() => {
         if (prevAddress.current !== null && prevAddress.current !== address && allocations.length > 0) {
             setAllocations([]);
+            window.location.reload();
+            console.log("new address found, reloading component!")
         }
         prevAddress.current = address;
     }, [address, allocations]);
@@ -198,7 +216,6 @@ export default function VeBALVoter() {
             const newAllocations = userVotingGauges.map((vote) => {
                 const matchingGauge = fullyDecoratedGauges.find((gauge) => gauge.address === vote.address);
                 const rewardInUSD = matchingGauge ? userVeBAL  * matchingGauge.valuePerVote : 0;
-                console.log("rewardInUsd", rewardInUSD)
                 return {
                     gaugeAddress: vote.address,
                     percentage: vote.userVotingPower ? vote.userVotingPower : 0,
@@ -292,7 +309,7 @@ export default function VeBALVoter() {
                 >
                     <SelfImprovementIcon sx={{ fontSize: 48 }} />
                     <Typography variant="h5" align="center">
-                        Pleaes connect your Wallet
+                        Please connect your Wallet
                     </Typography>
                 </Box>
             </CardContent>
