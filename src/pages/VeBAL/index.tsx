@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
-import {Backdrop, Button, Card, CardContent, Grid, Paper, TextField, Tooltip, Typography} from "@mui/material";
+import {Backdrop, Button, Card, CardContent, Grid, TextField, Typography} from "@mui/material";
 import { useUserVeBALLocks } from "../../data/balancer/useUserVeBALLocks";
 import MetricsCard from "../../components/Cards/MetricsCard";
 import LockPersonIcon from "@mui/icons-material/LockPerson";
