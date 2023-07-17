@@ -33,7 +33,6 @@ export default function VeBAL() {
   const userVeBAL = useGetUserVeBAL(address ? address : '');
   const totalVeBAL = useGetTotalVeBAL();
   const pools = useBalancerPools();
-  console.log("pools", pools)
   const gaugeData = useGetBalancerStakingGauges();
   const l1GaugeData = useDecorateL1Gauges(gaugeData);
   const decoratedGaugeData = useDecorateL2Gauges(l1GaugeData);
@@ -48,15 +47,28 @@ export default function VeBAL() {
   const [calculationTriggered, setCalculationTriggered] = useState<boolean>(false);
   const poolsRef = useRef<PoolData[]>([]);
   const additionalLiquidityRef = useRef<number>(0)
-  const [loading, setLoading] = useState<boolean>(false); // Loading state
+  const [loadingPools, setLoadingPools] = useState<boolean>(false); // Loading state pools
+
+  // Reset state when new address loads
+  useEffect(() => {
+    setTrimmedGaugeData([]);
+    setPortfolioData([]);
+    setAdditionalVeBAL(0);
+    setAdditionalLiquidity(0);
+    setCalculationTriggered(false);
+
+    // reset ref
+    additionalLiquidityRef.current = 0
+    // set loading to true again to wait for new data to load
+    setLoadingPools(true);
+  }, [address, activeNetworkVersion.chainId]);
 
   // gauge list ref
   useEffect(() => {
     if (JSON.stringify(poolsRef.current) !== JSON.stringify(pools)) {
       poolsRef.current = pools;
-      setLoading(true)
+      setLoadingPools(false)
     }
-    setLoading(false)
   }, [pools]);
 
   // Liquidity ref
@@ -66,15 +78,23 @@ export default function VeBAL() {
     }
   }, [additionalLiquidity]);
 
-  // Reset calculationTriggered when network changes
+  // Handle pool state
   useEffect(() => {
-    setCalculationTriggered(false);
-    setLoading(true)
-  }, [activeNetworkVersion.chainId, additionalLiquidity, additionalVeBAL] );
+    if (pools.length > 1) {
+      setLoadingPools(false)
+    } else {
+      setLoadingPools(true);
+    }
+  }, [activeNetworkVersion.chainId, additionalLiquidity, additionalVeBAL, pools]);
+
+  // Handle calculation trigger state
+  useEffect(() =>{
+    setCalculationTriggered(false)
+  }, [activeNetworkVersion.chainId, additionalLiquidity, additionalVeBAL])
+
 
   // State handling
   const calculateGauges = () => {
-    setLoading(true)
     const updatedGauges = calculateUserBalancesInUSD(
         decoratedGaugeData,
         poolsRef.current,
@@ -83,14 +103,10 @@ export default function VeBAL() {
         userVeBAL,
         totalVeBAL
     );
-    console.log("updatedGauges", updatedGauges)
     const trimmedData = updatedGauges.filter((gauge) => gauge.userBalance === 0 && Number(gauge.network) === Number(activeNetworkVersion.chainId));
     const portfolioData = updatedGauges.filter((gauge) => gauge.userBalance !== 0 && Number(gauge.network) === Number(activeNetworkVersion.chainId));
     setTrimmedGaugeData(trimmedData);
     setPortfolioData(portfolioData);
-    if (trimmedData.length > 1) {
-      setLoading(false)
-    }
   };
 
   const handleCalculate = () => {
@@ -100,9 +116,8 @@ export default function VeBAL() {
 
   const handleBackDropClose = () => {
     //Option to reset backdrop
-    setLoading(false);
+      setLoadingPools(false)
   };
-
 
   return (
       !isConnected ?
@@ -128,7 +143,7 @@ export default function VeBAL() {
               >
                 <SelfImprovementIcon sx={{ fontSize: 48 }} />
                 <Typography variant="h5" align="center">
-                  Pleaes connect your Wallet
+                  Please connect your Wallet
                 </Typography>
               </Box>
             </CardContent>
@@ -268,7 +283,7 @@ export default function VeBAL() {
         </Grid>
         { calculationTriggered ?
         <Grid item xs={11}>
-          <Box mb={1}>
+          <Box >
             <Typography variant="h5">Boost Across Wallet Portfolio</Typography>
           </Box>
           {portfolioData && portfolioData.length > 0 ? (
@@ -278,18 +293,20 @@ export default function VeBAL() {
               userVeBALAdjusted={userVeBAL+ additionalVeBAL}
             />
           ) : (
-              <Typography>No position(s) found </Typography>
+              <Typography variant={'caption'}>No position(s) found </Typography>
           )}
         </Grid> : null }
-        {calculationTriggered && !loading ?
-        <Grid item xs={11}>
-          <Box mb={1}>
+        {calculationTriggered && !loadingPools ?
+        <Grid item mt={1} xs={11}>
+          <Box >
             <Typography variant="h5">Theoretical Boost Across {activeNetworkVersion.name} Gauges</Typography>
           </Box>
           <Box mb={1}>
             <Typography variant="caption">Switch Networks in the Menu Header the top right to see the corresponding gauges</Typography>
           </Box>
-          {(JSON.stringify(poolsRef.current) === JSON.stringify(pools)) && pools && pools.length >= 1 && trimmedGaugeData && trimmedGaugeData.length >= 1 ? (
+          {(JSON.stringify(poolsRef.current) === JSON.stringify(pools))
+          && pools && pools.length >= 1
+          && trimmedGaugeData && trimmedGaugeData.length >= 1 ? (
             <GaugeBoostTable
                 key={'boost' + activeNetworkVersion.name}
                 gaugeDatas={trimmedGaugeData}
@@ -303,10 +320,18 @@ export default function VeBAL() {
       </Grid>
       <Backdrop
           sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={loading}
+          open={loadingPools}
           onClick={handleBackDropClose}
       >
+        <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+        >
         <CircularProgress color="inherit" />
+          <Typography>Fetching pool data...</Typography>
+        </Box>
       </Backdrop>
     </Box>
   );

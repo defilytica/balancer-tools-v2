@@ -4,11 +4,13 @@ import {Multicall} from "ethereum-multicall";
 import {ethers} from "ethers";
 import veBALVoteMany from "../../constants/abis/veBALVoteMany.json"
 import {veBALVoteAddress} from "../../constants";
+import {useAccount} from "wagmi";
 
-const useDecorateGaugesWithVotes = (stakingGaugeData: BalancerStakingGauges[], voterAddress: string): BalancerStakingGauges[] => {
+const useDecorateGaugesWithVotes = (stakingGaugeData: BalancerStakingGauges[]): BalancerStakingGauges[] => {
 
     const [decoratedGauges, setDecoratedGauges] = useState<BalancerStakingGauges[]>()
     const [isLoading, setIsLoading] = useState(true)
+    const { address } = useAccount();
 
     const fetchUserVotes = async (gaugeData: BalancerStakingGauges[] | undefined, votingAddress: string): Promise<BalancerStakingGauges[]> => {
         const updatedGaugeData: BalancerStakingGauges[] = [];
@@ -63,7 +65,7 @@ const useDecorateGaugesWithVotes = (stakingGaugeData: BalancerStakingGauges[], v
     useEffect(() => {
         if (isLoading && stakingGaugeData && stakingGaugeData.length > 0) {
             setIsLoading(false);
-            fetchUserVotes(stakingGaugeData, voterAddress)
+            fetchUserVotes(stakingGaugeData, address ? address.toString() : '')
                 .then((decoratedData) => {
                     setDecoratedGauges([...decoratedData]);
                     setIsLoading(false);
@@ -74,7 +76,7 @@ const useDecorateGaugesWithVotes = (stakingGaugeData: BalancerStakingGauges[], v
                 });
             setIsLoading(false);
         }
-    }, [isLoading, stakingGaugeData, voterAddress]);
+    }, [isLoading, stakingGaugeData, address, decoratedGauges]);
 
     if (decoratedGauges !== undefined) {
         return decoratedGauges;
