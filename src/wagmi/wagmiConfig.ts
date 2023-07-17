@@ -40,6 +40,7 @@ const connectors = connectorsForWallets([
             metaMaskWallet({ projectId, chains }),
             rabbyWallet({ chains }),
             ledgerWallet({ projectId, chains }),
+            walletConnectWallet({chains, projectId})
         ],
     },
     {
