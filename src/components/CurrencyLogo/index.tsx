@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
 import { useActiveNetworkVersion } from "../../state/application/hooks";
 import { useTheme } from '@mui/material/styles'
-import { SupportedNetwork } from "../../constants/networks";
+import {OptimismNetworkInfo, SupportedNetwork} from "../../constants/networks";
 import { isAddress } from '../../utils';
 import { Avatar } from '@mui/material';
 import useGetTokenLists, {TokenList} from "../../data/balancer/useGetTokenList";
+import {useLatestTokenList} from "../../data/tokens/useLatestTokenList";
+import {tokenClient} from "../../apollo/client";
 
 
 export const getTokenLogoURL = (address: string, networkId: SupportedNetwork) => {
@@ -60,6 +62,7 @@ export default function CurrencyLogo({address, size = '24px',}: {
     const [activeNetwork] = useActiveNetworkVersion();
     const theme = useTheme();
     const tokenList = useGetTokenLists();
+    const optimismTokenList = useLatestTokenList(tokenClient, OptimismNetworkInfo.chainId)
 
     //Secondary assets are loaded through Balancer
     const tempSources: { [address: string]: string } = useMemo(() => {
@@ -81,6 +84,8 @@ export default function CurrencyLogo({address, size = '24px',}: {
         return []
     }, [address, tempSources, tokenList, activeNetwork.id])
 
+    const newSrc = optimismTokenList.tokenList?.find(el => el.address === address);
+
     //Return an avatar for the default source, or an avatar as a child if default source is empty!
     return <Avatar
         sx={{
@@ -100,7 +105,7 @@ export default function CurrencyLogo({address, size = '24px',}: {
                     color: 'black',
                     fontSize: '15px',
                 }}
-                src={srcs[0]}
+                src={newSrc && newSrc.logoURI ? newSrc.logoURI : srcs[0]}
                 alt={'?'}
             />
         }

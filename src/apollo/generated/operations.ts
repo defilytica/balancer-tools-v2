@@ -854,3 +854,12 @@ export const GetLatestBlock = gql`
     }
   }
 `;
+export const GetTokenList = gql`
+  query GetTokenList {
+    tokenGetTokens {
+      address
+      name
+      logoURI
+    }
+  }
+`;

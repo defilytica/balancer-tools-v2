@@ -63,7 +63,7 @@ const useDecorateGaugesWithVotes = (stakingGaugeData: BalancerStakingGauges[]): 
     }
     //Fetch and populate gauge supply numbers
     useEffect(() => {
-        if (isLoading && stakingGaugeData && stakingGaugeData.length > 0) {
+        if (stakingGaugeData && stakingGaugeData.length > 0) {
             setIsLoading(false);
             fetchUserVotes(stakingGaugeData, address ? address.toString() : '')
                 .then((decoratedData) => {
@@ -76,7 +76,7 @@ const useDecorateGaugesWithVotes = (stakingGaugeData: BalancerStakingGauges[]): 
                 });
             setIsLoading(false);
         }
-    }, [isLoading, stakingGaugeData, address, decoratedGauges]);
+    }, [isLoading, stakingGaugeData, address]);
 
     if (decoratedGauges !== undefined) {
         return decoratedGauges;

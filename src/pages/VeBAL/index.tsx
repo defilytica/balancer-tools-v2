@@ -38,6 +38,7 @@ export default function VeBAL() {
   const decoratedGaugeData = useDecorateL2Gauges(l1GaugeData);
   const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);
   const unlockDate = date.toLocaleDateString();
+  console.log("l1GaugeData", l1GaugeData)
 
   // State variables
   const [trimmedGaugeData, setTrimmedGaugeData] = useState<BalancerStakingGauges[]>([]);
@@ -49,7 +50,7 @@ export default function VeBAL() {
   const additionalLiquidityRef = useRef<number>(0)
   const [loadingPools, setLoadingPools] = useState<boolean>(false); // Loading state pools
 
-  // Reset state when new address loads
+  // Reset state when an address changes
   useEffect(() => {
     setTrimmedGaugeData([]);
     setPortfolioData([]);

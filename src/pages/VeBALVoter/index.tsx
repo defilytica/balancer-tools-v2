@@ -200,7 +200,7 @@ export default function VeBALVoter() {
 
     // Reset allocations array when the address changes
     useEffect(() => {
-        if (prevAddress.current !== null && prevAddress.current !== address && allocations.length > 0) {
+        if ((prevAddress.current !== address || prevAddress.current === undefined) && allocations.length > 0) {
             setAllocations([]);
             window.location.reload();
             console.log("new address found, reloading component!")

@@ -13,6 +13,8 @@ Defined a Subgraph ID for an object type
 """
 directive @subgraphId(id: String!) on OBJECT
 
+scalar AmountHumanReadable
+
 type AmpUpdate {
   endAmp: BigInt!
   endTimestamp: BigInt!
@@ -122,11 +124,15 @@ enum AmpUpdate_orderBy {
   poolId__id
   poolId__isInRecoveryMode
   poolId__isPaused
+  poolId__joinExitEnabled
   poolId__lambda
+  poolId__lastJoinExitAmp
   poolId__lastPostJoinExitInvariant
   poolId__lowerTarget
   poolId__mainIndex
+  poolId__managementAumFee
   poolId__managementFee
+  poolId__mustAllowlistLPs
   poolId__name
   poolId__oracleEnabled
   poolId__owner
@@ -150,7 +156,10 @@ enum AmpUpdate_orderBy {
   poolId__tauAlphaY
   poolId__tauBetaX
   poolId__tauBetaY
+  poolId__totalAumFeeCollectedInBPT
   poolId__totalLiquidity
+  poolId__totalProtocolFee
+  poolId__totalProtocolFeePaidInBPT
   poolId__totalShares
   poolId__totalSwapFee
   poolId__totalSwapVolume
@@ -178,7 +187,9 @@ type Balancer {
     skip: Int = 0
     where: Pool_filter
   ): [Pool!]
+  protocolFeesCollector: Bytes
   totalLiquidity: BigDecimal!
+  totalProtocolFee: BigDecimal
   totalSwapCount: BigInt!
   totalSwapFee: BigDecimal!
   totalSwapVolume: BigDecimal!
@@ -189,6 +200,7 @@ type BalancerSnapshot {
   poolCount: Int!
   timestamp: Int!
   totalLiquidity: BigDecimal!
+  totalProtocolFee: BigDecimal
   totalSwapCount: BigInt!
   totalSwapFee: BigDecimal!
   totalSwapVolume: BigDecimal!
@@ -234,6 +246,14 @@ input BalancerSnapshot_filter {
   totalLiquidity_lte: BigDecimal
   totalLiquidity_not: BigDecimal
   totalLiquidity_not_in: [BigDecimal!]
+  totalProtocolFee: BigDecimal
+  totalProtocolFee_gt: BigDecimal
+  totalProtocolFee_gte: BigDecimal
+  totalProtocolFee_in: [BigDecimal!]
+  totalProtocolFee_lt: BigDecimal
+  totalProtocolFee_lte: BigDecimal
+  totalProtocolFee_not: BigDecimal
+  totalProtocolFee_not_in: [BigDecimal!]
   totalSwapCount: BigInt
   totalSwapCount_gt: BigInt
   totalSwapCount_gte: BigInt
@@ -286,13 +306,16 @@ enum BalancerSnapshot_orderBy {
   poolCount
   timestamp
   totalLiquidity
+  totalProtocolFee
   totalSwapCount
   totalSwapFee
   totalSwapVolume
   vault
   vault__id
   vault__poolCount
+  vault__protocolFeesCollector
   vault__totalLiquidity
+  vault__totalProtocolFee
   vault__totalSwapCount
   vault__totalSwapFee
   vault__totalSwapVolume
@@ -322,6 +345,16 @@ input Balancer_filter {
   poolCount_not: Int
   poolCount_not_in: [Int!]
   pools_: Pool_filter
+  protocolFeesCollector: Bytes
+  protocolFeesCollector_contains: Bytes
+  protocolFeesCollector_gt: Bytes
+  protocolFeesCollector_gte: Bytes
+  protocolFeesCollector_in: [Bytes!]
+  protocolFeesCollector_lt: Bytes
+  protocolFeesCollector_lte: Bytes
+  protocolFeesCollector_not: Bytes
+  protocolFeesCollector_not_contains: Bytes
+  protocolFeesCollector_not_in: [Bytes!]
   totalLiquidity: BigDecimal
   totalLiquidity_gt: BigDecimal
   totalLiquidity_gte: BigDecimal
@@ -330,6 +363,14 @@ input Balancer_filter {
   totalLiquidity_lte: BigDecimal
   totalLiquidity_not: BigDecimal
   totalLiquidity_not_in: [BigDecimal!]
+  totalProtocolFee: BigDecimal
+  totalProtocolFee_gt: BigDecimal
+  totalProtocolFee_gte: BigDecimal
+  totalProtocolFee_in: [BigDecimal!]
+  totalProtocolFee_lt: BigDecimal
+  totalProtocolFee_lte: BigDecimal
+  totalProtocolFee_not: BigDecimal
+  totalProtocolFee_not_in: [BigDecimal!]
   totalSwapCount: BigInt
   totalSwapCount_gt: BigInt
   totalSwapCount_gte: BigInt
@@ -360,7 +401,9 @@ enum Balancer_orderBy {
   id
   poolCount
   pools
+  protocolFeesCollector
   totalLiquidity
+  totalProtocolFee
   totalSwapCount
   totalSwapFee
   totalSwapVolume
@@ -611,10 +654,194 @@ scalar Bytes
 
 enum Chain {
   Arbitrum
+  Avalanche
   Gnosis
   Optimism
   Polygon
+  PolygonZkEvm
 }
+
+type CircuitBreaker {
+  bptPrice: BigDecimal!
+  id: ID!
+  lowerBoundPercentage: BigDecimal!
+  pool: Pool!
+  token: PoolToken!
+  upperBoundPercentage: BigDecimal!
+}
+
+input CircuitBreaker_filter {
+  """
+  Filter for the block changed event.
+  """
+  _change_block: BlockChangedFilter
+  and: [CircuitBreaker_filter]
+  bptPrice: BigDecimal
+  bptPrice_gt: BigDecimal
+  bptPrice_gte: BigDecimal
+  bptPrice_in: [BigDecimal!]
+  bptPrice_lt: BigDecimal
+  bptPrice_lte: BigDecimal
+  bptPrice_not: BigDecimal
+  bptPrice_not_in: [BigDecimal!]
+  id: ID
+  id_gt: ID
+  id_gte: ID
+  id_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_not: ID
+  id_not_in: [ID!]
+  lowerBoundPercentage: BigDecimal
+  lowerBoundPercentage_gt: BigDecimal
+  lowerBoundPercentage_gte: BigDecimal
+  lowerBoundPercentage_in: [BigDecimal!]
+  lowerBoundPercentage_lt: BigDecimal
+  lowerBoundPercentage_lte: BigDecimal
+  lowerBoundPercentage_not: BigDecimal
+  lowerBoundPercentage_not_in: [BigDecimal!]
+  or: [CircuitBreaker_filter]
+  pool: String
+  pool_: Pool_filter
+  pool_contains: String
+  pool_contains_nocase: String
+  pool_ends_with: String
+  pool_ends_with_nocase: String
+  pool_gt: String
+  pool_gte: String
+  pool_in: [String!]
+  pool_lt: String
+  pool_lte: String
+  pool_not: String
+  pool_not_contains: String
+  pool_not_contains_nocase: String
+  pool_not_ends_with: String
+  pool_not_ends_with_nocase: String
+  pool_not_in: [String!]
+  pool_not_starts_with: String
+  pool_not_starts_with_nocase: String
+  pool_starts_with: String
+  pool_starts_with_nocase: String
+  token: String
+  token_: PoolToken_filter
+  token_contains: String
+  token_contains_nocase: String
+  token_ends_with: String
+  token_ends_with_nocase: String
+  token_gt: String
+  token_gte: String
+  token_in: [String!]
+  token_lt: String
+  token_lte: String
+  token_not: String
+  token_not_contains: String
+  token_not_contains_nocase: String
+  token_not_ends_with: String
+  token_not_ends_with_nocase: String
+  token_not_in: [String!]
+  token_not_starts_with: String
+  token_not_starts_with_nocase: String
+  token_starts_with: String
+  token_starts_with_nocase: String
+  upperBoundPercentage: BigDecimal
+  upperBoundPercentage_gt: BigDecimal
+  upperBoundPercentage_gte: BigDecimal
+  upperBoundPercentage_in: [BigDecimal!]
+  upperBoundPercentage_lt: BigDecimal
+  upperBoundPercentage_lte: BigDecimal
+  upperBoundPercentage_not: BigDecimal
+  upperBoundPercentage_not_in: [BigDecimal!]
+}
+
+enum CircuitBreaker_orderBy {
+  bptPrice
+  id
+  lowerBoundPercentage
+  pool
+  pool__address
+  pool__alpha
+  pool__amp
+  pool__baseToken
+  pool__beta
+  pool__c
+  pool__createTime
+  pool__dSq
+  pool__delta
+  pool__epsilon
+  pool__expiryTime
+  pool__factory
+  pool__holdersCount
+  pool__id
+  pool__isInRecoveryMode
+  pool__isPaused
+  pool__joinExitEnabled
+  pool__lambda
+  pool__lastJoinExitAmp
+  pool__lastPostJoinExitInvariant
+  pool__lowerTarget
+  pool__mainIndex
+  pool__managementAumFee
+  pool__managementFee
+  pool__mustAllowlistLPs
+  pool__name
+  pool__oracleEnabled
+  pool__owner
+  pool__poolType
+  pool__poolTypeVersion
+  pool__principalToken
+  pool__protocolAumFeeCache
+  pool__protocolId
+  pool__protocolSwapFeeCache
+  pool__protocolYieldFeeCache
+  pool__root3Alpha
+  pool__s
+  pool__sqrtAlpha
+  pool__sqrtBeta
+  pool__strategyType
+  pool__swapEnabled
+  pool__swapFee
+  pool__swapsCount
+  pool__symbol
+  pool__tauAlphaX
+  pool__tauAlphaY
+  pool__tauBetaX
+  pool__tauBetaY
+  pool__totalAumFeeCollectedInBPT
+  pool__totalLiquidity
+  pool__totalProtocolFee
+  pool__totalProtocolFeePaidInBPT
+  pool__totalShares
+  pool__totalSwapFee
+  pool__totalSwapVolume
+  pool__totalWeight
+  pool__tx
+  pool__u
+  pool__unitSeconds
+  pool__upperTarget
+  pool__v
+  pool__w
+  pool__wrappedIndex
+  pool__z
+  token
+  token__address
+  token__assetManager
+  token__balance
+  token__cashBalance
+  token__decimals
+  token__id
+  token__index
+  token__isExemptFromYieldProtocolFee
+  token__managedBalance
+  token__name
+  token__oldPriceRate
+  token__paidProtocolFees
+  token__priceRate
+  token__symbol
+  token__weight
+  upperBoundPercentage
+}
+
+scalar Date
 
 type Gauge {
   """
@@ -1100,6 +1327,1145 @@ enum Gauge_orderBy {
   type__name
 }
 
+type GqlBalancePoolAprItem {
+  apr: GqlPoolAprValue!
+  id: ID!
+  subItems: [GqlBalancePoolAprSubItem!]
+  title: String!
+}
+
+type GqlBalancePoolAprSubItem {
+  apr: GqlPoolAprValue!
+  id: ID!
+  title: String!
+}
+
+scalar GqlBigNumber
+
+enum GqlChain {
+  ARBITRUM
+  AVALANCHE
+  FANTOM
+  GNOSIS
+  MAINNET
+  OPTIMISM
+  POLYGON
+  ZKEVM
+}
+
+type GqlContentNewsItem {
+  discussionUrl: String
+  id: ID!
+  image: String
+  source: GqlContentNewsItemSource!
+  text: String!
+  timestamp: String!
+  url: String!
+}
+
+enum GqlContentNewsItemSource {
+  discord
+  medium
+  twitter
+}
+
+type GqlFeaturePoolGroupItemExternalLink {
+  buttonText: String!
+  buttonUrl: String!
+  id: ID!
+  image: String!
+}
+
+type GqlHistoricalTokenPrice {
+  address: String!
+  prices: [GqlHistoricalTokenPriceEntry!]!
+}
+
+type GqlHistoricalTokenPriceEntry {
+  price: Float!
+  timestamp: String!
+}
+
+type GqlLatestSyncedBlocks {
+  poolSyncBlock: BigInt!
+  userStakeSyncBlock: BigInt!
+  userWalletSyncBlock: BigInt!
+}
+
+type GqlLge {
+  address: String!
+  adminAddress: String!
+  adminIsMultisig: Boolean!
+  bannerImageUrl: String!
+  collateralAddress: String!
+  collateralAmount: String!
+  collateralDecimals: Int!
+  collateralEndWeight: Int!
+  collateralStartWeight: Int!
+  description: String!
+  discordUrl: String!
+  endTimestamp: Int!
+  id: ID!
+  mediumUrl: String!
+  name: String!
+  startTimestamp: Int!
+  swapFee: String!
+  telegramUrl: String!
+  tokenAddress: String!
+  tokenAmount: String!
+  tokenDecimals: Int!
+  tokenEndWeight: Int!
+  tokenIconUrl: String!
+  tokenStartWeight: Int!
+  tokenSymbol: String!
+  twitterUrl: String!
+  websiteUrl: String!
+}
+
+input GqlLgeCreateInput {
+  address: String!
+  bannerImageUrl: String!
+  collateralAddress: String!
+  collateralAmount: String!
+  collateralEndWeight: Int!
+  collateralStartWeight: Int!
+  description: String!
+  discordUrl: String!
+  endTimestamp: Int!
+  id: ID!
+  mediumUrl: String!
+  name: String!
+  startTimestamp: Int!
+  swapFee: String!
+  telegramUrl: String!
+  tokenAddress: String!
+  tokenAmount: String!
+  tokenEndWeight: Int!
+  tokenIconUrl: String!
+  tokenStartWeight: Int!
+  twitterUrl: String!
+  websiteUrl: String!
+}
+
+type GqlLgePriceData {
+  price: Float!
+  timestamp: Int!
+  type: String!
+}
+
+input GqlLgeUpdateInput {
+  description: String!
+  discordUrl: String!
+  id: ID!
+  mediumUrl: String!
+  name: String!
+  telegramUrl: String!
+  tokenIconUrl: String!
+  twitterUrl: String!
+  websiteUrl: String!
+}
+
+type GqlPoolApr {
+  apr: GqlPoolAprValue!
+  hasRewardApr: Boolean!
+  items: [GqlBalancePoolAprItem!]!
+  nativeRewardApr: GqlPoolAprValue!
+  swapApr: BigDecimal!
+  thirdPartyApr: GqlPoolAprValue!
+}
+
+type GqlPoolAprRange {
+  max: BigDecimal!
+  min: BigDecimal!
+}
+
+type GqlPoolAprTotal {
+  total: BigDecimal!
+}
+
+union GqlPoolAprValue = GqlPoolAprRange | GqlPoolAprTotal
+
+interface GqlPoolBase {
+  address: Bytes!
+  allTokens: [GqlPoolTokenExpanded!]!
+  chain: GqlChain!
+  createTime: Int!
+  decimals: Int!
+  displayTokens: [GqlPoolTokenDisplay!]!
+  dynamicData: GqlPoolDynamicData!
+  factory: Bytes
+  id: ID!
+  investConfig: GqlPoolInvestConfig!
+  name: String!
+  owner: Bytes
+  staking: GqlPoolStaking
+  symbol: String!
+  withdrawConfig: GqlPoolWithdrawConfig!
+}
+
+type GqlPoolBatchSwap {
+  id: ID!
+  swaps: [GqlPoolBatchSwapSwap!]!
+  timestamp: Int!
+  tokenAmountIn: String!
+  tokenAmountOut: String!
+  tokenIn: String!
+  tokenInPrice: Float!
+  tokenOut: String!
+  tokenOutPrice: Float!
+  tx: String!
+  userAddress: String!
+  valueUSD: Float!
+}
+
+type GqlPoolBatchSwapPool {
+  id: ID!
+  tokens: [String!]!
+}
+
+type GqlPoolBatchSwapSwap {
+  id: ID!
+  pool: GqlPoolMinimal!
+  timestamp: Int!
+  tokenAmountIn: String!
+  tokenAmountOut: String!
+  tokenIn: String!
+  tokenOut: String!
+  tx: String!
+  userAddress: String!
+  valueUSD: Float!
+}
+
+type GqlPoolDynamicData {
+  apr: GqlPoolApr!
+  fees24h: BigDecimal!
+  fees24hAth: BigDecimal!
+  fees24hAthTimestamp: Int!
+  fees24hAtl: BigDecimal!
+  fees24hAtlTimestamp: Int!
+  fees48h: BigDecimal!
+  holdersCount: BigInt!
+  lifetimeSwapFees: BigDecimal!
+  lifetimeVolume: BigDecimal!
+  poolId: ID!
+  sharePriceAth: BigDecimal!
+  sharePriceAthTimestamp: Int!
+  sharePriceAtl: BigDecimal!
+  sharePriceAtlTimestamp: Int!
+  swapEnabled: Boolean!
+  swapFee: BigDecimal!
+  swapsCount: BigInt!
+  totalLiquidity: BigDecimal!
+  totalLiquidity24hAgo: BigDecimal!
+  totalLiquidityAth: BigDecimal!
+  totalLiquidityAthTimestamp: Int!
+  totalLiquidityAtl: BigDecimal!
+  totalLiquidityAtlTimestamp: Int!
+  totalShares: BigDecimal!
+  totalShares24hAgo: BigDecimal!
+  volume24h: BigDecimal!
+  volume24hAth: BigDecimal!
+  volume24hAthTimestamp: Int!
+  volume24hAtl: BigDecimal!
+  volume24hAtlTimestamp: Int!
+  volume48h: BigDecimal!
+  yieldCapture24h: BigDecimal!
+  yieldCapture48h: BigDecimal!
+}
+
+type GqlPoolElement implements GqlPoolBase {
+  address: Bytes!
+  allTokens: [GqlPoolTokenExpanded!]!
+  baseToken: Bytes!
+  chain: GqlChain!
+  createTime: Int!
+  decimals: Int!
+  displayTokens: [GqlPoolTokenDisplay!]!
+  dynamicData: GqlPoolDynamicData!
+  factory: Bytes
+  id: ID!
+  investConfig: GqlPoolInvestConfig!
+  name: String!
+  owner: Bytes!
+  principalToken: Bytes!
+  staking: GqlPoolStaking
+  symbol: String!
+  tokens: [GqlPoolToken!]!
+  unitSeconds: BigInt!
+  withdrawConfig: GqlPoolWithdrawConfig!
+}
+
+type GqlPoolFeaturedPoolGroup {
+  icon: String!
+  id: ID!
+  items: [GqlPoolFeaturedPoolGroupItem!]!
+  title: String!
+}
+
+union GqlPoolFeaturedPoolGroupItem =
+    GqlFeaturePoolGroupItemExternalLink
+  | GqlPoolMinimal
+
+input GqlPoolFilter {
+  categoryIn: [GqlPoolFilterCategory!]
+  categoryNotIn: [GqlPoolFilterCategory!]
+  chainIn: [GqlChain!]
+  chainNotIn: [GqlChain!]
+  filterIn: [String!]
+  filterNotIn: [String!]
+  idIn: [String!]
+  idNotIn: [String!]
+  poolTypeIn: [GqlPoolFilterType!]
+  poolTypeNotIn: [GqlPoolFilterType!]
+  tokensIn: [String!]
+  tokensNotIn: [String!]
+}
+
+enum GqlPoolFilterCategory {
+  BLACK_LISTED
+  INCENTIVIZED
+}
+
+type GqlPoolFilterDefinition {
+  id: ID!
+  title: String!
+}
+
+enum GqlPoolFilterType {
+  ELEMENT
+  GYRO
+  GYRO3
+  GYROE
+  INVESTMENT
+  LINEAR
+  LIQUIDITY_BOOTSTRAPPING
+  META_STABLE
+  PHANTOM_STABLE
+  STABLE
+  UNKNOWN
+  WEIGHTED
+}
+
+type GqlPoolGyro implements GqlPoolBase {
+  address: Bytes!
+  allTokens: [GqlPoolTokenExpanded!]!
+  alpha: String!
+  beta: String!
+  chain: GqlChain!
+  createTime: Int!
+  decimals: Int!
+  displayTokens: [GqlPoolTokenDisplay!]!
+  dynamicData: GqlPoolDynamicData!
+  factory: Bytes
+  id: ID!
+  investConfig: GqlPoolInvestConfig!
+  name: String!
+  nestingType: GqlPoolNestingType!
+  owner: Bytes!
+  staking: GqlPoolStaking
+  symbol: String!
+  tokens: [GqlPoolTokenUnion!]!
+  type: String!
+  withdrawConfig: GqlPoolWithdrawConfig!
+}
+
+type GqlPoolInvestConfig {
+  options: [GqlPoolInvestOption!]!
+  proportionalEnabled: Boolean!
+  singleAssetEnabled: Boolean!
+}
+
+type GqlPoolInvestOption {
+  poolTokenAddress: String!
+  poolTokenIndex: Int!
+  tokenOptions: [GqlPoolToken!]!
+}
+
+type GqlPoolJoinExit {
+  amounts: [GqlPoolJoinExitAmount!]!
+  id: ID!
+  poolId: String!
+  sender: String!
+  timestamp: Int!
+  tx: String!
+  type: GqlPoolJoinExitType!
+  valueUSD: String
+}
+
+type GqlPoolJoinExitAmount {
+  address: String!
+  amount: String!
+}
+
+input GqlPoolJoinExitFilter {
+  poolIdIn: [String!]
+}
+
+enum GqlPoolJoinExitType {
+  Exit
+  Join
+}
+
+type GqlPoolLinear implements GqlPoolBase {
+  address: Bytes!
+  allTokens: [GqlPoolTokenExpanded!]!
+  bptPriceRate: BigDecimal!
+  chain: GqlChain!
+  createTime: Int!
+  decimals: Int!
+  displayTokens: [GqlPoolTokenDisplay!]!
+  dynamicData: GqlPoolDynamicData!
+  factory: Bytes
+  id: ID!
+  investConfig: GqlPoolInvestConfig!
+  lowerTarget: BigInt!
+  mainIndex: Int!
+  name: String!
+  owner: Bytes!
+  staking: GqlPoolStaking
+  symbol: String!
+  tokens: [GqlPoolToken!]!
+  upperTarget: BigInt!
+  withdrawConfig: GqlPoolWithdrawConfig!
+  wrappedIndex: Int!
+}
+
+type GqlPoolLinearNested {
+  address: Bytes!
+  bptPriceRate: BigDecimal!
+  createTime: Int!
+  factory: Bytes
+  id: ID!
+  lowerTarget: BigInt!
+  mainIndex: Int!
+  name: String!
+  owner: Bytes!
+  symbol: String!
+  tokens: [GqlPoolToken!]!
+  totalLiquidity: BigDecimal!
+  totalShares: BigDecimal!
+  upperTarget: BigInt!
+  wrappedIndex: Int!
+}
+
+type GqlPoolLinearPoolData {
+  address: String!
+  balance: String!
+  id: ID!
+  mainToken: GqlPoolLinearPoolMainToken!
+  mainTokenTotalBalance: String!
+  poolToken: String!
+  priceRate: String!
+  symbol: String!
+  totalSupply: String!
+  unwrappedTokenAddress: String!
+  wrappedToken: GqlPoolLinearPoolWrappedToken!
+}
+
+type GqlPoolLinearPoolMainToken {
+  address: String!
+  balance: String!
+  decimals: Int!
+  index: Int!
+  name: String!
+  symbol: String!
+  totalSupply: String!
+}
+
+type GqlPoolLinearPoolWrappedToken {
+  address: String!
+  balance: String!
+  decimals: Int!
+  index: Int!
+  name: String!
+  priceRate: String!
+  symbol: String!
+  totalSupply: String!
+}
+
+type GqlPoolLiquidityBootstrapping implements GqlPoolBase {
+  address: Bytes!
+  allTokens: [GqlPoolTokenExpanded!]!
+  chain: GqlChain!
+  createTime: Int!
+  decimals: Int!
+  displayTokens: [GqlPoolTokenDisplay!]!
+  dynamicData: GqlPoolDynamicData!
+  factory: Bytes
+  id: ID!
+  investConfig: GqlPoolInvestConfig!
+  name: String!
+  nestingType: GqlPoolNestingType!
+  owner: Bytes!
+  staking: GqlPoolStaking
+  symbol: String!
+  tokens: [GqlPoolTokenUnion!]!
+  withdrawConfig: GqlPoolWithdrawConfig!
+}
+
+type GqlPoolMetaStable implements GqlPoolBase {
+  address: Bytes!
+  allTokens: [GqlPoolTokenExpanded!]!
+  amp: BigInt!
+  chain: GqlChain!
+  createTime: Int!
+  decimals: Int!
+  displayTokens: [GqlPoolTokenDisplay!]!
+  dynamicData: GqlPoolDynamicData!
+  factory: Bytes
+  id: ID!
+  investConfig: GqlPoolInvestConfig!
+  name: String!
+  owner: Bytes!
+  staking: GqlPoolStaking
+  symbol: String!
+  tokens: [GqlPoolToken!]!
+  withdrawConfig: GqlPoolWithdrawConfig!
+}
+
+type GqlPoolMinimal {
+  address: Bytes!
+  allTokens: [GqlPoolTokenExpanded!]!
+  chain: GqlChain!
+  createTime: Int!
+  decimals: Int!
+  displayTokens: [GqlPoolTokenDisplay!]!
+  dynamicData: GqlPoolDynamicData!
+  factory: Bytes
+  id: ID!
+  name: String!
+  owner: Bytes
+  staking: GqlPoolStaking
+  symbol: String!
+  type: GqlPoolMinimalType!
+  version: Int!
+}
+
+enum GqlPoolMinimalType {
+  ELEMENT
+  GYRO
+  GYRO3
+  GYROE
+  INVESTMENT
+  LINEAR
+  LIQUIDITY_BOOTSTRAPPING
+  META_STABLE
+  PHANTOM_STABLE
+  STABLE
+  UNKNOWN
+  WEIGHTED
+}
+
+union GqlPoolNestedUnion = GqlPoolLinearNested | GqlPoolPhantomStableNested
+
+enum GqlPoolNestingType {
+  HAS_ONLY_PHANTOM_BPT
+  HAS_SOME_PHANTOM_BPT
+  NO_NESTING
+}
+
+enum GqlPoolOrderBy {
+  apr
+  fees24h
+  totalLiquidity
+  totalShares
+  volume24h
+}
+
+enum GqlPoolOrderDirection {
+  asc
+  desc
+}
+
+type GqlPoolPhantomStable implements GqlPoolBase {
+  address: Bytes!
+  allTokens: [GqlPoolTokenExpanded!]!
+  amp: BigInt!
+  bptPriceRate: BigDecimal!
+  chain: GqlChain!
+  createTime: Int!
+  decimals: Int!
+  displayTokens: [GqlPoolTokenDisplay!]!
+  dynamicData: GqlPoolDynamicData!
+  factory: Bytes
+  id: ID!
+  investConfig: GqlPoolInvestConfig!
+  name: String!
+  nestingType: GqlPoolNestingType!
+  owner: Bytes!
+  staking: GqlPoolStaking
+  symbol: String!
+  tokens: [GqlPoolTokenUnion!]!
+  withdrawConfig: GqlPoolWithdrawConfig!
+}
+
+type GqlPoolPhantomStableNested {
+  address: Bytes!
+  amp: BigInt!
+  bptPriceRate: BigDecimal!
+  createTime: Int!
+  factory: Bytes
+  id: ID!
+  name: String!
+  nestingType: GqlPoolNestingType!
+  owner: Bytes!
+  swapFee: BigDecimal!
+  symbol: String!
+  tokens: [GqlPoolTokenPhantomStableNestedUnion!]!
+  totalLiquidity: BigDecimal!
+  totalShares: BigDecimal!
+}
+
+type GqlPoolSnapshot {
+  amounts: [String!]!
+  fees24h: String!
+  holdersCount: String!
+  id: ID!
+  poolId: String!
+  sharePrice: String!
+  swapsCount: String!
+  timestamp: Int!
+  totalLiquidity: String!
+  totalShares: String!
+  totalSwapFee: String!
+  totalSwapVolume: String!
+  volume24h: String!
+}
+
+enum GqlPoolSnapshotDataRange {
+  ALL_TIME
+  NINETY_DAYS
+  ONE_HUNDRED_EIGHTY_DAYS
+  ONE_YEAR
+  THIRTY_DAYS
+}
+
+type GqlPoolStable implements GqlPoolBase {
+  address: Bytes!
+  allTokens: [GqlPoolTokenExpanded!]!
+  amp: BigInt!
+  chain: GqlChain!
+  createTime: Int!
+  decimals: Int!
+  displayTokens: [GqlPoolTokenDisplay!]!
+  dynamicData: GqlPoolDynamicData!
+  factory: Bytes
+  id: ID!
+  investConfig: GqlPoolInvestConfig!
+  name: String!
+  owner: Bytes!
+  staking: GqlPoolStaking
+  symbol: String!
+  tokens: [GqlPoolToken!]!
+  withdrawConfig: GqlPoolWithdrawConfig!
+}
+
+type GqlPoolStablePhantomPoolData {
+  address: String!
+  balance: String!
+  id: ID!
+  symbol: String!
+  tokens: [GqlPoolToken!]!
+  totalSupply: String!
+}
+
+type GqlPoolStaking {
+  address: String!
+  farm: GqlPoolStakingMasterChefFarm
+  gauge: GqlPoolStakingGauge
+  id: ID!
+  reliquary: GqlPoolStakingReliquaryFarm
+  type: GqlPoolStakingType!
+}
+
+type GqlPoolStakingFarmRewarder {
+  address: String!
+  id: ID!
+  rewardPerSecond: String!
+  tokenAddress: String!
+}
+
+type GqlPoolStakingGauge {
+  gaugeAddress: String!
+  id: ID!
+  otherGauges: [GqlPoolStakingOtherGauge!]
+  rewards: [GqlPoolStakingGaugeReward!]!
+  status: GqlPoolStakingGaugeStatus!
+  version: Int!
+}
+
+type GqlPoolStakingGaugeReward {
+  id: ID!
+  rewardPerSecond: String!
+  tokenAddress: String!
+}
+
+enum GqlPoolStakingGaugeStatus {
+  ACTIVE
+  KILLED
+  PREFERRED
+}
+
+type GqlPoolStakingMasterChefFarm {
+  beetsPerBlock: String!
+  id: ID!
+  rewarders: [GqlPoolStakingFarmRewarder!]
+}
+
+type GqlPoolStakingOtherGauge {
+  gaugeAddress: String!
+  id: ID!
+  rewards: [GqlPoolStakingGaugeReward!]!
+  status: GqlPoolStakingGaugeStatus!
+  version: Int!
+}
+
+type GqlPoolStakingReliquaryFarm {
+  beetsPerSecond: String!
+  id: ID!
+  levels: [GqlPoolStakingReliquaryFarmLevel!]
+  totalBalance: String!
+  totalWeightedBalance: String!
+}
+
+type GqlPoolStakingReliquaryFarmLevel {
+  allocationPoints: Int!
+  apr: BigDecimal!
+  balance: BigDecimal!
+  id: ID!
+  level: Int!
+  requiredMaturity: Int!
+}
+
+enum GqlPoolStakingType {
+  FRESH_BEETS
+  GAUGE
+  MASTER_CHEF
+  RELIQUARY
+}
+
+type GqlPoolSwap {
+  id: ID!
+  poolId: String!
+  timestamp: Int!
+  tokenAmountIn: String!
+  tokenAmountOut: String!
+  tokenIn: String!
+  tokenOut: String!
+  tx: String!
+  userAddress: String!
+  valueUSD: Float!
+}
+
+input GqlPoolSwapFilter {
+  poolIdIn: [String!]
+  tokenInIn: [String!]
+  tokenOutIn: [String!]
+}
+
+type GqlPoolToken implements GqlPoolTokenBase {
+  address: String!
+  balance: BigDecimal!
+  decimals: Int!
+  id: ID!
+  index: Int!
+  name: String!
+  priceRate: BigDecimal!
+  symbol: String!
+  totalBalance: BigDecimal!
+  weight: BigDecimal
+}
+
+interface GqlPoolTokenBase {
+  address: String!
+  balance: BigDecimal!
+  decimals: Int!
+  id: ID!
+  index: Int!
+  name: String!
+  priceRate: BigDecimal!
+  symbol: String!
+  totalBalance: BigDecimal!
+  weight: BigDecimal
+}
+
+type GqlPoolTokenDisplay {
+  address: String!
+  id: ID!
+  name: String!
+  nestedTokens: [GqlPoolTokenDisplay!]
+  symbol: String!
+  weight: BigDecimal
+}
+
+type GqlPoolTokenExpanded {
+  address: String!
+  decimals: Int!
+  id: ID!
+  isMainToken: Boolean!
+  isNested: Boolean!
+  isPhantomBpt: Boolean!
+  name: String!
+  symbol: String!
+  weight: String
+}
+
+type GqlPoolTokenLinear implements GqlPoolTokenBase {
+  address: String!
+  balance: BigDecimal!
+  decimals: Int!
+  id: ID!
+  index: Int!
+  mainTokenBalance: BigDecimal!
+  name: String!
+  pool: GqlPoolLinearNested!
+  priceRate: BigDecimal!
+  symbol: String!
+  totalBalance: BigDecimal!
+  totalMainTokenBalance: BigDecimal!
+  weight: BigDecimal
+  wrappedTokenBalance: BigDecimal!
+}
+
+type GqlPoolTokenPhantomStable implements GqlPoolTokenBase {
+  address: String!
+  balance: BigDecimal!
+  decimals: Int!
+  id: ID!
+  index: Int!
+  name: String!
+  pool: GqlPoolPhantomStableNested!
+  priceRate: BigDecimal!
+  symbol: String!
+  totalBalance: BigDecimal!
+  weight: BigDecimal
+}
+
+union GqlPoolTokenPhantomStableNestedUnion = GqlPoolToken | GqlPoolTokenLinear
+
+union GqlPoolTokenUnion =
+    GqlPoolToken
+  | GqlPoolTokenLinear
+  | GqlPoolTokenPhantomStable
+
+union GqlPoolUnion =
+    GqlPoolElement
+  | GqlPoolGyro
+  | GqlPoolLinear
+  | GqlPoolLiquidityBootstrapping
+  | GqlPoolMetaStable
+  | GqlPoolPhantomStable
+  | GqlPoolStable
+  | GqlPoolWeighted
+
+type GqlPoolUserSwapVolume {
+  swapVolumeUSD: BigDecimal!
+  userAddress: String!
+}
+
+type GqlPoolWeighted implements GqlPoolBase {
+  address: Bytes!
+  allTokens: [GqlPoolTokenExpanded!]!
+  chain: GqlChain!
+  createTime: Int!
+  decimals: Int!
+  displayTokens: [GqlPoolTokenDisplay!]!
+  dynamicData: GqlPoolDynamicData!
+  factory: Bytes
+  id: ID!
+  investConfig: GqlPoolInvestConfig!
+  name: String!
+  nestingType: GqlPoolNestingType!
+  owner: Bytes!
+  staking: GqlPoolStaking
+  symbol: String!
+  tokens: [GqlPoolTokenUnion!]!
+  withdrawConfig: GqlPoolWithdrawConfig!
+}
+
+type GqlPoolWithdrawConfig {
+  options: [GqlPoolWithdrawOption!]!
+  proportionalEnabled: Boolean!
+  singleAssetEnabled: Boolean!
+}
+
+type GqlPoolWithdrawOption {
+  poolTokenAddress: String!
+  poolTokenIndex: Int!
+  tokenOptions: [GqlPoolToken!]!
+}
+
+type GqlProtocolMetricsAggregated {
+  chains: [GqlProtocolMetricsChain!]!
+  numLiquidityProviders: BigInt!
+  poolCount: BigInt!
+  swapFee7d: BigDecimal!
+  swapFee24h: BigDecimal!
+  swapVolume7d: BigDecimal!
+  swapVolume24h: BigDecimal!
+  totalLiquidity: BigDecimal!
+  totalSwapFee: BigDecimal!
+  totalSwapVolume: BigDecimal!
+  yieldCapture24h: BigDecimal!
+}
+
+type GqlProtocolMetricsChain {
+  chainId: String!
+  numLiquidityProviders: BigInt!
+  poolCount: BigInt!
+  swapFee7d: BigDecimal!
+  swapFee24h: BigDecimal!
+  swapVolume7d: BigDecimal!
+  swapVolume24h: BigDecimal!
+  totalLiquidity: BigDecimal!
+  totalSwapFee: BigDecimal!
+  totalSwapVolume: BigDecimal!
+  yieldCapture24h: BigDecimal!
+}
+
+type GqlRelicSnapshot {
+  balance: String!
+  entryTimestamp: Int!
+  farmId: String!
+  level: Int!
+  relicId: Int!
+}
+
+type GqlReliquaryFarmLevelSnapshot {
+  balance: String!
+  id: ID!
+  level: String!
+}
+
+type GqlReliquaryFarmSnapshot {
+  dailyDeposited: String!
+  dailyWithdrawn: String!
+  farmId: String!
+  id: ID!
+  levelBalances: [GqlReliquaryFarmLevelSnapshot!]!
+  relicCount: String!
+  timestamp: Int!
+  tokenBalances: [GqlReliquaryTokenBalanceSnapshot!]!
+  totalBalance: String!
+  totalLiquidity: String!
+  userCount: String!
+}
+
+type GqlReliquaryTokenBalanceSnapshot {
+  address: String!
+  balance: String!
+  decimals: Int!
+  id: ID!
+  name: String!
+  symbol: String!
+}
+
+type GqlSorGetBatchSwapForTokensInResponse {
+  assets: [String!]!
+  swaps: [GqlSorSwap!]!
+  tokenOutAmount: AmountHumanReadable!
+}
+
+type GqlSorGetSwapsResponse {
+  effectivePrice: AmountHumanReadable!
+  effectivePriceReversed: AmountHumanReadable!
+  marketSp: String!
+  priceImpact: AmountHumanReadable!
+  returnAmount: AmountHumanReadable!
+  returnAmountConsideringFees: BigDecimal!
+  returnAmountFromSwaps: BigDecimal
+  returnAmountScaled: BigDecimal!
+  routes: [GqlSorSwapRoute!]!
+  swapAmount: AmountHumanReadable!
+  swapAmountForSwaps: BigDecimal
+  swapAmountScaled: BigDecimal!
+  swapType: GqlSorSwapType!
+  swaps: [GqlSorSwap!]!
+  tokenAddresses: [String!]!
+  tokenIn: String!
+  tokenInAmount: AmountHumanReadable!
+  tokenOut: String!
+  tokenOutAmount: AmountHumanReadable!
+}
+
+type GqlSorSwap {
+  amount: String!
+  assetInIndex: Int!
+  assetOutIndex: Int!
+  poolId: String!
+  userData: String!
+}
+
+input GqlSorSwapOptionsInput {
+  forceRefresh: Boolean
+  maxPools: Int
+  timestamp: Int
+}
+
+type GqlSorSwapRoute {
+  hops: [GqlSorSwapRouteHop!]!
+  share: Float!
+  tokenIn: String!
+  tokenInAmount: BigDecimal!
+  tokenOut: String!
+  tokenOutAmount: BigDecimal!
+}
+
+type GqlSorSwapRouteHop {
+  pool: GqlPoolMinimal!
+  poolId: String!
+  tokenIn: String!
+  tokenInAmount: BigDecimal!
+  tokenOut: String!
+  tokenOutAmount: BigDecimal!
+}
+
+enum GqlSorSwapType {
+  EXACT_IN
+  EXACT_OUT
+}
+
+type GqlToken {
+  address: String!
+  chainId: Int!
+  decimals: Int!
+  description: String
+  discordUrl: String
+  logoURI: String
+  name: String!
+  priority: Int!
+  symbol: String!
+  telegramUrl: String
+  tradable: Boolean!
+  twitterUsername: String
+  websiteUrl: String
+}
+
+input GqlTokenAmountHumanReadable {
+  address: String!
+  amount: AmountHumanReadable!
+}
+
+type GqlTokenCandlestickChartDataItem {
+  close: AmountHumanReadable!
+  high: AmountHumanReadable!
+  id: ID!
+  low: AmountHumanReadable!
+  open: AmountHumanReadable!
+  timestamp: Int!
+}
+
+enum GqlTokenChartDataRange {
+  SEVEN_DAY
+  THIRTY_DAY
+}
+
+type GqlTokenData {
+  description: String
+  discordUrl: String
+  id: ID!
+  telegramUrl: String
+  tokenAddress: String!
+  twitterUsername: String
+  websiteUrl: String
+}
+
+type GqlTokenDynamicData {
+  ath: Float!
+  atl: Float!
+  fdv: String
+  high24h: Float!
+  id: String!
+  low24h: Float!
+  marketCap: String
+  price: Float!
+  priceChange24h: Float!
+  priceChangePercent7d: Float
+  priceChangePercent14d: Float
+  priceChangePercent24h: Float!
+  priceChangePercent30d: Float
+  tokenAddress: String!
+  updatedAt: String!
+}
+
+type GqlTokenPrice {
+  address: String!
+  price: Float!
+}
+
+type GqlTokenPriceChartDataItem {
+  id: ID!
+  price: AmountHumanReadable!
+  timestamp: Int!
+}
+
+enum GqlTokenType {
+  BPT
+  LINEAR_WRAPPED_TOKEN
+  PHANTOM_BPT
+  WHITE_LISTED
+}
+
+type GqlUserFbeetsBalance {
+  id: String!
+  stakedBalance: AmountHumanReadable!
+  totalBalance: AmountHumanReadable!
+  walletBalance: AmountHumanReadable!
+}
+
+type GqlUserPoolBalance {
+  poolId: String!
+  stakedBalance: AmountHumanReadable!
+  tokenAddress: String!
+  tokenPrice: Float!
+  totalBalance: AmountHumanReadable!
+  walletBalance: AmountHumanReadable!
+}
+
+type GqlUserPoolSnapshot {
+  farmBalance: AmountHumanReadable!
+  fees24h: AmountHumanReadable!
+  gaugeBalance: AmountHumanReadable!
+  percentShare: Float!
+  timestamp: Int!
+  totalBalance: AmountHumanReadable!
+  totalValueUSD: AmountHumanReadable!
+  walletBalance: AmountHumanReadable!
+}
+
+type GqlUserPortfolioSnapshot {
+  farmBalance: AmountHumanReadable!
+  fees24h: AmountHumanReadable!
+  gaugeBalance: AmountHumanReadable!
+  pools: [GqlUserPoolSnapshot!]!
+  timestamp: Int!
+  totalBalance: AmountHumanReadable!
+  totalFees: AmountHumanReadable!
+  totalValueUSD: AmountHumanReadable!
+  walletBalance: AmountHumanReadable!
+}
+
+type GqlUserRelicSnapshot {
+  relicCount: Int!
+  relicSnapshots: [GqlRelicSnapshot!]!
+  timestamp: Int!
+  totalBalance: String!
+}
+
+enum GqlUserSnapshotDataRange {
+  ALL_TIME
+  NINETY_DAYS
+  ONE_HUNDRED_EIGHTY_DAYS
+  ONE_YEAR
+  THIRTY_DAYS
+}
+
+input GqlUserSwapVolumeFilter {
+  poolIdIn: [String!]
+  tokenInIn: [String!]
+  tokenOutIn: [String!]
+}
+
 type GradualWeightUpdate {
   endTimestamp: BigInt!
   endWeights: [BigInt!]!
@@ -1205,11 +2571,15 @@ enum GradualWeightUpdate_orderBy {
   poolId__id
   poolId__isInRecoveryMode
   poolId__isPaused
+  poolId__joinExitEnabled
   poolId__lambda
+  poolId__lastJoinExitAmp
   poolId__lastPostJoinExitInvariant
   poolId__lowerTarget
   poolId__mainIndex
+  poolId__managementAumFee
   poolId__managementFee
+  poolId__mustAllowlistLPs
   poolId__name
   poolId__oracleEnabled
   poolId__owner
@@ -1233,7 +2603,10 @@ enum GradualWeightUpdate_orderBy {
   poolId__tauAlphaY
   poolId__tauBetaX
   poolId__tauBetaY
+  poolId__totalAumFeeCollectedInBPT
   poolId__totalLiquidity
+  poolId__totalProtocolFee
+  poolId__totalProtocolFeePaidInBPT
   poolId__totalShares
   poolId__totalSwapFee
   poolId__totalSwapVolume
@@ -1251,10 +2624,20 @@ enum GradualWeightUpdate_orderBy {
   startWeights
 }
 
+"""
+8 bytes signed integer
+"""
+scalar Int8
+
 enum InvestType {
   Exit
   Join
 }
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
 
 type JoinExit {
   amounts: [BigDecimal!]!
@@ -1393,11 +2776,15 @@ enum JoinExit_orderBy {
   pool__id
   pool__isInRecoveryMode
   pool__isPaused
+  pool__joinExitEnabled
   pool__lambda
+  pool__lastJoinExitAmp
   pool__lastPostJoinExitInvariant
   pool__lowerTarget
   pool__mainIndex
+  pool__managementAumFee
   pool__managementFee
+  pool__mustAllowlistLPs
   pool__name
   pool__oracleEnabled
   pool__owner
@@ -1421,7 +2808,10 @@ enum JoinExit_orderBy {
   pool__tauAlphaY
   pool__tauBetaX
   pool__tauBetaY
+  pool__totalAumFeeCollectedInBPT
   pool__totalLiquidity
+  pool__totalProtocolFee
+  pool__totalProtocolFeePaidInBPT
   pool__totalShares
   pool__totalSwapFee
   pool__totalSwapVolume
@@ -1547,11 +2937,15 @@ enum LatestPrice_orderBy {
   poolId__id
   poolId__isInRecoveryMode
   poolId__isPaused
+  poolId__joinExitEnabled
   poolId__lambda
+  poolId__lastJoinExitAmp
   poolId__lastPostJoinExitInvariant
   poolId__lowerTarget
   poolId__mainIndex
+  poolId__managementAumFee
   poolId__managementFee
+  poolId__mustAllowlistLPs
   poolId__name
   poolId__oracleEnabled
   poolId__owner
@@ -1575,7 +2969,10 @@ enum LatestPrice_orderBy {
   poolId__tauAlphaY
   poolId__tauBetaX
   poolId__tauBetaY
+  poolId__totalAumFeeCollectedInBPT
   poolId__totalLiquidity
+  poolId__totalProtocolFee
+  poolId__totalProtocolFeePaidInBPT
   poolId__totalShares
   poolId__totalSwapFee
   poolId__totalSwapVolume
@@ -2058,11 +3455,67 @@ enum ManagementOperation_orderBy {
   poolTokenId__managedBalance
   poolTokenId__name
   poolTokenId__oldPriceRate
+  poolTokenId__paidProtocolFees
   poolTokenId__priceRate
   poolTokenId__symbol
   poolTokenId__weight
   timestamp
   type
+}
+
+type Mutation {
+  beetsPoolLoadReliquarySnapshotsForAllFarms: String!
+  beetsSyncFbeetsRatio: String!
+  cacheAverageBlockTime: String!
+  lgeCreate(lge: GqlLgeCreateInput!): GqlLge!
+  lgeSyncFromSanity: String!
+  poolBlackListAddPool(poolId: String!): String!
+  poolBlackListRemovePool(poolId: String!): String!
+  poolDeletePool(poolId: String!): String!
+  poolInitializeSnapshotsForPool(poolId: String!): String!
+  poolLoadOnChainDataForAllPools: String!
+  poolLoadOnChainDataForPoolsWithActiveUpdates: String!
+  poolLoadSnapshotsForAllPools: String!
+  poolLoadSnapshotsForPools(poolIds: [String!]!, reload: Boolean): String!
+  poolReloadAllPoolAprs: String!
+  poolReloadAllTokenNestedPoolIds: String!
+  poolReloadPoolNestedTokens(poolId: String!): String!
+  poolReloadPoolTokenIndexes(poolId: String!): String!
+  poolReloadStakingForAllPools(stakingTypes: [GqlPoolStakingType!]!): String!
+  poolSetPoolsWithPreferredGaugesAsIncentivized: String!
+  poolSyncAllPoolVersions: String!
+  poolSyncAllPoolsFromSubgraph: [String!]!
+  poolSyncLatestSnapshotsForAllPools(daysToSync: Int): String!
+  poolSyncNewPoolsFromSubgraph: [String!]!
+  poolSyncPool(poolId: String!): String!
+  poolSyncPoolAllTokensRelationship: String!
+  poolSyncSanityPoolData: String!
+  poolSyncStakingForPools: String!
+  poolSyncSwapsForLast48Hours: String!
+  poolSyncTotalShares: String!
+  poolUpdateAprs: String!
+  poolUpdateLifetimeValuesForAllPools: String!
+  poolUpdateLiquidity24hAgoForAllPools: String!
+  poolUpdateLiquidityValuesForAllPools: String!
+  poolUpdateVolumeAndFeeValuesForAllPools: String!
+  protocolCacheMetrics: String!
+  tokenDeletePrice(timestamp: Int!, tokenAddress: String!): Boolean!
+  tokenDeleteTokenType(tokenAddress: String!, type: GqlTokenType!): String!
+  tokenInitChartData(tokenAddress: String!): String!
+  tokenReloadAllTokenTypes: String!
+  tokenReloadTokenPrices: Boolean
+  tokenSyncTokenDefinitions: String!
+  tokenSyncTokenDynamicData: String!
+  userInitStakedBalances(stakingTypes: [GqlPoolStakingType!]!): String!
+  userInitWalletBalancesForAllPools: String!
+  userInitWalletBalancesForPool(poolId: String!): String!
+  userLoadAllRelicSnapshots: String!
+  userSyncBalance(poolId: String!): String!
+  userSyncBalanceAllPools: String!
+  userSyncChangedStakedBalances: String!
+  userSyncChangedWalletBalancesForAllPools: String!
+  veBalSyncAllUserBalances: String!
+  veBalSyncTotalSupply: String!
 }
 
 type OmniVotingEscrowLock {
@@ -2095,6 +3548,11 @@ type OmniVotingEscrowLock {
   veBAL decay rate (per second)
   """
   slope: BigDecimal!
+
+  """
+  Timestamp the lock was created [seconds]
+  """
+  timestamp: Int!
 
   """
   Reference to VotingEscrow entity
@@ -2172,6 +3630,14 @@ input OmniVotingEscrowLock_filter {
   slope_lte: BigDecimal
   slope_not: BigDecimal
   slope_not_in: [BigDecimal!]
+  timestamp: Int
+  timestamp_gt: Int
+  timestamp_gte: Int
+  timestamp_in: [Int!]
+  timestamp_lt: Int
+  timestamp_lte: Int
+  timestamp_not: Int
+  timestamp_not_in: [Int!]
   votingEscrowID: String
   votingEscrowID_: VotingEscrow_filter
   votingEscrowID_contains: String
@@ -2203,6 +3669,7 @@ enum OmniVotingEscrowLock_orderBy {
   localUser__id
   remoteUser
   slope
+  timestamp
   votingEscrowID
   votingEscrowID__id
   votingEscrowID__stakedSupply
@@ -2232,6 +3699,13 @@ type Pool {
   baseToken: Bytes
   beta: BigDecimal
   c: BigDecimal
+  circuitBreakers(
+    first: Int = 100
+    orderBy: CircuitBreaker_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+    where: CircuitBreaker_filter
+  ): [CircuitBreaker!]
   createTime: Int!
   dSq: BigDecimal
   delta: BigDecimal
@@ -2269,11 +3743,15 @@ type Pool {
   id: ID!
   isInRecoveryMode: Boolean
   isPaused: Boolean
+  joinExitEnabled: Boolean
   lambda: BigDecimal
+  lastJoinExitAmp: BigInt
   lastPostJoinExitInvariant: BigDecimal
   lowerTarget: BigDecimal
   mainIndex: Int
+  managementAumFee: BigDecimal
   managementFee: BigDecimal
+  mustAllowlistLPs: Boolean
   name: String
   oracleEnabled: Boolean!
   owner: Bytes
@@ -2344,7 +3822,10 @@ type Pool {
     where: PoolToken_filter
   ): [PoolToken!]
   tokensList: [Bytes!]!
+  totalAumFeeCollectedInBPT: BigDecimal
   totalLiquidity: BigDecimal!
+  totalProtocolFee: BigDecimal
+  totalProtocolFeePaidInBPT: BigDecimal
   totalShares: BigDecimal!
   totalSwapFee: BigDecimal!
   totalSwapVolume: BigDecimal!
@@ -2429,11 +3910,15 @@ enum PoolContract_orderBy {
   pool__id
   pool__isInRecoveryMode
   pool__isPaused
+  pool__joinExitEnabled
   pool__lambda
+  pool__lastJoinExitAmp
   pool__lastPostJoinExitInvariant
   pool__lowerTarget
   pool__mainIndex
+  pool__managementAumFee
   pool__managementFee
+  pool__mustAllowlistLPs
   pool__name
   pool__oracleEnabled
   pool__owner
@@ -2457,7 +3942,10 @@ enum PoolContract_orderBy {
   pool__tauAlphaY
   pool__tauBetaX
   pool__tauBetaY
+  pool__totalAumFeeCollectedInBPT
   pool__totalLiquidity
+  pool__totalProtocolFee
+  pool__totalProtocolFeePaidInBPT
   pool__totalShares
   pool__totalSwapFee
   pool__totalSwapVolume
@@ -2582,11 +4070,15 @@ enum PoolHistoricalLiquidity_orderBy {
   poolId__id
   poolId__isInRecoveryMode
   poolId__isPaused
+  poolId__joinExitEnabled
   poolId__lambda
+  poolId__lastJoinExitAmp
   poolId__lastPostJoinExitInvariant
   poolId__lowerTarget
   poolId__mainIndex
+  poolId__managementAumFee
   poolId__managementFee
+  poolId__mustAllowlistLPs
   poolId__name
   poolId__oracleEnabled
   poolId__owner
@@ -2610,7 +4102,10 @@ enum PoolHistoricalLiquidity_orderBy {
   poolId__tauAlphaY
   poolId__tauBetaX
   poolId__tauBetaY
+  poolId__totalAumFeeCollectedInBPT
   poolId__totalLiquidity
+  poolId__totalProtocolFee
+  poolId__totalProtocolFeePaidInBPT
   poolId__totalShares
   poolId__totalSwapFee
   poolId__totalSwapVolume
@@ -2723,11 +4218,15 @@ enum PoolShare_orderBy {
   poolId__id
   poolId__isInRecoveryMode
   poolId__isPaused
+  poolId__joinExitEnabled
   poolId__lambda
+  poolId__lastJoinExitAmp
   poolId__lastPostJoinExitInvariant
   poolId__lowerTarget
   poolId__mainIndex
+  poolId__managementAumFee
   poolId__managementFee
+  poolId__mustAllowlistLPs
   poolId__name
   poolId__oracleEnabled
   poolId__owner
@@ -2751,7 +4250,10 @@ enum PoolShare_orderBy {
   poolId__tauAlphaY
   poolId__tauBetaX
   poolId__tauBetaY
+  poolId__totalAumFeeCollectedInBPT
   poolId__totalLiquidity
+  poolId__totalProtocolFee
+  poolId__totalProtocolFeePaidInBPT
   poolId__totalShares
   poolId__totalSwapFee
   poolId__totalSwapVolume
@@ -2774,6 +4276,7 @@ type PoolSnapshot {
   id: ID!
   liquidity: BigDecimal!
   pool: Pool!
+  protocolFee: BigDecimal
   swapFees: BigDecimal!
   swapVolume: BigDecimal!
   swapsCount: BigInt!
@@ -2839,6 +4342,14 @@ input PoolSnapshot_filter {
   pool_not_starts_with_nocase: String
   pool_starts_with: String
   pool_starts_with_nocase: String
+  protocolFee: BigDecimal
+  protocolFee_gt: BigDecimal
+  protocolFee_gte: BigDecimal
+  protocolFee_in: [BigDecimal!]
+  protocolFee_lt: BigDecimal
+  protocolFee_lte: BigDecimal
+  protocolFee_not: BigDecimal
+  protocolFee_not_in: [BigDecimal!]
   swapFees: BigDecimal
   swapFees_gt: BigDecimal
   swapFees_gte: BigDecimal
@@ -2903,11 +4414,15 @@ enum PoolSnapshot_orderBy {
   pool__id
   pool__isInRecoveryMode
   pool__isPaused
+  pool__joinExitEnabled
   pool__lambda
+  pool__lastJoinExitAmp
   pool__lastPostJoinExitInvariant
   pool__lowerTarget
   pool__mainIndex
+  pool__managementAumFee
   pool__managementFee
+  pool__mustAllowlistLPs
   pool__name
   pool__oracleEnabled
   pool__owner
@@ -2931,7 +4446,10 @@ enum PoolSnapshot_orderBy {
   pool__tauAlphaY
   pool__tauBetaX
   pool__tauBetaY
+  pool__totalAumFeeCollectedInBPT
   pool__totalLiquidity
+  pool__totalProtocolFee
+  pool__totalProtocolFeePaidInBPT
   pool__totalShares
   pool__totalSwapFee
   pool__totalSwapVolume
@@ -2944,6 +4462,7 @@ enum PoolSnapshot_orderBy {
   pool__w
   pool__wrappedIndex
   pool__z
+  protocolFee
   swapFees
   swapVolume
   swapsCount
@@ -2956,6 +4475,7 @@ type PoolToken {
   assetManager: Bytes!
   balance: BigDecimal!
   cashBalance: BigDecimal!
+  circuitBreaker: CircuitBreaker
   decimals: Int!
   id: ID!
   index: Int
@@ -2970,6 +4490,7 @@ type PoolToken {
   ): [ManagementOperation!]
   name: String!
   oldPriceRate: BigDecimal
+  paidProtocolFees: BigDecimal
   poolId: Pool
   priceRate: BigDecimal!
   symbol: String!
@@ -3029,6 +4550,27 @@ input PoolToken_filter {
   cashBalance_lte: BigDecimal
   cashBalance_not: BigDecimal
   cashBalance_not_in: [BigDecimal!]
+  circuitBreaker: String
+  circuitBreaker_: CircuitBreaker_filter
+  circuitBreaker_contains: String
+  circuitBreaker_contains_nocase: String
+  circuitBreaker_ends_with: String
+  circuitBreaker_ends_with_nocase: String
+  circuitBreaker_gt: String
+  circuitBreaker_gte: String
+  circuitBreaker_in: [String!]
+  circuitBreaker_lt: String
+  circuitBreaker_lte: String
+  circuitBreaker_not: String
+  circuitBreaker_not_contains: String
+  circuitBreaker_not_contains_nocase: String
+  circuitBreaker_not_ends_with: String
+  circuitBreaker_not_ends_with_nocase: String
+  circuitBreaker_not_in: [String!]
+  circuitBreaker_not_starts_with: String
+  circuitBreaker_not_starts_with_nocase: String
+  circuitBreaker_starts_with: String
+  circuitBreaker_starts_with_nocase: String
   decimals: Int
   decimals_gt: Int
   decimals_gte: Int
@@ -3095,6 +4637,14 @@ input PoolToken_filter {
   oldPriceRate_not: BigDecimal
   oldPriceRate_not_in: [BigDecimal!]
   or: [PoolToken_filter]
+  paidProtocolFees: BigDecimal
+  paidProtocolFees_gt: BigDecimal
+  paidProtocolFees_gte: BigDecimal
+  paidProtocolFees_in: [BigDecimal!]
+  paidProtocolFees_lt: BigDecimal
+  paidProtocolFees_lte: BigDecimal
+  paidProtocolFees_not: BigDecimal
+  paidProtocolFees_not_in: [BigDecimal!]
   poolId: String
   poolId_: Pool_filter
   poolId_contains: String
@@ -3180,6 +4730,11 @@ enum PoolToken_orderBy {
   assetManager
   balance
   cashBalance
+  circuitBreaker
+  circuitBreaker__bptPrice
+  circuitBreaker__id
+  circuitBreaker__lowerBoundPercentage
+  circuitBreaker__upperBoundPercentage
   decimals
   id
   index
@@ -3188,6 +4743,7 @@ enum PoolToken_orderBy {
   managements
   name
   oldPriceRate
+  paidProtocolFees
   poolId
   poolId__address
   poolId__alpha
@@ -3205,11 +4761,15 @@ enum PoolToken_orderBy {
   poolId__id
   poolId__isInRecoveryMode
   poolId__isPaused
+  poolId__joinExitEnabled
   poolId__lambda
+  poolId__lastJoinExitAmp
   poolId__lastPostJoinExitInvariant
   poolId__lowerTarget
   poolId__mainIndex
+  poolId__managementAumFee
   poolId__managementFee
+  poolId__mustAllowlistLPs
   poolId__name
   poolId__oracleEnabled
   poolId__owner
@@ -3233,7 +4793,10 @@ enum PoolToken_orderBy {
   poolId__tauAlphaY
   poolId__tauBetaX
   poolId__tauBetaY
+  poolId__totalAumFeeCollectedInBPT
   poolId__totalLiquidity
+  poolId__totalProtocolFee
+  poolId__totalProtocolFeePaidInBPT
   poolId__totalShares
   poolId__totalSwapFee
   poolId__totalSwapVolume
@@ -3251,6 +4814,7 @@ enum PoolToken_orderBy {
   token
   token__address
   token__decimals
+  token__fxOracleDecimals
   token__id
   token__latestFXPrice
   token__latestUSDPrice
@@ -3323,6 +4887,7 @@ input Pool_filter {
   c_lte: BigDecimal
   c_not: BigDecimal
   c_not_in: [BigDecimal!]
+  circuitBreakers_: CircuitBreaker_filter
   createTime: Int
   createTime_gt: Int
   createTime_gte: Int
@@ -3405,6 +4970,10 @@ input Pool_filter {
   isPaused_in: [Boolean!]
   isPaused_not: Boolean
   isPaused_not_in: [Boolean!]
+  joinExitEnabled: Boolean
+  joinExitEnabled_in: [Boolean!]
+  joinExitEnabled_not: Boolean
+  joinExitEnabled_not_in: [Boolean!]
   lambda: BigDecimal
   lambda_gt: BigDecimal
   lambda_gte: BigDecimal
@@ -3413,6 +4982,14 @@ input Pool_filter {
   lambda_lte: BigDecimal
   lambda_not: BigDecimal
   lambda_not_in: [BigDecimal!]
+  lastJoinExitAmp: BigInt
+  lastJoinExitAmp_gt: BigInt
+  lastJoinExitAmp_gte: BigInt
+  lastJoinExitAmp_in: [BigInt!]
+  lastJoinExitAmp_lt: BigInt
+  lastJoinExitAmp_lte: BigInt
+  lastJoinExitAmp_not: BigInt
+  lastJoinExitAmp_not_in: [BigInt!]
   lastPostJoinExitInvariant: BigDecimal
   lastPostJoinExitInvariant_gt: BigDecimal
   lastPostJoinExitInvariant_gte: BigDecimal
@@ -3437,6 +5014,14 @@ input Pool_filter {
   mainIndex_lte: Int
   mainIndex_not: Int
   mainIndex_not_in: [Int!]
+  managementAumFee: BigDecimal
+  managementAumFee_gt: BigDecimal
+  managementAumFee_gte: BigDecimal
+  managementAumFee_in: [BigDecimal!]
+  managementAumFee_lt: BigDecimal
+  managementAumFee_lte: BigDecimal
+  managementAumFee_not: BigDecimal
+  managementAumFee_not_in: [BigDecimal!]
   managementFee: BigDecimal
   managementFee_gt: BigDecimal
   managementFee_gte: BigDecimal
@@ -3445,6 +5030,10 @@ input Pool_filter {
   managementFee_lte: BigDecimal
   managementFee_not: BigDecimal
   managementFee_not_in: [BigDecimal!]
+  mustAllowlistLPs: Boolean
+  mustAllowlistLPs_in: [Boolean!]
+  mustAllowlistLPs_not: Boolean
+  mustAllowlistLPs_not_in: [Boolean!]
   name: String
   name_contains: String
   name_contains_nocase: String
@@ -3725,6 +5314,14 @@ input Pool_filter {
   tokensList_not_contains: [Bytes!]
   tokensList_not_contains_nocase: [Bytes!]
   tokens_: PoolToken_filter
+  totalAumFeeCollectedInBPT: BigDecimal
+  totalAumFeeCollectedInBPT_gt: BigDecimal
+  totalAumFeeCollectedInBPT_gte: BigDecimal
+  totalAumFeeCollectedInBPT_in: [BigDecimal!]
+  totalAumFeeCollectedInBPT_lt: BigDecimal
+  totalAumFeeCollectedInBPT_lte: BigDecimal
+  totalAumFeeCollectedInBPT_not: BigDecimal
+  totalAumFeeCollectedInBPT_not_in: [BigDecimal!]
   totalLiquidity: BigDecimal
   totalLiquidity_gt: BigDecimal
   totalLiquidity_gte: BigDecimal
@@ -3733,6 +5330,22 @@ input Pool_filter {
   totalLiquidity_lte: BigDecimal
   totalLiquidity_not: BigDecimal
   totalLiquidity_not_in: [BigDecimal!]
+  totalProtocolFee: BigDecimal
+  totalProtocolFeePaidInBPT: BigDecimal
+  totalProtocolFeePaidInBPT_gt: BigDecimal
+  totalProtocolFeePaidInBPT_gte: BigDecimal
+  totalProtocolFeePaidInBPT_in: [BigDecimal!]
+  totalProtocolFeePaidInBPT_lt: BigDecimal
+  totalProtocolFeePaidInBPT_lte: BigDecimal
+  totalProtocolFeePaidInBPT_not: BigDecimal
+  totalProtocolFeePaidInBPT_not_in: [BigDecimal!]
+  totalProtocolFee_gt: BigDecimal
+  totalProtocolFee_gte: BigDecimal
+  totalProtocolFee_in: [BigDecimal!]
+  totalProtocolFee_lt: BigDecimal
+  totalProtocolFee_lte: BigDecimal
+  totalProtocolFee_not: BigDecimal
+  totalProtocolFee_not_in: [BigDecimal!]
   totalShares: BigDecimal
   totalShares_gt: BigDecimal
   totalShares_gte: BigDecimal
@@ -3862,6 +5475,7 @@ enum Pool_orderBy {
   baseToken
   beta
   c
+  circuitBreakers
   createTime
   dSq
   delta
@@ -3875,11 +5489,15 @@ enum Pool_orderBy {
   id
   isInRecoveryMode
   isPaused
+  joinExitEnabled
   lambda
+  lastJoinExitAmp
   lastPostJoinExitInvariant
   lowerTarget
   mainIndex
+  managementAumFee
   managementFee
+  mustAllowlistLPs
   name
   oracleEnabled
   owner
@@ -3923,7 +5541,10 @@ enum Pool_orderBy {
   tauBetaY
   tokens
   tokensList
+  totalAumFeeCollectedInBPT
   totalLiquidity
+  totalProtocolFee
+  totalProtocolFeePaidInBPT
   totalShares
   totalSwapFee
   totalSwapVolume
@@ -3936,7 +5557,9 @@ enum Pool_orderBy {
   vaultID
   vaultID__id
   vaultID__poolCount
+  vaultID__protocolFeesCollector
   vaultID__totalLiquidity
+  vaultID__totalProtocolFee
   vaultID__totalSwapCount
   vaultID__totalSwapFee
   vaultID__totalSwapVolume
@@ -4081,11 +5704,15 @@ enum PriceRateProvider_orderBy {
   poolId__id
   poolId__isInRecoveryMode
   poolId__isPaused
+  poolId__joinExitEnabled
   poolId__lambda
+  poolId__lastJoinExitAmp
   poolId__lastPostJoinExitInvariant
   poolId__lowerTarget
   poolId__mainIndex
+  poolId__managementAumFee
   poolId__managementFee
+  poolId__mustAllowlistLPs
   poolId__name
   poolId__oracleEnabled
   poolId__owner
@@ -4109,7 +5736,10 @@ enum PriceRateProvider_orderBy {
   poolId__tauAlphaY
   poolId__tauBetaX
   poolId__tauBetaY
+  poolId__totalAumFeeCollectedInBPT
   poolId__totalLiquidity
+  poolId__totalProtocolFee
+  poolId__totalProtocolFeePaidInBPT
   poolId__totalShares
   poolId__totalSwapFee
   poolId__totalSwapVolume
@@ -4135,6 +5765,7 @@ enum PriceRateProvider_orderBy {
   token__managedBalance
   token__name
   token__oldPriceRate
+  token__paidProtocolFees
   token__priceRate
   token__symbol
   token__weight
@@ -4276,6 +5907,11 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
     where: Balancer_filter
   ): [Balancer!]!
+  beetsGetFbeetsRatio: String!
+  beetsPoolGetReliquaryFarmSnapshots(
+    id: String!
+    range: GqlPoolSnapshotDataRange!
+  ): [GqlReliquaryFarmSnapshot!]!
   block(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -4304,6 +5940,39 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
     where: Block_filter
   ): [Block!]!
+  blocksGetAverageBlockTime: Float!
+  blocksGetBlocksPerDay: Float!
+  blocksGetBlocksPerSecond: Float!
+  blocksGetBlocksPerYear: Float!
+  circuitBreaker(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): CircuitBreaker
+  circuitBreakers(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: CircuitBreaker_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: CircuitBreaker_filter
+  ): [CircuitBreaker!]!
+  contentGetNewsItems: [GqlContentNewsItem!]!
   gauge(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -4528,6 +6197,10 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
     where: LatestPrice_filter
   ): [LatestPrice!]!
+  latestSyncedBlocks: GqlLatestSyncedBlocks!
+  lge(id: ID!): GqlLge!
+  lgeGetChartData(id: ID!): [GqlLgePriceData]!
+  lges: [GqlLge!]!
   liquidityGauge(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -4680,6 +6353,49 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
     where: PoolContract_filter
   ): [PoolContract!]!
+  poolGetAllPoolsSnapshots(
+    range: GqlPoolSnapshotDataRange!
+  ): [GqlPoolSnapshot!]!
+  poolGetBatchSwaps(
+    first: Int
+    skip: Int
+    where: GqlPoolSwapFilter
+  ): [GqlPoolBatchSwap!]!
+  poolGetFeaturedPoolGroups: [GqlPoolFeaturedPoolGroup!]!
+  poolGetJoinExits(
+    first: Int
+    skip: Int
+    where: GqlPoolJoinExitFilter
+  ): [GqlPoolJoinExit!]!
+  poolGetLinearPools: [GqlPoolLinear!]!
+  poolGetPool(id: String!): GqlPoolBase!
+  poolGetPoolFilters: [GqlPoolFilterDefinition!]!
+  poolGetPools(
+    first: Int
+    orderBy: GqlPoolOrderBy
+    orderDirection: GqlPoolOrderDirection
+    skip: Int
+    textSearch: String
+    where: GqlPoolFilter
+  ): [GqlPoolMinimal!]!
+  poolGetPoolsCount(
+    first: Int
+    orderBy: GqlPoolOrderBy
+    orderDirection: GqlPoolOrderDirection
+    skip: Int
+    textSearch: String
+    where: GqlPoolFilter
+  ): Int!
+  poolGetSnapshots(
+    id: String!
+    range: GqlPoolSnapshotDataRange!
+  ): [GqlPoolSnapshot!]!
+  poolGetSwaps(first: Int, skip: Int, where: GqlPoolSwapFilter): [GqlPoolSwap!]!
+  poolGetUserSwapVolume(
+    first: Int
+    skip: Int
+    where: GqlUserSwapVolumeFilter
+  ): [GqlPoolUserSwapVolume!]!
   poolHistoricalLiquidities(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -4864,6 +6580,8 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
     where: ProtocolIdData_filter
   ): [ProtocolIdData!]!
+  protocolMetricsAggregated(chainIds: [String!]!): GqlProtocolMetricsAggregated!
+  protocolMetricsChain: GqlProtocolMetricsChain!
   rewardToken(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -4948,6 +6666,18 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
     where: SingleRecipientGauge_filter
   ): [SingleRecipientGauge!]!
+  sorGetBatchSwapForTokensIn(
+    swapOptions: GqlSorSwapOptionsInput!
+    tokenOut: String!
+    tokensIn: [GqlTokenAmountHumanReadable!]!
+  ): GqlSorGetBatchSwapForTokensInResponse!
+  sorGetSwaps(
+    swapAmount: BigDecimal!
+    swapOptions: GqlSorSwapOptionsInput!
+    swapType: GqlSorSwapType!
+    tokenIn: String!
+    tokenOut: String!
+  ): GqlSorGetSwapsResponse!
   swap(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -5016,6 +6746,27 @@ type Query {
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): Token
+  tokenGetCandlestickChartData(
+    address: String!
+    range: GqlTokenChartDataRange!
+  ): [GqlTokenCandlestickChartDataItem!]!
+  tokenGetCurrentPrices: [GqlTokenPrice!]!
+  tokenGetHistoricalPrices(addresses: [String!]!): [GqlHistoricalTokenPrice!]!
+  tokenGetPriceChartData(
+    address: String!
+    range: GqlTokenChartDataRange!
+  ): [GqlTokenPriceChartDataItem!]!
+  tokenGetProtocolTokenPrice: AmountHumanReadable!
+  tokenGetRelativePriceChartData(
+    range: GqlTokenChartDataRange!
+    tokenIn: String!
+    tokenOut: String!
+  ): [GqlTokenPriceChartDataItem!]!
+  tokenGetTokenData(address: String!): GqlTokenData
+  tokenGetTokenDynamicData(address: String!): GqlTokenDynamicData
+  tokenGetTokens: [GqlToken!]!
+  tokenGetTokensData(addresses: [String!]!): [GqlTokenData!]!
+  tokenGetTokensDynamicData(addresses: [String!]!): [GqlTokenDynamicData!]!
   tokenPrice(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -5156,6 +6907,24 @@ type Query {
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): User
+  userGetFbeetsBalance: GqlUserFbeetsBalance!
+  userGetPoolBalances: [GqlUserPoolBalance!]!
+  userGetPoolJoinExits(
+    first: Int = 10
+    poolId: String!
+    skip: Int = 0
+  ): [GqlPoolJoinExit!]!
+  userGetPoolSnapshots(
+    poolId: String!
+    range: GqlUserSnapshotDataRange!
+  ): [GqlUserPoolSnapshot!]!
+  userGetPortfolioSnapshots(days: Int!): [GqlUserPortfolioSnapshot!]!
+  userGetRelicSnapshots(
+    farmId: String!
+    range: GqlUserSnapshotDataRange!
+  ): [GqlUserRelicSnapshot!]!
+  userGetStaking: [GqlPoolStaking!]!
+  userGetSwaps(first: Int = 10, poolId: String!, skip: Int = 0): [GqlPoolSwap!]!
   userInternalBalance(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -5200,6 +6969,8 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
     where: User_filter
   ): [User!]!
+  veBalGetTotalSupply: AmountHumanReadable!
+  veBalGetUserBalance: AmountHumanReadable!
   votingEscrow(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -5785,6 +7556,34 @@ type Subscription {
     subgraphError: _SubgraphErrorPolicy_! = deny
     where: Block_filter
   ): [Block!]!
+  circuitBreaker(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    id: ID!
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): CircuitBreaker
+  circuitBreakers(
+    """
+    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    first: Int = 100
+    orderBy: CircuitBreaker_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+    where: CircuitBreaker_filter
+  ): [CircuitBreaker!]!
   gauge(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -6864,11 +8663,15 @@ enum SwapFeeUpdate_orderBy {
   pool__id
   pool__isInRecoveryMode
   pool__isPaused
+  pool__joinExitEnabled
   pool__lambda
+  pool__lastJoinExitAmp
   pool__lastPostJoinExitInvariant
   pool__lowerTarget
   pool__mainIndex
+  pool__managementAumFee
   pool__managementFee
+  pool__mustAllowlistLPs
   pool__name
   pool__oracleEnabled
   pool__owner
@@ -6892,7 +8695,10 @@ enum SwapFeeUpdate_orderBy {
   pool__tauAlphaY
   pool__tauBetaX
   pool__tauBetaY
+  pool__totalAumFeeCollectedInBPT
   pool__totalLiquidity
+  pool__totalProtocolFee
+  pool__totalProtocolFeePaidInBPT
   pool__totalShares
   pool__totalSwapFee
   pool__totalSwapVolume
@@ -7101,11 +8907,15 @@ enum Swap_orderBy {
   poolId__id
   poolId__isInRecoveryMode
   poolId__isPaused
+  poolId__joinExitEnabled
   poolId__lambda
+  poolId__lastJoinExitAmp
   poolId__lastPostJoinExitInvariant
   poolId__lowerTarget
   poolId__mainIndex
+  poolId__managementAumFee
   poolId__managementFee
+  poolId__mustAllowlistLPs
   poolId__name
   poolId__oracleEnabled
   poolId__owner
@@ -7129,7 +8939,10 @@ enum Swap_orderBy {
   poolId__tauAlphaY
   poolId__tauBetaX
   poolId__tauBetaY
+  poolId__totalAumFeeCollectedInBPT
   poolId__totalLiquidity
+  poolId__totalProtocolFee
+  poolId__totalProtocolFeePaidInBPT
   poolId__totalShares
   poolId__totalSwapFee
   poolId__totalSwapVolume
@@ -7158,6 +8971,7 @@ enum Swap_orderBy {
 type Token {
   address: String!
   decimals: Int!
+  fxOracleDecimals: Int
   id: ID!
   latestFXPrice: BigDecimal
   latestPrice: LatestPrice
@@ -7296,11 +9110,15 @@ enum TokenPrice_orderBy {
   poolId__id
   poolId__isInRecoveryMode
   poolId__isPaused
+  poolId__joinExitEnabled
   poolId__lambda
+  poolId__lastJoinExitAmp
   poolId__lastPostJoinExitInvariant
   poolId__lowerTarget
   poolId__mainIndex
+  poolId__managementAumFee
   poolId__managementFee
+  poolId__mustAllowlistLPs
   poolId__name
   poolId__oracleEnabled
   poolId__owner
@@ -7324,7 +9142,10 @@ enum TokenPrice_orderBy {
   poolId__tauAlphaY
   poolId__tauBetaX
   poolId__tauBetaY
+  poolId__totalAumFeeCollectedInBPT
   poolId__totalLiquidity
+  poolId__totalProtocolFee
+  poolId__totalProtocolFeePaidInBPT
   poolId__totalShares
   poolId__totalSwapFee
   poolId__totalSwapVolume
@@ -7445,6 +9266,7 @@ enum TokenSnapshot_orderBy {
   token
   token__address
   token__decimals
+  token__fxOracleDecimals
   token__id
   token__latestFXPrice
   token__latestUSDPrice
@@ -7497,6 +9319,14 @@ input Token_filter {
   decimals_lte: Int
   decimals_not: Int
   decimals_not_in: [Int!]
+  fxOracleDecimals: Int
+  fxOracleDecimals_gt: Int
+  fxOracleDecimals_gte: Int
+  fxOracleDecimals_in: [Int!]
+  fxOracleDecimals_lt: Int
+  fxOracleDecimals_lte: Int
+  fxOracleDecimals_not: Int
+  fxOracleDecimals_not_in: [Int!]
   id: ID
   id_gt: ID
   id_gte: ID
@@ -7657,6 +9487,7 @@ input Token_filter {
 enum Token_orderBy {
   address
   decimals
+  fxOracleDecimals
   id
   latestFXPrice
   latestPrice
@@ -7685,11 +9516,15 @@ enum Token_orderBy {
   pool__id
   pool__isInRecoveryMode
   pool__isPaused
+  pool__joinExitEnabled
   pool__lambda
+  pool__lastJoinExitAmp
   pool__lastPostJoinExitInvariant
   pool__lowerTarget
   pool__mainIndex
+  pool__managementAumFee
   pool__managementFee
+  pool__mustAllowlistLPs
   pool__name
   pool__oracleEnabled
   pool__owner
@@ -7713,7 +9548,10 @@ enum Token_orderBy {
   pool__tauAlphaY
   pool__tauBetaX
   pool__tauBetaY
+  pool__totalAumFeeCollectedInBPT
   pool__totalLiquidity
+  pool__totalProtocolFee
+  pool__totalProtocolFeePaidInBPT
   pool__totalShares
   pool__totalSwapFee
   pool__totalSwapVolume
@@ -7906,6 +9744,7 @@ enum TradePair_orderBy {
   token0
   token0__address
   token0__decimals
+  token0__fxOracleDecimals
   token0__id
   token0__latestFXPrice
   token0__latestUSDPrice
@@ -7920,6 +9759,7 @@ enum TradePair_orderBy {
   token1
   token1__address
   token1__decimals
+  token1__fxOracleDecimals
   token1__id
   token1__latestFXPrice
   token1__latestUSDPrice
@@ -8099,6 +9939,7 @@ enum UserInternalBalance_orderBy {
   tokenInfo
   tokenInfo__address
   tokenInfo__decimals
+  tokenInfo__fxOracleDecimals
   tokenInfo__id
   tokenInfo__latestFXPrice
   tokenInfo__latestUSDPrice
@@ -8205,12 +10046,17 @@ type VotingEscrowLock {
   slope: BigDecimal!
 
   """
+  Timestamp at which the lock was created [seconds]
+  """
+  timestamp: Int!
+
+  """
   Timestamp at which B-80BAL-20WETH BPT can be unlocked by user [seconds]
   """
   unlockTime: BigInt!
 
   """
-  Timestamp at which the lock was updated [seconds]
+  Timestamp at which the lcok was created [seconds]. Same as timestamp
   """
   updatedAt: Int!
 
@@ -8264,6 +10110,14 @@ input VotingEscrowLock_filter {
   slope_lte: BigDecimal
   slope_not: BigDecimal
   slope_not_in: [BigDecimal!]
+  timestamp: Int
+  timestamp_gt: Int
+  timestamp_gte: Int
+  timestamp_in: [Int!]
+  timestamp_lt: Int
+  timestamp_lte: Int
+  timestamp_not: Int
+  timestamp_not_in: [Int!]
   unlockTime: BigInt
   unlockTime_gt: BigInt
   unlockTime_gte: BigInt
@@ -8329,6 +10183,7 @@ enum VotingEscrowLock_orderBy {
   id
   lockedBalance
   slope
+  timestamp
   unlockTime
   updatedAt
   user

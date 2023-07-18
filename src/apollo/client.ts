@@ -296,3 +296,19 @@ export const optimismBlockClient = new ApolloClient({
         },
     },
 })
+
+//FTM and OP token client
+export const tokenClient = new ApolloClient({
+    uri: 'https://backend-v3.beets-ftm-node.com/',
+    cache: new InMemoryCache(),
+    queryDeduplication: true,
+    defaultOptions: {
+        watchQuery: {
+            fetchPolicy: 'no-cache',
+        },
+        query: {
+            fetchPolicy: 'no-cache',
+            errorPolicy: 'all',
+        },
+    },
+});
