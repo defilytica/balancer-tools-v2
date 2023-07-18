@@ -1,4 +1,3 @@
-
 import ARBITRUM_LOGO_URL from '../assets/svg/arbitrum.svg'
 import ETHEREUM_LOGO_URL from '../assets/svg/ethereum.svg'
 import POLYGON_LOGO_URL from '../assets/svg/polygon.svg'
@@ -187,5 +186,5 @@ export const SUPPORTED_NETWORK_VERSIONS: NetworkInfo[] = [
   PolygonNetworkInfo,
   GnosisNetworkInfo,
   PolygonZkEVMNetworkInfo,
-    OptimismNetworkInfo
+  OptimismNetworkInfo
 ]

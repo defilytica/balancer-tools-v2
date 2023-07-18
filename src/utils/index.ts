@@ -10,7 +10,7 @@ import {
     NetworkInfo,
     OptimismNetworkInfo,
     PolygonNetworkInfo, PolygonZkEVMNetworkInfo
-} from './../constants/networks';
+} from '../constants/networks';
 
 
 // returns the checksummed address if the address is valid, otherwise returns false

@@ -6,13 +6,12 @@ import {useEffect, useState} from "react";
 import {Multicall} from 'ethereum-multicall';
 import {EthereumNetworkInfo} from "../../constants/networks";
 import {useAccount} from 'wagmi';
-import { calculateBoostFromGauge, calculateMaxBoost, calculateMinVeBAL } from "../../pages/VeBAL/veBALHelpers";
 
 const useDecorateL1Gauges = (stakingGaugeData: BalancerStakingGauges[]): BalancerStakingGauges[] => {
 
     const [decoratedGauges, setDecoratedGauges] = useState<BalancerStakingGauges[]>()
     const [isLoading, setIsLoading] = useState(true)
-    const {address} = useAccount();
+    const {isConnected, address} = useAccount();
 
     const fetchVotingGaugesWorkingSupply = async (gaugeData: BalancerStakingGauges[] | undefined): Promise<BalancerStakingGauges[]> => {
         const updatedGaugeData: BalancerStakingGauges[] = [];
@@ -117,7 +116,7 @@ const useDecorateL1Gauges = (stakingGaugeData: BalancerStakingGauges[]): Balance
 
     //Fetch and populate gauge supply numbers
     useEffect(() => {
-        if (isLoading && stakingGaugeData && stakingGaugeData.length > 0) {
+        if (stakingGaugeData && stakingGaugeData.length > 0) {
             setIsLoading(false);
             fetchVotingGaugesWorkingSupply(stakingGaugeData)
                 .then((decoratedData) => {
@@ -130,7 +129,7 @@ const useDecorateL1Gauges = (stakingGaugeData: BalancerStakingGauges[]): Balance
                 });
             setIsLoading(false);
         }
-    }, [isLoading, stakingGaugeData]);
+    }, [isLoading, stakingGaugeData, address, isConnected]);
 
     if (decoratedGauges !== undefined) {
         return decoratedGauges;

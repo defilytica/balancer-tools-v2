@@ -2,7 +2,12 @@ import { BalancerStakingGauges } from "./balancerTypes";
 import { ethers } from "ethers";
 import vyperPolygonGauge from "../../constants/abis/vyperPolygonGauge.json";
 import { useEffect, useState } from "react";
-import { ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo } from "../../constants/networks";
+import {
+    ArbitrumNetworkInfo,
+    EthereumNetworkInfo,
+    PolygonNetworkInfo,
+    PolygonZkEVMNetworkInfo
+} from "../../constants/networks";
 import {ContractCallResults, ContractCallReturnContext, Multicall} from 'ethereum-multicall';
 import {useAccount} from 'wagmi';
 import { calculateBoostFromGauge, calculateMaxBoost, calculateMinVeBAL } from "../../pages/VeBAL/veBALHelpers";
@@ -13,11 +18,12 @@ const NETWORK_PROVIDERS = {
     "100": 'https://rpc.gnosischain.com',
     [PolygonNetworkInfo.chainId]: 'https://polygon-bor.publicnode.com',
     [ArbitrumNetworkInfo.chainId]: 'https://rpc.ankr.com/arbitrum',
+    [PolygonZkEVMNetworkInfo.chainId]: 'https://polygon-zkevm.blockpi.network/v1/rpc/public',
 };
 
 interface MulticallItem {
     chainId: string;
-    promise: Promise<  ContractCallResults>; // replace "any" with the specific type you're expecting
+    promise: Promise< ContractCallResults>;
 }
 
 const useDecorateL2Gauges = (stakingGaugeData: BalancerStakingGauges[]): BalancerStakingGauges[] => {
@@ -116,7 +122,7 @@ const useDecorateL2Gauges = (stakingGaugeData: BalancerStakingGauges[]): Balance
                 });
             setIsLoading(false);
         }
-    }, [isLoading, stakingGaugeData]);
+    }, [isLoading, stakingGaugeData, address]);
 
     if (decoratedGauges !== undefined) {
         return decoratedGauges;

@@ -21,6 +21,6 @@ export function useGetTotalVeBAL(): number {
     if (!data && isLoading) {
         return 0;
     }
-    console.log(Number(data) / 1e18);
+    //console.log(Number(data) / 1e18);
     return Number(data) / 1e18;
 }

@@ -106,7 +106,7 @@ export const arbitrumClient = new ApolloClient({
       },
     },
   })
-  
+
   export const arbitrumBlockClient = new ApolloClient({
     uri: 'https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-one-blocks',
     cache: new InMemoryCache(),
@@ -150,7 +150,7 @@ export const arbitrumClient = new ApolloClient({
       },
     },
   })
-  
+
   export const polygonBlockClient = new ApolloClient({
     uri: 'https://api.thegraph.com/subgraphs/name/ianlapham/polygon-blocks',
     cache: new InMemoryCache(),
@@ -283,7 +283,7 @@ export const optimismClient = new ApolloClient({
 })
 
 export const optimismBlockClient = new ApolloClient({
-    uri: 'https://api.thegraph.com/subgraphs/name/danielmk/optimism-blocks',
+    uri: 'https://api.thegraph.com/subgraphs/name/beethovenxfi/optimism-blocks',
     cache: new InMemoryCache(),
     queryDeduplication: true,
     defaultOptions: {
@@ -296,3 +296,19 @@ export const optimismBlockClient = new ApolloClient({
         },
     },
 })
+
+//FTM and OP token client
+export const tokenClient = new ApolloClient({
+    uri: 'https://backend-v3.beets-ftm-node.com/',
+    cache: new InMemoryCache(),
+    queryDeduplication: true,
+    defaultOptions: {
+        watchQuery: {
+            fetchPolicy: 'no-cache',
+        },
+        query: {
+            fetchPolicy: 'no-cache',
+            errorPolicy: 'all',
+        },
+    },
+});

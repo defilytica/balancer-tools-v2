@@ -20,9 +20,19 @@ export interface Scalars {
   Boolean: boolean;
   Int: number;
   Float: number;
+  AmountHumanReadable: any;
   BigDecimal: string;
   BigInt: string;
   Bytes: string;
+  Date: any;
+  GqlBigNumber: any;
+  /**
+   * 8 bytes signed integer
+   *
+   */
+  Int8: any;
+  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
+  JSON: any;
 }
 
 export interface AmpUpdate {
@@ -133,11 +143,15 @@ export type AmpUpdate_OrderBy =
   | "poolId__id"
   | "poolId__isInRecoveryMode"
   | "poolId__isPaused"
+  | "poolId__joinExitEnabled"
   | "poolId__lambda"
+  | "poolId__lastJoinExitAmp"
   | "poolId__lastPostJoinExitInvariant"
   | "poolId__lowerTarget"
   | "poolId__mainIndex"
+  | "poolId__managementAumFee"
   | "poolId__managementFee"
+  | "poolId__mustAllowlistLPs"
   | "poolId__name"
   | "poolId__oracleEnabled"
   | "poolId__owner"
@@ -161,7 +175,10 @@ export type AmpUpdate_OrderBy =
   | "poolId__tauAlphaY"
   | "poolId__tauBetaX"
   | "poolId__tauBetaY"
+  | "poolId__totalAumFeeCollectedInBPT"
   | "poolId__totalLiquidity"
+  | "poolId__totalProtocolFee"
+  | "poolId__totalProtocolFeePaidInBPT"
   | "poolId__totalShares"
   | "poolId__totalSwapFee"
   | "poolId__totalSwapVolume"
@@ -183,7 +200,9 @@ export interface Balancer {
   id: Scalars["ID"];
   poolCount: Scalars["Int"];
   pools?: Maybe<Array<Pool>>;
+  protocolFeesCollector?: Maybe<Scalars["Bytes"]>;
   totalLiquidity: Scalars["BigDecimal"];
+  totalProtocolFee?: Maybe<Scalars["BigDecimal"]>;
   totalSwapCount: Scalars["BigInt"];
   totalSwapFee: Scalars["BigDecimal"];
   totalSwapVolume: Scalars["BigDecimal"];
@@ -203,6 +222,7 @@ export interface BalancerSnapshot {
   poolCount: Scalars["Int"];
   timestamp: Scalars["Int"];
   totalLiquidity: Scalars["BigDecimal"];
+  totalProtocolFee?: Maybe<Scalars["BigDecimal"]>;
   totalSwapCount: Scalars["BigInt"];
   totalSwapFee: Scalars["BigDecimal"];
   totalSwapVolume: Scalars["BigDecimal"];
@@ -246,6 +266,14 @@ export interface BalancerSnapshot_Filter {
   totalLiquidity_lte?: InputMaybe<Scalars["BigDecimal"]>;
   totalLiquidity_not?: InputMaybe<Scalars["BigDecimal"]>;
   totalLiquidity_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  totalProtocolFee?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFee_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFee_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFee_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  totalProtocolFee_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFee_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFee_not?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFee_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
   totalSwapCount?: InputMaybe<Scalars["BigInt"]>;
   totalSwapCount_gt?: InputMaybe<Scalars["BigInt"]>;
   totalSwapCount_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -298,13 +326,16 @@ export type BalancerSnapshot_OrderBy =
   | "poolCount"
   | "timestamp"
   | "totalLiquidity"
+  | "totalProtocolFee"
   | "totalSwapCount"
   | "totalSwapFee"
   | "totalSwapVolume"
   | "vault"
   | "vault__id"
   | "vault__poolCount"
+  | "vault__protocolFeesCollector"
   | "vault__totalLiquidity"
+  | "vault__totalProtocolFee"
   | "vault__totalSwapCount"
   | "vault__totalSwapFee"
   | "vault__totalSwapVolume";
@@ -331,6 +362,16 @@ export interface Balancer_Filter {
   poolCount_not?: InputMaybe<Scalars["Int"]>;
   poolCount_not_in?: InputMaybe<Array<Scalars["Int"]>>;
   pools_?: InputMaybe<Pool_Filter>;
+  protocolFeesCollector?: InputMaybe<Scalars["Bytes"]>;
+  protocolFeesCollector_contains?: InputMaybe<Scalars["Bytes"]>;
+  protocolFeesCollector_gt?: InputMaybe<Scalars["Bytes"]>;
+  protocolFeesCollector_gte?: InputMaybe<Scalars["Bytes"]>;
+  protocolFeesCollector_in?: InputMaybe<Array<Scalars["Bytes"]>>;
+  protocolFeesCollector_lt?: InputMaybe<Scalars["Bytes"]>;
+  protocolFeesCollector_lte?: InputMaybe<Scalars["Bytes"]>;
+  protocolFeesCollector_not?: InputMaybe<Scalars["Bytes"]>;
+  protocolFeesCollector_not_contains?: InputMaybe<Scalars["Bytes"]>;
+  protocolFeesCollector_not_in?: InputMaybe<Array<Scalars["Bytes"]>>;
   totalLiquidity?: InputMaybe<Scalars["BigDecimal"]>;
   totalLiquidity_gt?: InputMaybe<Scalars["BigDecimal"]>;
   totalLiquidity_gte?: InputMaybe<Scalars["BigDecimal"]>;
@@ -339,6 +380,14 @@ export interface Balancer_Filter {
   totalLiquidity_lte?: InputMaybe<Scalars["BigDecimal"]>;
   totalLiquidity_not?: InputMaybe<Scalars["BigDecimal"]>;
   totalLiquidity_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  totalProtocolFee?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFee_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFee_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFee_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  totalProtocolFee_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFee_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFee_not?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFee_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
   totalSwapCount?: InputMaybe<Scalars["BigInt"]>;
   totalSwapCount_gt?: InputMaybe<Scalars["BigInt"]>;
   totalSwapCount_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -369,7 +418,9 @@ export type Balancer_OrderBy =
   | "id"
   | "poolCount"
   | "pools"
+  | "protocolFeesCollector"
   | "totalLiquidity"
+  | "totalProtocolFee"
   | "totalSwapCount"
   | "totalSwapFee"
   | "totalSwapVolume";
@@ -609,7 +660,191 @@ export type Block_OrderBy =
   | "transactionsRoot"
   | "unclesHash";
 
-export type Chain = "Arbitrum" | "Gnosis" | "Optimism" | "Polygon";
+export type Chain =
+  | "Arbitrum"
+  | "Avalanche"
+  | "Gnosis"
+  | "Optimism"
+  | "Polygon"
+  | "PolygonZkEvm";
+
+export interface CircuitBreaker {
+  __typename: "CircuitBreaker";
+  bptPrice: Scalars["BigDecimal"];
+  id: Scalars["ID"];
+  lowerBoundPercentage: Scalars["BigDecimal"];
+  pool: Pool;
+  token: PoolToken;
+  upperBoundPercentage: Scalars["BigDecimal"];
+}
+
+export interface CircuitBreaker_Filter {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<CircuitBreaker_Filter>>>;
+  bptPrice?: InputMaybe<Scalars["BigDecimal"]>;
+  bptPrice_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  bptPrice_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  bptPrice_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  bptPrice_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  bptPrice_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  bptPrice_not?: InputMaybe<Scalars["BigDecimal"]>;
+  bptPrice_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  id?: InputMaybe<Scalars["ID"]>;
+  id_gt?: InputMaybe<Scalars["ID"]>;
+  id_gte?: InputMaybe<Scalars["ID"]>;
+  id_in?: InputMaybe<Array<Scalars["ID"]>>;
+  id_lt?: InputMaybe<Scalars["ID"]>;
+  id_lte?: InputMaybe<Scalars["ID"]>;
+  id_not?: InputMaybe<Scalars["ID"]>;
+  id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
+  lowerBoundPercentage?: InputMaybe<Scalars["BigDecimal"]>;
+  lowerBoundPercentage_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  lowerBoundPercentage_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  lowerBoundPercentage_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  lowerBoundPercentage_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  lowerBoundPercentage_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  lowerBoundPercentage_not?: InputMaybe<Scalars["BigDecimal"]>;
+  lowerBoundPercentage_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  or?: InputMaybe<Array<InputMaybe<CircuitBreaker_Filter>>>;
+  pool?: InputMaybe<Scalars["String"]>;
+  pool_?: InputMaybe<Pool_Filter>;
+  pool_contains?: InputMaybe<Scalars["String"]>;
+  pool_contains_nocase?: InputMaybe<Scalars["String"]>;
+  pool_ends_with?: InputMaybe<Scalars["String"]>;
+  pool_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  pool_gt?: InputMaybe<Scalars["String"]>;
+  pool_gte?: InputMaybe<Scalars["String"]>;
+  pool_in?: InputMaybe<Array<Scalars["String"]>>;
+  pool_lt?: InputMaybe<Scalars["String"]>;
+  pool_lte?: InputMaybe<Scalars["String"]>;
+  pool_not?: InputMaybe<Scalars["String"]>;
+  pool_not_contains?: InputMaybe<Scalars["String"]>;
+  pool_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  pool_not_ends_with?: InputMaybe<Scalars["String"]>;
+  pool_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  pool_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  pool_not_starts_with?: InputMaybe<Scalars["String"]>;
+  pool_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  pool_starts_with?: InputMaybe<Scalars["String"]>;
+  pool_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  token?: InputMaybe<Scalars["String"]>;
+  token_?: InputMaybe<PoolToken_Filter>;
+  token_contains?: InputMaybe<Scalars["String"]>;
+  token_contains_nocase?: InputMaybe<Scalars["String"]>;
+  token_ends_with?: InputMaybe<Scalars["String"]>;
+  token_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  token_gt?: InputMaybe<Scalars["String"]>;
+  token_gte?: InputMaybe<Scalars["String"]>;
+  token_in?: InputMaybe<Array<Scalars["String"]>>;
+  token_lt?: InputMaybe<Scalars["String"]>;
+  token_lte?: InputMaybe<Scalars["String"]>;
+  token_not?: InputMaybe<Scalars["String"]>;
+  token_not_contains?: InputMaybe<Scalars["String"]>;
+  token_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  token_not_ends_with?: InputMaybe<Scalars["String"]>;
+  token_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  token_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  token_not_starts_with?: InputMaybe<Scalars["String"]>;
+  token_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  token_starts_with?: InputMaybe<Scalars["String"]>;
+  token_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  upperBoundPercentage?: InputMaybe<Scalars["BigDecimal"]>;
+  upperBoundPercentage_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  upperBoundPercentage_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  upperBoundPercentage_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  upperBoundPercentage_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  upperBoundPercentage_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  upperBoundPercentage_not?: InputMaybe<Scalars["BigDecimal"]>;
+  upperBoundPercentage_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+}
+
+export type CircuitBreaker_OrderBy =
+  | "bptPrice"
+  | "id"
+  | "lowerBoundPercentage"
+  | "pool"
+  | "pool__address"
+  | "pool__alpha"
+  | "pool__amp"
+  | "pool__baseToken"
+  | "pool__beta"
+  | "pool__c"
+  | "pool__createTime"
+  | "pool__dSq"
+  | "pool__delta"
+  | "pool__epsilon"
+  | "pool__expiryTime"
+  | "pool__factory"
+  | "pool__holdersCount"
+  | "pool__id"
+  | "pool__isInRecoveryMode"
+  | "pool__isPaused"
+  | "pool__joinExitEnabled"
+  | "pool__lambda"
+  | "pool__lastJoinExitAmp"
+  | "pool__lastPostJoinExitInvariant"
+  | "pool__lowerTarget"
+  | "pool__mainIndex"
+  | "pool__managementAumFee"
+  | "pool__managementFee"
+  | "pool__mustAllowlistLPs"
+  | "pool__name"
+  | "pool__oracleEnabled"
+  | "pool__owner"
+  | "pool__poolType"
+  | "pool__poolTypeVersion"
+  | "pool__principalToken"
+  | "pool__protocolAumFeeCache"
+  | "pool__protocolId"
+  | "pool__protocolSwapFeeCache"
+  | "pool__protocolYieldFeeCache"
+  | "pool__root3Alpha"
+  | "pool__s"
+  | "pool__sqrtAlpha"
+  | "pool__sqrtBeta"
+  | "pool__strategyType"
+  | "pool__swapEnabled"
+  | "pool__swapFee"
+  | "pool__swapsCount"
+  | "pool__symbol"
+  | "pool__tauAlphaX"
+  | "pool__tauAlphaY"
+  | "pool__tauBetaX"
+  | "pool__tauBetaY"
+  | "pool__totalAumFeeCollectedInBPT"
+  | "pool__totalLiquidity"
+  | "pool__totalProtocolFee"
+  | "pool__totalProtocolFeePaidInBPT"
+  | "pool__totalShares"
+  | "pool__totalSwapFee"
+  | "pool__totalSwapVolume"
+  | "pool__totalWeight"
+  | "pool__tx"
+  | "pool__u"
+  | "pool__unitSeconds"
+  | "pool__upperTarget"
+  | "pool__v"
+  | "pool__w"
+  | "pool__wrappedIndex"
+  | "pool__z"
+  | "token"
+  | "token__address"
+  | "token__assetManager"
+  | "token__balance"
+  | "token__cashBalance"
+  | "token__decimals"
+  | "token__id"
+  | "token__index"
+  | "token__isExemptFromYieldProtocolFee"
+  | "token__managedBalance"
+  | "token__name"
+  | "token__oldPriceRate"
+  | "token__paidProtocolFees"
+  | "token__priceRate"
+  | "token__symbol"
+  | "token__weight"
+  | "upperBoundPercentage";
 
 export interface Gauge {
   __typename: "Gauge";
@@ -1027,6 +1262,1192 @@ export type Gauge_OrderBy =
   | "type__id"
   | "type__name";
 
+export interface GqlBalancePoolAprItem {
+  __typename: "GqlBalancePoolAprItem";
+  apr: GqlPoolAprValue;
+  id: Scalars["ID"];
+  subItems?: Maybe<Array<GqlBalancePoolAprSubItem>>;
+  title: Scalars["String"];
+}
+
+export interface GqlBalancePoolAprSubItem {
+  __typename: "GqlBalancePoolAprSubItem";
+  apr: GqlPoolAprValue;
+  id: Scalars["ID"];
+  title: Scalars["String"];
+}
+
+export type GqlChain =
+  | "ARBITRUM"
+  | "AVALANCHE"
+  | "FANTOM"
+  | "GNOSIS"
+  | "MAINNET"
+  | "OPTIMISM"
+  | "POLYGON"
+  | "ZKEVM";
+
+export interface GqlContentNewsItem {
+  __typename: "GqlContentNewsItem";
+  discussionUrl?: Maybe<Scalars["String"]>;
+  id: Scalars["ID"];
+  image?: Maybe<Scalars["String"]>;
+  source: GqlContentNewsItemSource;
+  text: Scalars["String"];
+  timestamp: Scalars["String"];
+  url: Scalars["String"];
+}
+
+export type GqlContentNewsItemSource = "discord" | "medium" | "twitter";
+
+export interface GqlFeaturePoolGroupItemExternalLink {
+  __typename: "GqlFeaturePoolGroupItemExternalLink";
+  buttonText: Scalars["String"];
+  buttonUrl: Scalars["String"];
+  id: Scalars["ID"];
+  image: Scalars["String"];
+}
+
+export interface GqlHistoricalTokenPrice {
+  __typename: "GqlHistoricalTokenPrice";
+  address: Scalars["String"];
+  prices: Array<GqlHistoricalTokenPriceEntry>;
+}
+
+export interface GqlHistoricalTokenPriceEntry {
+  __typename: "GqlHistoricalTokenPriceEntry";
+  price: Scalars["Float"];
+  timestamp: Scalars["String"];
+}
+
+export interface GqlLatestSyncedBlocks {
+  __typename: "GqlLatestSyncedBlocks";
+  poolSyncBlock: Scalars["BigInt"];
+  userStakeSyncBlock: Scalars["BigInt"];
+  userWalletSyncBlock: Scalars["BigInt"];
+}
+
+export interface GqlLge {
+  __typename: "GqlLge";
+  address: Scalars["String"];
+  adminAddress: Scalars["String"];
+  adminIsMultisig: Scalars["Boolean"];
+  bannerImageUrl: Scalars["String"];
+  collateralAddress: Scalars["String"];
+  collateralAmount: Scalars["String"];
+  collateralDecimals: Scalars["Int"];
+  collateralEndWeight: Scalars["Int"];
+  collateralStartWeight: Scalars["Int"];
+  description: Scalars["String"];
+  discordUrl: Scalars["String"];
+  endTimestamp: Scalars["Int"];
+  id: Scalars["ID"];
+  mediumUrl: Scalars["String"];
+  name: Scalars["String"];
+  startTimestamp: Scalars["Int"];
+  swapFee: Scalars["String"];
+  telegramUrl: Scalars["String"];
+  tokenAddress: Scalars["String"];
+  tokenAmount: Scalars["String"];
+  tokenDecimals: Scalars["Int"];
+  tokenEndWeight: Scalars["Int"];
+  tokenIconUrl: Scalars["String"];
+  tokenStartWeight: Scalars["Int"];
+  tokenSymbol: Scalars["String"];
+  twitterUrl: Scalars["String"];
+  websiteUrl: Scalars["String"];
+}
+
+export interface GqlLgeCreateInput {
+  address: Scalars["String"];
+  bannerImageUrl: Scalars["String"];
+  collateralAddress: Scalars["String"];
+  collateralAmount: Scalars["String"];
+  collateralEndWeight: Scalars["Int"];
+  collateralStartWeight: Scalars["Int"];
+  description: Scalars["String"];
+  discordUrl: Scalars["String"];
+  endTimestamp: Scalars["Int"];
+  id: Scalars["ID"];
+  mediumUrl: Scalars["String"];
+  name: Scalars["String"];
+  startTimestamp: Scalars["Int"];
+  swapFee: Scalars["String"];
+  telegramUrl: Scalars["String"];
+  tokenAddress: Scalars["String"];
+  tokenAmount: Scalars["String"];
+  tokenEndWeight: Scalars["Int"];
+  tokenIconUrl: Scalars["String"];
+  tokenStartWeight: Scalars["Int"];
+  twitterUrl: Scalars["String"];
+  websiteUrl: Scalars["String"];
+}
+
+export interface GqlLgePriceData {
+  __typename: "GqlLgePriceData";
+  price: Scalars["Float"];
+  timestamp: Scalars["Int"];
+  type: Scalars["String"];
+}
+
+export interface GqlLgeUpdateInput {
+  description: Scalars["String"];
+  discordUrl: Scalars["String"];
+  id: Scalars["ID"];
+  mediumUrl: Scalars["String"];
+  name: Scalars["String"];
+  telegramUrl: Scalars["String"];
+  tokenIconUrl: Scalars["String"];
+  twitterUrl: Scalars["String"];
+  websiteUrl: Scalars["String"];
+}
+
+export interface GqlPoolApr {
+  __typename: "GqlPoolApr";
+  apr: GqlPoolAprValue;
+  hasRewardApr: Scalars["Boolean"];
+  items: Array<GqlBalancePoolAprItem>;
+  nativeRewardApr: GqlPoolAprValue;
+  swapApr: Scalars["BigDecimal"];
+  thirdPartyApr: GqlPoolAprValue;
+}
+
+export interface GqlPoolAprRange {
+  __typename: "GqlPoolAprRange";
+  max: Scalars["BigDecimal"];
+  min: Scalars["BigDecimal"];
+}
+
+export interface GqlPoolAprTotal {
+  __typename: "GqlPoolAprTotal";
+  total: Scalars["BigDecimal"];
+}
+
+export type GqlPoolAprValue = GqlPoolAprRange | GqlPoolAprTotal;
+
+export interface GqlPoolBase {
+  address: Scalars["Bytes"];
+  allTokens: Array<GqlPoolTokenExpanded>;
+  chain: GqlChain;
+  createTime: Scalars["Int"];
+  decimals: Scalars["Int"];
+  displayTokens: Array<GqlPoolTokenDisplay>;
+  dynamicData: GqlPoolDynamicData;
+  factory?: Maybe<Scalars["Bytes"]>;
+  id: Scalars["ID"];
+  investConfig: GqlPoolInvestConfig;
+  name: Scalars["String"];
+  owner?: Maybe<Scalars["Bytes"]>;
+  staking?: Maybe<GqlPoolStaking>;
+  symbol: Scalars["String"];
+  withdrawConfig: GqlPoolWithdrawConfig;
+}
+
+export interface GqlPoolBatchSwap {
+  __typename: "GqlPoolBatchSwap";
+  id: Scalars["ID"];
+  swaps: Array<GqlPoolBatchSwapSwap>;
+  timestamp: Scalars["Int"];
+  tokenAmountIn: Scalars["String"];
+  tokenAmountOut: Scalars["String"];
+  tokenIn: Scalars["String"];
+  tokenInPrice: Scalars["Float"];
+  tokenOut: Scalars["String"];
+  tokenOutPrice: Scalars["Float"];
+  tx: Scalars["String"];
+  userAddress: Scalars["String"];
+  valueUSD: Scalars["Float"];
+}
+
+export interface GqlPoolBatchSwapPool {
+  __typename: "GqlPoolBatchSwapPool";
+  id: Scalars["ID"];
+  tokens: Array<Scalars["String"]>;
+}
+
+export interface GqlPoolBatchSwapSwap {
+  __typename: "GqlPoolBatchSwapSwap";
+  id: Scalars["ID"];
+  pool: GqlPoolMinimal;
+  timestamp: Scalars["Int"];
+  tokenAmountIn: Scalars["String"];
+  tokenAmountOut: Scalars["String"];
+  tokenIn: Scalars["String"];
+  tokenOut: Scalars["String"];
+  tx: Scalars["String"];
+  userAddress: Scalars["String"];
+  valueUSD: Scalars["Float"];
+}
+
+export interface GqlPoolDynamicData {
+  __typename: "GqlPoolDynamicData";
+  apr: GqlPoolApr;
+  fees24h: Scalars["BigDecimal"];
+  fees24hAth: Scalars["BigDecimal"];
+  fees24hAthTimestamp: Scalars["Int"];
+  fees24hAtl: Scalars["BigDecimal"];
+  fees24hAtlTimestamp: Scalars["Int"];
+  fees48h: Scalars["BigDecimal"];
+  holdersCount: Scalars["BigInt"];
+  lifetimeSwapFees: Scalars["BigDecimal"];
+  lifetimeVolume: Scalars["BigDecimal"];
+  poolId: Scalars["ID"];
+  sharePriceAth: Scalars["BigDecimal"];
+  sharePriceAthTimestamp: Scalars["Int"];
+  sharePriceAtl: Scalars["BigDecimal"];
+  sharePriceAtlTimestamp: Scalars["Int"];
+  swapEnabled: Scalars["Boolean"];
+  swapFee: Scalars["BigDecimal"];
+  swapsCount: Scalars["BigInt"];
+  totalLiquidity: Scalars["BigDecimal"];
+  totalLiquidity24hAgo: Scalars["BigDecimal"];
+  totalLiquidityAth: Scalars["BigDecimal"];
+  totalLiquidityAthTimestamp: Scalars["Int"];
+  totalLiquidityAtl: Scalars["BigDecimal"];
+  totalLiquidityAtlTimestamp: Scalars["Int"];
+  totalShares: Scalars["BigDecimal"];
+  totalShares24hAgo: Scalars["BigDecimal"];
+  volume24h: Scalars["BigDecimal"];
+  volume24hAth: Scalars["BigDecimal"];
+  volume24hAthTimestamp: Scalars["Int"];
+  volume24hAtl: Scalars["BigDecimal"];
+  volume24hAtlTimestamp: Scalars["Int"];
+  volume48h: Scalars["BigDecimal"];
+  yieldCapture24h: Scalars["BigDecimal"];
+  yieldCapture48h: Scalars["BigDecimal"];
+}
+
+export interface GqlPoolElement extends GqlPoolBase {
+  __typename: "GqlPoolElement";
+  address: Scalars["Bytes"];
+  allTokens: Array<GqlPoolTokenExpanded>;
+  baseToken: Scalars["Bytes"];
+  chain: GqlChain;
+  createTime: Scalars["Int"];
+  decimals: Scalars["Int"];
+  displayTokens: Array<GqlPoolTokenDisplay>;
+  dynamicData: GqlPoolDynamicData;
+  factory?: Maybe<Scalars["Bytes"]>;
+  id: Scalars["ID"];
+  investConfig: GqlPoolInvestConfig;
+  name: Scalars["String"];
+  owner: Scalars["Bytes"];
+  principalToken: Scalars["Bytes"];
+  staking?: Maybe<GqlPoolStaking>;
+  symbol: Scalars["String"];
+  tokens: Array<GqlPoolToken>;
+  unitSeconds: Scalars["BigInt"];
+  withdrawConfig: GqlPoolWithdrawConfig;
+}
+
+export interface GqlPoolFeaturedPoolGroup {
+  __typename: "GqlPoolFeaturedPoolGroup";
+  icon: Scalars["String"];
+  id: Scalars["ID"];
+  items: Array<GqlPoolFeaturedPoolGroupItem>;
+  title: Scalars["String"];
+}
+
+export type GqlPoolFeaturedPoolGroupItem =
+  | GqlFeaturePoolGroupItemExternalLink
+  | GqlPoolMinimal;
+
+export interface GqlPoolFilter {
+  categoryIn?: InputMaybe<Array<GqlPoolFilterCategory>>;
+  categoryNotIn?: InputMaybe<Array<GqlPoolFilterCategory>>;
+  chainIn?: InputMaybe<Array<GqlChain>>;
+  chainNotIn?: InputMaybe<Array<GqlChain>>;
+  filterIn?: InputMaybe<Array<Scalars["String"]>>;
+  filterNotIn?: InputMaybe<Array<Scalars["String"]>>;
+  idIn?: InputMaybe<Array<Scalars["String"]>>;
+  idNotIn?: InputMaybe<Array<Scalars["String"]>>;
+  poolTypeIn?: InputMaybe<Array<GqlPoolFilterType>>;
+  poolTypeNotIn?: InputMaybe<Array<GqlPoolFilterType>>;
+  tokensIn?: InputMaybe<Array<Scalars["String"]>>;
+  tokensNotIn?: InputMaybe<Array<Scalars["String"]>>;
+}
+
+export type GqlPoolFilterCategory = "BLACK_LISTED" | "INCENTIVIZED";
+
+export interface GqlPoolFilterDefinition {
+  __typename: "GqlPoolFilterDefinition";
+  id: Scalars["ID"];
+  title: Scalars["String"];
+}
+
+export type GqlPoolFilterType =
+  | "ELEMENT"
+  | "GYRO"
+  | "GYRO3"
+  | "GYROE"
+  | "INVESTMENT"
+  | "LINEAR"
+  | "LIQUIDITY_BOOTSTRAPPING"
+  | "META_STABLE"
+  | "PHANTOM_STABLE"
+  | "STABLE"
+  | "UNKNOWN"
+  | "WEIGHTED";
+
+export interface GqlPoolGyro extends GqlPoolBase {
+  __typename: "GqlPoolGyro";
+  address: Scalars["Bytes"];
+  allTokens: Array<GqlPoolTokenExpanded>;
+  alpha: Scalars["String"];
+  beta: Scalars["String"];
+  chain: GqlChain;
+  createTime: Scalars["Int"];
+  decimals: Scalars["Int"];
+  displayTokens: Array<GqlPoolTokenDisplay>;
+  dynamicData: GqlPoolDynamicData;
+  factory?: Maybe<Scalars["Bytes"]>;
+  id: Scalars["ID"];
+  investConfig: GqlPoolInvestConfig;
+  name: Scalars["String"];
+  nestingType: GqlPoolNestingType;
+  owner: Scalars["Bytes"];
+  staking?: Maybe<GqlPoolStaking>;
+  symbol: Scalars["String"];
+  tokens: Array<GqlPoolTokenUnion>;
+  type: Scalars["String"];
+  withdrawConfig: GqlPoolWithdrawConfig;
+}
+
+export interface GqlPoolInvestConfig {
+  __typename: "GqlPoolInvestConfig";
+  options: Array<GqlPoolInvestOption>;
+  proportionalEnabled: Scalars["Boolean"];
+  singleAssetEnabled: Scalars["Boolean"];
+}
+
+export interface GqlPoolInvestOption {
+  __typename: "GqlPoolInvestOption";
+  poolTokenAddress: Scalars["String"];
+  poolTokenIndex: Scalars["Int"];
+  tokenOptions: Array<GqlPoolToken>;
+}
+
+export interface GqlPoolJoinExit {
+  __typename: "GqlPoolJoinExit";
+  amounts: Array<GqlPoolJoinExitAmount>;
+  id: Scalars["ID"];
+  poolId: Scalars["String"];
+  sender: Scalars["String"];
+  timestamp: Scalars["Int"];
+  tx: Scalars["String"];
+  type: GqlPoolJoinExitType;
+  valueUSD?: Maybe<Scalars["String"]>;
+}
+
+export interface GqlPoolJoinExitAmount {
+  __typename: "GqlPoolJoinExitAmount";
+  address: Scalars["String"];
+  amount: Scalars["String"];
+}
+
+export interface GqlPoolJoinExitFilter {
+  poolIdIn?: InputMaybe<Array<Scalars["String"]>>;
+}
+
+export type GqlPoolJoinExitType = "Exit" | "Join";
+
+export interface GqlPoolLinear extends GqlPoolBase {
+  __typename: "GqlPoolLinear";
+  address: Scalars["Bytes"];
+  allTokens: Array<GqlPoolTokenExpanded>;
+  bptPriceRate: Scalars["BigDecimal"];
+  chain: GqlChain;
+  createTime: Scalars["Int"];
+  decimals: Scalars["Int"];
+  displayTokens: Array<GqlPoolTokenDisplay>;
+  dynamicData: GqlPoolDynamicData;
+  factory?: Maybe<Scalars["Bytes"]>;
+  id: Scalars["ID"];
+  investConfig: GqlPoolInvestConfig;
+  lowerTarget: Scalars["BigInt"];
+  mainIndex: Scalars["Int"];
+  name: Scalars["String"];
+  owner: Scalars["Bytes"];
+  staking?: Maybe<GqlPoolStaking>;
+  symbol: Scalars["String"];
+  tokens: Array<GqlPoolToken>;
+  upperTarget: Scalars["BigInt"];
+  withdrawConfig: GqlPoolWithdrawConfig;
+  wrappedIndex: Scalars["Int"];
+}
+
+export interface GqlPoolLinearNested {
+  __typename: "GqlPoolLinearNested";
+  address: Scalars["Bytes"];
+  bptPriceRate: Scalars["BigDecimal"];
+  createTime: Scalars["Int"];
+  factory?: Maybe<Scalars["Bytes"]>;
+  id: Scalars["ID"];
+  lowerTarget: Scalars["BigInt"];
+  mainIndex: Scalars["Int"];
+  name: Scalars["String"];
+  owner: Scalars["Bytes"];
+  symbol: Scalars["String"];
+  tokens: Array<GqlPoolToken>;
+  totalLiquidity: Scalars["BigDecimal"];
+  totalShares: Scalars["BigDecimal"];
+  upperTarget: Scalars["BigInt"];
+  wrappedIndex: Scalars["Int"];
+}
+
+export interface GqlPoolLinearPoolData {
+  __typename: "GqlPoolLinearPoolData";
+  address: Scalars["String"];
+  balance: Scalars["String"];
+  id: Scalars["ID"];
+  mainToken: GqlPoolLinearPoolMainToken;
+  mainTokenTotalBalance: Scalars["String"];
+  poolToken: Scalars["String"];
+  priceRate: Scalars["String"];
+  symbol: Scalars["String"];
+  totalSupply: Scalars["String"];
+  unwrappedTokenAddress: Scalars["String"];
+  wrappedToken: GqlPoolLinearPoolWrappedToken;
+}
+
+export interface GqlPoolLinearPoolMainToken {
+  __typename: "GqlPoolLinearPoolMainToken";
+  address: Scalars["String"];
+  balance: Scalars["String"];
+  decimals: Scalars["Int"];
+  index: Scalars["Int"];
+  name: Scalars["String"];
+  symbol: Scalars["String"];
+  totalSupply: Scalars["String"];
+}
+
+export interface GqlPoolLinearPoolWrappedToken {
+  __typename: "GqlPoolLinearPoolWrappedToken";
+  address: Scalars["String"];
+  balance: Scalars["String"];
+  decimals: Scalars["Int"];
+  index: Scalars["Int"];
+  name: Scalars["String"];
+  priceRate: Scalars["String"];
+  symbol: Scalars["String"];
+  totalSupply: Scalars["String"];
+}
+
+export interface GqlPoolLiquidityBootstrapping extends GqlPoolBase {
+  __typename: "GqlPoolLiquidityBootstrapping";
+  address: Scalars["Bytes"];
+  allTokens: Array<GqlPoolTokenExpanded>;
+  chain: GqlChain;
+  createTime: Scalars["Int"];
+  decimals: Scalars["Int"];
+  displayTokens: Array<GqlPoolTokenDisplay>;
+  dynamicData: GqlPoolDynamicData;
+  factory?: Maybe<Scalars["Bytes"]>;
+  id: Scalars["ID"];
+  investConfig: GqlPoolInvestConfig;
+  name: Scalars["String"];
+  nestingType: GqlPoolNestingType;
+  owner: Scalars["Bytes"];
+  staking?: Maybe<GqlPoolStaking>;
+  symbol: Scalars["String"];
+  tokens: Array<GqlPoolTokenUnion>;
+  withdrawConfig: GqlPoolWithdrawConfig;
+}
+
+export interface GqlPoolMetaStable extends GqlPoolBase {
+  __typename: "GqlPoolMetaStable";
+  address: Scalars["Bytes"];
+  allTokens: Array<GqlPoolTokenExpanded>;
+  amp: Scalars["BigInt"];
+  chain: GqlChain;
+  createTime: Scalars["Int"];
+  decimals: Scalars["Int"];
+  displayTokens: Array<GqlPoolTokenDisplay>;
+  dynamicData: GqlPoolDynamicData;
+  factory?: Maybe<Scalars["Bytes"]>;
+  id: Scalars["ID"];
+  investConfig: GqlPoolInvestConfig;
+  name: Scalars["String"];
+  owner: Scalars["Bytes"];
+  staking?: Maybe<GqlPoolStaking>;
+  symbol: Scalars["String"];
+  tokens: Array<GqlPoolToken>;
+  withdrawConfig: GqlPoolWithdrawConfig;
+}
+
+export interface GqlPoolMinimal {
+  __typename: "GqlPoolMinimal";
+  address: Scalars["Bytes"];
+  allTokens: Array<GqlPoolTokenExpanded>;
+  chain: GqlChain;
+  createTime: Scalars["Int"];
+  decimals: Scalars["Int"];
+  displayTokens: Array<GqlPoolTokenDisplay>;
+  dynamicData: GqlPoolDynamicData;
+  factory?: Maybe<Scalars["Bytes"]>;
+  id: Scalars["ID"];
+  name: Scalars["String"];
+  owner?: Maybe<Scalars["Bytes"]>;
+  staking?: Maybe<GqlPoolStaking>;
+  symbol: Scalars["String"];
+  type: GqlPoolMinimalType;
+  version: Scalars["Int"];
+}
+
+export type GqlPoolMinimalType =
+  | "ELEMENT"
+  | "GYRO"
+  | "GYRO3"
+  | "GYROE"
+  | "INVESTMENT"
+  | "LINEAR"
+  | "LIQUIDITY_BOOTSTRAPPING"
+  | "META_STABLE"
+  | "PHANTOM_STABLE"
+  | "STABLE"
+  | "UNKNOWN"
+  | "WEIGHTED";
+
+export type GqlPoolNestedUnion =
+  | GqlPoolLinearNested
+  | GqlPoolPhantomStableNested;
+
+export type GqlPoolNestingType =
+  | "HAS_ONLY_PHANTOM_BPT"
+  | "HAS_SOME_PHANTOM_BPT"
+  | "NO_NESTING";
+
+export type GqlPoolOrderBy =
+  | "apr"
+  | "fees24h"
+  | "totalLiquidity"
+  | "totalShares"
+  | "volume24h";
+
+export type GqlPoolOrderDirection = "asc" | "desc";
+
+export interface GqlPoolPhantomStable extends GqlPoolBase {
+  __typename: "GqlPoolPhantomStable";
+  address: Scalars["Bytes"];
+  allTokens: Array<GqlPoolTokenExpanded>;
+  amp: Scalars["BigInt"];
+  bptPriceRate: Scalars["BigDecimal"];
+  chain: GqlChain;
+  createTime: Scalars["Int"];
+  decimals: Scalars["Int"];
+  displayTokens: Array<GqlPoolTokenDisplay>;
+  dynamicData: GqlPoolDynamicData;
+  factory?: Maybe<Scalars["Bytes"]>;
+  id: Scalars["ID"];
+  investConfig: GqlPoolInvestConfig;
+  name: Scalars["String"];
+  nestingType: GqlPoolNestingType;
+  owner: Scalars["Bytes"];
+  staking?: Maybe<GqlPoolStaking>;
+  symbol: Scalars["String"];
+  tokens: Array<GqlPoolTokenUnion>;
+  withdrawConfig: GqlPoolWithdrawConfig;
+}
+
+export interface GqlPoolPhantomStableNested {
+  __typename: "GqlPoolPhantomStableNested";
+  address: Scalars["Bytes"];
+  amp: Scalars["BigInt"];
+  bptPriceRate: Scalars["BigDecimal"];
+  createTime: Scalars["Int"];
+  factory?: Maybe<Scalars["Bytes"]>;
+  id: Scalars["ID"];
+  name: Scalars["String"];
+  nestingType: GqlPoolNestingType;
+  owner: Scalars["Bytes"];
+  swapFee: Scalars["BigDecimal"];
+  symbol: Scalars["String"];
+  tokens: Array<GqlPoolTokenPhantomStableNestedUnion>;
+  totalLiquidity: Scalars["BigDecimal"];
+  totalShares: Scalars["BigDecimal"];
+}
+
+export interface GqlPoolSnapshot {
+  __typename: "GqlPoolSnapshot";
+  amounts: Array<Scalars["String"]>;
+  fees24h: Scalars["String"];
+  holdersCount: Scalars["String"];
+  id: Scalars["ID"];
+  poolId: Scalars["String"];
+  sharePrice: Scalars["String"];
+  swapsCount: Scalars["String"];
+  timestamp: Scalars["Int"];
+  totalLiquidity: Scalars["String"];
+  totalShares: Scalars["String"];
+  totalSwapFee: Scalars["String"];
+  totalSwapVolume: Scalars["String"];
+  volume24h: Scalars["String"];
+}
+
+export type GqlPoolSnapshotDataRange =
+  | "ALL_TIME"
+  | "NINETY_DAYS"
+  | "ONE_HUNDRED_EIGHTY_DAYS"
+  | "ONE_YEAR"
+  | "THIRTY_DAYS";
+
+export interface GqlPoolStable extends GqlPoolBase {
+  __typename: "GqlPoolStable";
+  address: Scalars["Bytes"];
+  allTokens: Array<GqlPoolTokenExpanded>;
+  amp: Scalars["BigInt"];
+  chain: GqlChain;
+  createTime: Scalars["Int"];
+  decimals: Scalars["Int"];
+  displayTokens: Array<GqlPoolTokenDisplay>;
+  dynamicData: GqlPoolDynamicData;
+  factory?: Maybe<Scalars["Bytes"]>;
+  id: Scalars["ID"];
+  investConfig: GqlPoolInvestConfig;
+  name: Scalars["String"];
+  owner: Scalars["Bytes"];
+  staking?: Maybe<GqlPoolStaking>;
+  symbol: Scalars["String"];
+  tokens: Array<GqlPoolToken>;
+  withdrawConfig: GqlPoolWithdrawConfig;
+}
+
+export interface GqlPoolStablePhantomPoolData {
+  __typename: "GqlPoolStablePhantomPoolData";
+  address: Scalars["String"];
+  balance: Scalars["String"];
+  id: Scalars["ID"];
+  symbol: Scalars["String"];
+  tokens: Array<GqlPoolToken>;
+  totalSupply: Scalars["String"];
+}
+
+export interface GqlPoolStaking {
+  __typename: "GqlPoolStaking";
+  address: Scalars["String"];
+  farm?: Maybe<GqlPoolStakingMasterChefFarm>;
+  gauge?: Maybe<GqlPoolStakingGauge>;
+  id: Scalars["ID"];
+  reliquary?: Maybe<GqlPoolStakingReliquaryFarm>;
+  type: GqlPoolStakingType;
+}
+
+export interface GqlPoolStakingFarmRewarder {
+  __typename: "GqlPoolStakingFarmRewarder";
+  address: Scalars["String"];
+  id: Scalars["ID"];
+  rewardPerSecond: Scalars["String"];
+  tokenAddress: Scalars["String"];
+}
+
+export interface GqlPoolStakingGauge {
+  __typename: "GqlPoolStakingGauge";
+  gaugeAddress: Scalars["String"];
+  id: Scalars["ID"];
+  otherGauges?: Maybe<Array<GqlPoolStakingOtherGauge>>;
+  rewards: Array<GqlPoolStakingGaugeReward>;
+  status: GqlPoolStakingGaugeStatus;
+  version: Scalars["Int"];
+}
+
+export interface GqlPoolStakingGaugeReward {
+  __typename: "GqlPoolStakingGaugeReward";
+  id: Scalars["ID"];
+  rewardPerSecond: Scalars["String"];
+  tokenAddress: Scalars["String"];
+}
+
+export type GqlPoolStakingGaugeStatus = "ACTIVE" | "KILLED" | "PREFERRED";
+
+export interface GqlPoolStakingMasterChefFarm {
+  __typename: "GqlPoolStakingMasterChefFarm";
+  beetsPerBlock: Scalars["String"];
+  id: Scalars["ID"];
+  rewarders?: Maybe<Array<GqlPoolStakingFarmRewarder>>;
+}
+
+export interface GqlPoolStakingOtherGauge {
+  __typename: "GqlPoolStakingOtherGauge";
+  gaugeAddress: Scalars["String"];
+  id: Scalars["ID"];
+  rewards: Array<GqlPoolStakingGaugeReward>;
+  status: GqlPoolStakingGaugeStatus;
+  version: Scalars["Int"];
+}
+
+export interface GqlPoolStakingReliquaryFarm {
+  __typename: "GqlPoolStakingReliquaryFarm";
+  beetsPerSecond: Scalars["String"];
+  id: Scalars["ID"];
+  levels?: Maybe<Array<GqlPoolStakingReliquaryFarmLevel>>;
+  totalBalance: Scalars["String"];
+  totalWeightedBalance: Scalars["String"];
+}
+
+export interface GqlPoolStakingReliquaryFarmLevel {
+  __typename: "GqlPoolStakingReliquaryFarmLevel";
+  allocationPoints: Scalars["Int"];
+  apr: Scalars["BigDecimal"];
+  balance: Scalars["BigDecimal"];
+  id: Scalars["ID"];
+  level: Scalars["Int"];
+  requiredMaturity: Scalars["Int"];
+}
+
+export type GqlPoolStakingType =
+  | "FRESH_BEETS"
+  | "GAUGE"
+  | "MASTER_CHEF"
+  | "RELIQUARY";
+
+export interface GqlPoolSwap {
+  __typename: "GqlPoolSwap";
+  id: Scalars["ID"];
+  poolId: Scalars["String"];
+  timestamp: Scalars["Int"];
+  tokenAmountIn: Scalars["String"];
+  tokenAmountOut: Scalars["String"];
+  tokenIn: Scalars["String"];
+  tokenOut: Scalars["String"];
+  tx: Scalars["String"];
+  userAddress: Scalars["String"];
+  valueUSD: Scalars["Float"];
+}
+
+export interface GqlPoolSwapFilter {
+  poolIdIn?: InputMaybe<Array<Scalars["String"]>>;
+  tokenInIn?: InputMaybe<Array<Scalars["String"]>>;
+  tokenOutIn?: InputMaybe<Array<Scalars["String"]>>;
+}
+
+export interface GqlPoolToken extends GqlPoolTokenBase {
+  __typename: "GqlPoolToken";
+  address: Scalars["String"];
+  balance: Scalars["BigDecimal"];
+  decimals: Scalars["Int"];
+  id: Scalars["ID"];
+  index: Scalars["Int"];
+  name: Scalars["String"];
+  priceRate: Scalars["BigDecimal"];
+  symbol: Scalars["String"];
+  totalBalance: Scalars["BigDecimal"];
+  weight?: Maybe<Scalars["BigDecimal"]>;
+}
+
+export interface GqlPoolTokenBase {
+  address: Scalars["String"];
+  balance: Scalars["BigDecimal"];
+  decimals: Scalars["Int"];
+  id: Scalars["ID"];
+  index: Scalars["Int"];
+  name: Scalars["String"];
+  priceRate: Scalars["BigDecimal"];
+  symbol: Scalars["String"];
+  totalBalance: Scalars["BigDecimal"];
+  weight?: Maybe<Scalars["BigDecimal"]>;
+}
+
+export interface GqlPoolTokenDisplay {
+  __typename: "GqlPoolTokenDisplay";
+  address: Scalars["String"];
+  id: Scalars["ID"];
+  name: Scalars["String"];
+  nestedTokens?: Maybe<Array<GqlPoolTokenDisplay>>;
+  symbol: Scalars["String"];
+  weight?: Maybe<Scalars["BigDecimal"]>;
+}
+
+export interface GqlPoolTokenExpanded {
+  __typename: "GqlPoolTokenExpanded";
+  address: Scalars["String"];
+  decimals: Scalars["Int"];
+  id: Scalars["ID"];
+  isMainToken: Scalars["Boolean"];
+  isNested: Scalars["Boolean"];
+  isPhantomBpt: Scalars["Boolean"];
+  name: Scalars["String"];
+  symbol: Scalars["String"];
+  weight?: Maybe<Scalars["String"]>;
+}
+
+export interface GqlPoolTokenLinear extends GqlPoolTokenBase {
+  __typename: "GqlPoolTokenLinear";
+  address: Scalars["String"];
+  balance: Scalars["BigDecimal"];
+  decimals: Scalars["Int"];
+  id: Scalars["ID"];
+  index: Scalars["Int"];
+  mainTokenBalance: Scalars["BigDecimal"];
+  name: Scalars["String"];
+  pool: GqlPoolLinearNested;
+  priceRate: Scalars["BigDecimal"];
+  symbol: Scalars["String"];
+  totalBalance: Scalars["BigDecimal"];
+  totalMainTokenBalance: Scalars["BigDecimal"];
+  weight?: Maybe<Scalars["BigDecimal"]>;
+  wrappedTokenBalance: Scalars["BigDecimal"];
+}
+
+export interface GqlPoolTokenPhantomStable extends GqlPoolTokenBase {
+  __typename: "GqlPoolTokenPhantomStable";
+  address: Scalars["String"];
+  balance: Scalars["BigDecimal"];
+  decimals: Scalars["Int"];
+  id: Scalars["ID"];
+  index: Scalars["Int"];
+  name: Scalars["String"];
+  pool: GqlPoolPhantomStableNested;
+  priceRate: Scalars["BigDecimal"];
+  symbol: Scalars["String"];
+  totalBalance: Scalars["BigDecimal"];
+  weight?: Maybe<Scalars["BigDecimal"]>;
+}
+
+export type GqlPoolTokenPhantomStableNestedUnion =
+  | GqlPoolToken
+  | GqlPoolTokenLinear;
+
+export type GqlPoolTokenUnion =
+  | GqlPoolToken
+  | GqlPoolTokenLinear
+  | GqlPoolTokenPhantomStable;
+
+export type GqlPoolUnion =
+  | GqlPoolElement
+  | GqlPoolGyro
+  | GqlPoolLinear
+  | GqlPoolLiquidityBootstrapping
+  | GqlPoolMetaStable
+  | GqlPoolPhantomStable
+  | GqlPoolStable
+  | GqlPoolWeighted;
+
+export interface GqlPoolUserSwapVolume {
+  __typename: "GqlPoolUserSwapVolume";
+  swapVolumeUSD: Scalars["BigDecimal"];
+  userAddress: Scalars["String"];
+}
+
+export interface GqlPoolWeighted extends GqlPoolBase {
+  __typename: "GqlPoolWeighted";
+  address: Scalars["Bytes"];
+  allTokens: Array<GqlPoolTokenExpanded>;
+  chain: GqlChain;
+  createTime: Scalars["Int"];
+  decimals: Scalars["Int"];
+  displayTokens: Array<GqlPoolTokenDisplay>;
+  dynamicData: GqlPoolDynamicData;
+  factory?: Maybe<Scalars["Bytes"]>;
+  id: Scalars["ID"];
+  investConfig: GqlPoolInvestConfig;
+  name: Scalars["String"];
+  nestingType: GqlPoolNestingType;
+  owner: Scalars["Bytes"];
+  staking?: Maybe<GqlPoolStaking>;
+  symbol: Scalars["String"];
+  tokens: Array<GqlPoolTokenUnion>;
+  withdrawConfig: GqlPoolWithdrawConfig;
+}
+
+export interface GqlPoolWithdrawConfig {
+  __typename: "GqlPoolWithdrawConfig";
+  options: Array<GqlPoolWithdrawOption>;
+  proportionalEnabled: Scalars["Boolean"];
+  singleAssetEnabled: Scalars["Boolean"];
+}
+
+export interface GqlPoolWithdrawOption {
+  __typename: "GqlPoolWithdrawOption";
+  poolTokenAddress: Scalars["String"];
+  poolTokenIndex: Scalars["Int"];
+  tokenOptions: Array<GqlPoolToken>;
+}
+
+export interface GqlProtocolMetricsAggregated {
+  __typename: "GqlProtocolMetricsAggregated";
+  chains: Array<GqlProtocolMetricsChain>;
+  numLiquidityProviders: Scalars["BigInt"];
+  poolCount: Scalars["BigInt"];
+  swapFee7d: Scalars["BigDecimal"];
+  swapFee24h: Scalars["BigDecimal"];
+  swapVolume7d: Scalars["BigDecimal"];
+  swapVolume24h: Scalars["BigDecimal"];
+  totalLiquidity: Scalars["BigDecimal"];
+  totalSwapFee: Scalars["BigDecimal"];
+  totalSwapVolume: Scalars["BigDecimal"];
+  yieldCapture24h: Scalars["BigDecimal"];
+}
+
+export interface GqlProtocolMetricsChain {
+  __typename: "GqlProtocolMetricsChain";
+  chainId: Scalars["String"];
+  numLiquidityProviders: Scalars["BigInt"];
+  poolCount: Scalars["BigInt"];
+  swapFee7d: Scalars["BigDecimal"];
+  swapFee24h: Scalars["BigDecimal"];
+  swapVolume7d: Scalars["BigDecimal"];
+  swapVolume24h: Scalars["BigDecimal"];
+  totalLiquidity: Scalars["BigDecimal"];
+  totalSwapFee: Scalars["BigDecimal"];
+  totalSwapVolume: Scalars["BigDecimal"];
+  yieldCapture24h: Scalars["BigDecimal"];
+}
+
+export interface GqlRelicSnapshot {
+  __typename: "GqlRelicSnapshot";
+  balance: Scalars["String"];
+  entryTimestamp: Scalars["Int"];
+  farmId: Scalars["String"];
+  level: Scalars["Int"];
+  relicId: Scalars["Int"];
+}
+
+export interface GqlReliquaryFarmLevelSnapshot {
+  __typename: "GqlReliquaryFarmLevelSnapshot";
+  balance: Scalars["String"];
+  id: Scalars["ID"];
+  level: Scalars["String"];
+}
+
+export interface GqlReliquaryFarmSnapshot {
+  __typename: "GqlReliquaryFarmSnapshot";
+  dailyDeposited: Scalars["String"];
+  dailyWithdrawn: Scalars["String"];
+  farmId: Scalars["String"];
+  id: Scalars["ID"];
+  levelBalances: Array<GqlReliquaryFarmLevelSnapshot>;
+  relicCount: Scalars["String"];
+  timestamp: Scalars["Int"];
+  tokenBalances: Array<GqlReliquaryTokenBalanceSnapshot>;
+  totalBalance: Scalars["String"];
+  totalLiquidity: Scalars["String"];
+  userCount: Scalars["String"];
+}
+
+export interface GqlReliquaryTokenBalanceSnapshot {
+  __typename: "GqlReliquaryTokenBalanceSnapshot";
+  address: Scalars["String"];
+  balance: Scalars["String"];
+  decimals: Scalars["Int"];
+  id: Scalars["ID"];
+  name: Scalars["String"];
+  symbol: Scalars["String"];
+}
+
+export interface GqlSorGetBatchSwapForTokensInResponse {
+  __typename: "GqlSorGetBatchSwapForTokensInResponse";
+  assets: Array<Scalars["String"]>;
+  swaps: Array<GqlSorSwap>;
+  tokenOutAmount: Scalars["AmountHumanReadable"];
+}
+
+export interface GqlSorGetSwapsResponse {
+  __typename: "GqlSorGetSwapsResponse";
+  effectivePrice: Scalars["AmountHumanReadable"];
+  effectivePriceReversed: Scalars["AmountHumanReadable"];
+  marketSp: Scalars["String"];
+  priceImpact: Scalars["AmountHumanReadable"];
+  returnAmount: Scalars["AmountHumanReadable"];
+  returnAmountConsideringFees: Scalars["BigDecimal"];
+  returnAmountFromSwaps?: Maybe<Scalars["BigDecimal"]>;
+  returnAmountScaled: Scalars["BigDecimal"];
+  routes: Array<GqlSorSwapRoute>;
+  swapAmount: Scalars["AmountHumanReadable"];
+  swapAmountForSwaps?: Maybe<Scalars["BigDecimal"]>;
+  swapAmountScaled: Scalars["BigDecimal"];
+  swapType: GqlSorSwapType;
+  swaps: Array<GqlSorSwap>;
+  tokenAddresses: Array<Scalars["String"]>;
+  tokenIn: Scalars["String"];
+  tokenInAmount: Scalars["AmountHumanReadable"];
+  tokenOut: Scalars["String"];
+  tokenOutAmount: Scalars["AmountHumanReadable"];
+}
+
+export interface GqlSorSwap {
+  __typename: "GqlSorSwap";
+  amount: Scalars["String"];
+  assetInIndex: Scalars["Int"];
+  assetOutIndex: Scalars["Int"];
+  poolId: Scalars["String"];
+  userData: Scalars["String"];
+}
+
+export interface GqlSorSwapOptionsInput {
+  forceRefresh?: InputMaybe<Scalars["Boolean"]>;
+  maxPools?: InputMaybe<Scalars["Int"]>;
+  timestamp?: InputMaybe<Scalars["Int"]>;
+}
+
+export interface GqlSorSwapRoute {
+  __typename: "GqlSorSwapRoute";
+  hops: Array<GqlSorSwapRouteHop>;
+  share: Scalars["Float"];
+  tokenIn: Scalars["String"];
+  tokenInAmount: Scalars["BigDecimal"];
+  tokenOut: Scalars["String"];
+  tokenOutAmount: Scalars["BigDecimal"];
+}
+
+export interface GqlSorSwapRouteHop {
+  __typename: "GqlSorSwapRouteHop";
+  pool: GqlPoolMinimal;
+  poolId: Scalars["String"];
+  tokenIn: Scalars["String"];
+  tokenInAmount: Scalars["BigDecimal"];
+  tokenOut: Scalars["String"];
+  tokenOutAmount: Scalars["BigDecimal"];
+}
+
+export type GqlSorSwapType = "EXACT_IN" | "EXACT_OUT";
+
+export interface GqlToken {
+  __typename: "GqlToken";
+  address: Scalars["String"];
+  chainId: Scalars["Int"];
+  decimals: Scalars["Int"];
+  description?: Maybe<Scalars["String"]>;
+  discordUrl?: Maybe<Scalars["String"]>;
+  logoURI?: Maybe<Scalars["String"]>;
+  name: Scalars["String"];
+  priority: Scalars["Int"];
+  symbol: Scalars["String"];
+  telegramUrl?: Maybe<Scalars["String"]>;
+  tradable: Scalars["Boolean"];
+  twitterUsername?: Maybe<Scalars["String"]>;
+  websiteUrl?: Maybe<Scalars["String"]>;
+}
+
+export interface GqlTokenAmountHumanReadable {
+  address: Scalars["String"];
+  amount: Scalars["AmountHumanReadable"];
+}
+
+export interface GqlTokenCandlestickChartDataItem {
+  __typename: "GqlTokenCandlestickChartDataItem";
+  close: Scalars["AmountHumanReadable"];
+  high: Scalars["AmountHumanReadable"];
+  id: Scalars["ID"];
+  low: Scalars["AmountHumanReadable"];
+  open: Scalars["AmountHumanReadable"];
+  timestamp: Scalars["Int"];
+}
+
+export type GqlTokenChartDataRange = "SEVEN_DAY" | "THIRTY_DAY";
+
+export interface GqlTokenData {
+  __typename: "GqlTokenData";
+  description?: Maybe<Scalars["String"]>;
+  discordUrl?: Maybe<Scalars["String"]>;
+  id: Scalars["ID"];
+  telegramUrl?: Maybe<Scalars["String"]>;
+  tokenAddress: Scalars["String"];
+  twitterUsername?: Maybe<Scalars["String"]>;
+  websiteUrl?: Maybe<Scalars["String"]>;
+}
+
+export interface GqlTokenDynamicData {
+  __typename: "GqlTokenDynamicData";
+  ath: Scalars["Float"];
+  atl: Scalars["Float"];
+  fdv?: Maybe<Scalars["String"]>;
+  high24h: Scalars["Float"];
+  id: Scalars["String"];
+  low24h: Scalars["Float"];
+  marketCap?: Maybe<Scalars["String"]>;
+  price: Scalars["Float"];
+  priceChange24h: Scalars["Float"];
+  priceChangePercent7d?: Maybe<Scalars["Float"]>;
+  priceChangePercent14d?: Maybe<Scalars["Float"]>;
+  priceChangePercent24h: Scalars["Float"];
+  priceChangePercent30d?: Maybe<Scalars["Float"]>;
+  tokenAddress: Scalars["String"];
+  updatedAt: Scalars["String"];
+}
+
+export interface GqlTokenPrice {
+  __typename: "GqlTokenPrice";
+  address: Scalars["String"];
+  price: Scalars["Float"];
+}
+
+export interface GqlTokenPriceChartDataItem {
+  __typename: "GqlTokenPriceChartDataItem";
+  id: Scalars["ID"];
+  price: Scalars["AmountHumanReadable"];
+  timestamp: Scalars["Int"];
+}
+
+export type GqlTokenType =
+  | "BPT"
+  | "LINEAR_WRAPPED_TOKEN"
+  | "PHANTOM_BPT"
+  | "WHITE_LISTED";
+
+export interface GqlUserFbeetsBalance {
+  __typename: "GqlUserFbeetsBalance";
+  id: Scalars["String"];
+  stakedBalance: Scalars["AmountHumanReadable"];
+  totalBalance: Scalars["AmountHumanReadable"];
+  walletBalance: Scalars["AmountHumanReadable"];
+}
+
+export interface GqlUserPoolBalance {
+  __typename: "GqlUserPoolBalance";
+  poolId: Scalars["String"];
+  stakedBalance: Scalars["AmountHumanReadable"];
+  tokenAddress: Scalars["String"];
+  tokenPrice: Scalars["Float"];
+  totalBalance: Scalars["AmountHumanReadable"];
+  walletBalance: Scalars["AmountHumanReadable"];
+}
+
+export interface GqlUserPoolSnapshot {
+  __typename: "GqlUserPoolSnapshot";
+  farmBalance: Scalars["AmountHumanReadable"];
+  fees24h: Scalars["AmountHumanReadable"];
+  gaugeBalance: Scalars["AmountHumanReadable"];
+  percentShare: Scalars["Float"];
+  timestamp: Scalars["Int"];
+  totalBalance: Scalars["AmountHumanReadable"];
+  totalValueUSD: Scalars["AmountHumanReadable"];
+  walletBalance: Scalars["AmountHumanReadable"];
+}
+
+export interface GqlUserPortfolioSnapshot {
+  __typename: "GqlUserPortfolioSnapshot";
+  farmBalance: Scalars["AmountHumanReadable"];
+  fees24h: Scalars["AmountHumanReadable"];
+  gaugeBalance: Scalars["AmountHumanReadable"];
+  pools: Array<GqlUserPoolSnapshot>;
+  timestamp: Scalars["Int"];
+  totalBalance: Scalars["AmountHumanReadable"];
+  totalFees: Scalars["AmountHumanReadable"];
+  totalValueUSD: Scalars["AmountHumanReadable"];
+  walletBalance: Scalars["AmountHumanReadable"];
+}
+
+export interface GqlUserRelicSnapshot {
+  __typename: "GqlUserRelicSnapshot";
+  relicCount: Scalars["Int"];
+  relicSnapshots: Array<GqlRelicSnapshot>;
+  timestamp: Scalars["Int"];
+  totalBalance: Scalars["String"];
+}
+
+export type GqlUserSnapshotDataRange =
+  | "ALL_TIME"
+  | "NINETY_DAYS"
+  | "ONE_HUNDRED_EIGHTY_DAYS"
+  | "ONE_YEAR"
+  | "THIRTY_DAYS";
+
+export interface GqlUserSwapVolumeFilter {
+  poolIdIn?: InputMaybe<Array<Scalars["String"]>>;
+  tokenInIn?: InputMaybe<Array<Scalars["String"]>>;
+  tokenOutIn?: InputMaybe<Array<Scalars["String"]>>;
+}
+
 export interface GradualWeightUpdate {
   __typename: "GradualWeightUpdate";
   endTimestamp: Scalars["BigInt"];
@@ -1131,11 +2552,15 @@ export type GradualWeightUpdate_OrderBy =
   | "poolId__id"
   | "poolId__isInRecoveryMode"
   | "poolId__isPaused"
+  | "poolId__joinExitEnabled"
   | "poolId__lambda"
+  | "poolId__lastJoinExitAmp"
   | "poolId__lastPostJoinExitInvariant"
   | "poolId__lowerTarget"
   | "poolId__mainIndex"
+  | "poolId__managementAumFee"
   | "poolId__managementFee"
+  | "poolId__mustAllowlistLPs"
   | "poolId__name"
   | "poolId__oracleEnabled"
   | "poolId__owner"
@@ -1159,7 +2584,10 @@ export type GradualWeightUpdate_OrderBy =
   | "poolId__tauAlphaY"
   | "poolId__tauBetaX"
   | "poolId__tauBetaY"
+  | "poolId__totalAumFeeCollectedInBPT"
   | "poolId__totalLiquidity"
+  | "poolId__totalProtocolFee"
+  | "poolId__totalProtocolFeePaidInBPT"
   | "poolId__totalShares"
   | "poolId__totalSwapFee"
   | "poolId__totalSwapVolume"
@@ -1314,11 +2742,15 @@ export type JoinExit_OrderBy =
   | "pool__id"
   | "pool__isInRecoveryMode"
   | "pool__isPaused"
+  | "pool__joinExitEnabled"
   | "pool__lambda"
+  | "pool__lastJoinExitAmp"
   | "pool__lastPostJoinExitInvariant"
   | "pool__lowerTarget"
   | "pool__mainIndex"
+  | "pool__managementAumFee"
   | "pool__managementFee"
+  | "pool__mustAllowlistLPs"
   | "pool__name"
   | "pool__oracleEnabled"
   | "pool__owner"
@@ -1342,7 +2774,10 @@ export type JoinExit_OrderBy =
   | "pool__tauAlphaY"
   | "pool__tauBetaX"
   | "pool__tauBetaY"
+  | "pool__totalAumFeeCollectedInBPT"
   | "pool__totalLiquidity"
+  | "pool__totalProtocolFee"
+  | "pool__totalProtocolFeePaidInBPT"
   | "pool__totalShares"
   | "pool__totalSwapFee"
   | "pool__totalSwapVolume"
@@ -1466,11 +2901,15 @@ export type LatestPrice_OrderBy =
   | "poolId__id"
   | "poolId__isInRecoveryMode"
   | "poolId__isPaused"
+  | "poolId__joinExitEnabled"
   | "poolId__lambda"
+  | "poolId__lastJoinExitAmp"
   | "poolId__lastPostJoinExitInvariant"
   | "poolId__lowerTarget"
   | "poolId__mainIndex"
+  | "poolId__managementAumFee"
   | "poolId__managementFee"
+  | "poolId__mustAllowlistLPs"
   | "poolId__name"
   | "poolId__oracleEnabled"
   | "poolId__owner"
@@ -1494,7 +2933,10 @@ export type LatestPrice_OrderBy =
   | "poolId__tauAlphaY"
   | "poolId__tauBetaX"
   | "poolId__tauBetaY"
+  | "poolId__totalAumFeeCollectedInBPT"
   | "poolId__totalLiquidity"
+  | "poolId__totalProtocolFee"
+  | "poolId__totalProtocolFeePaidInBPT"
   | "poolId__totalShares"
   | "poolId__totalSwapFee"
   | "poolId__totalSwapVolume"
@@ -1917,11 +3359,139 @@ export type ManagementOperation_OrderBy =
   | "poolTokenId__managedBalance"
   | "poolTokenId__name"
   | "poolTokenId__oldPriceRate"
+  | "poolTokenId__paidProtocolFees"
   | "poolTokenId__priceRate"
   | "poolTokenId__symbol"
   | "poolTokenId__weight"
   | "timestamp"
   | "type";
+
+export interface Mutation {
+  __typename: "Mutation";
+  beetsPoolLoadReliquarySnapshotsForAllFarms: Scalars["String"];
+  beetsSyncFbeetsRatio: Scalars["String"];
+  cacheAverageBlockTime: Scalars["String"];
+  lgeCreate: GqlLge;
+  lgeSyncFromSanity: Scalars["String"];
+  poolBlackListAddPool: Scalars["String"];
+  poolBlackListRemovePool: Scalars["String"];
+  poolDeletePool: Scalars["String"];
+  poolInitializeSnapshotsForPool: Scalars["String"];
+  poolLoadOnChainDataForAllPools: Scalars["String"];
+  poolLoadOnChainDataForPoolsWithActiveUpdates: Scalars["String"];
+  poolLoadSnapshotsForAllPools: Scalars["String"];
+  poolLoadSnapshotsForPools: Scalars["String"];
+  poolReloadAllPoolAprs: Scalars["String"];
+  poolReloadAllTokenNestedPoolIds: Scalars["String"];
+  poolReloadPoolNestedTokens: Scalars["String"];
+  poolReloadPoolTokenIndexes: Scalars["String"];
+  poolReloadStakingForAllPools: Scalars["String"];
+  poolSetPoolsWithPreferredGaugesAsIncentivized: Scalars["String"];
+  poolSyncAllPoolVersions: Scalars["String"];
+  poolSyncAllPoolsFromSubgraph: Array<Scalars["String"]>;
+  poolSyncLatestSnapshotsForAllPools: Scalars["String"];
+  poolSyncNewPoolsFromSubgraph: Array<Scalars["String"]>;
+  poolSyncPool: Scalars["String"];
+  poolSyncPoolAllTokensRelationship: Scalars["String"];
+  poolSyncSanityPoolData: Scalars["String"];
+  poolSyncStakingForPools: Scalars["String"];
+  poolSyncSwapsForLast48Hours: Scalars["String"];
+  poolSyncTotalShares: Scalars["String"];
+  poolUpdateAprs: Scalars["String"];
+  poolUpdateLifetimeValuesForAllPools: Scalars["String"];
+  poolUpdateLiquidity24hAgoForAllPools: Scalars["String"];
+  poolUpdateLiquidityValuesForAllPools: Scalars["String"];
+  poolUpdateVolumeAndFeeValuesForAllPools: Scalars["String"];
+  protocolCacheMetrics: Scalars["String"];
+  tokenDeletePrice: Scalars["Boolean"];
+  tokenDeleteTokenType: Scalars["String"];
+  tokenInitChartData: Scalars["String"];
+  tokenReloadAllTokenTypes: Scalars["String"];
+  tokenReloadTokenPrices?: Maybe<Scalars["Boolean"]>;
+  tokenSyncTokenDefinitions: Scalars["String"];
+  tokenSyncTokenDynamicData: Scalars["String"];
+  userInitStakedBalances: Scalars["String"];
+  userInitWalletBalancesForAllPools: Scalars["String"];
+  userInitWalletBalancesForPool: Scalars["String"];
+  userLoadAllRelicSnapshots: Scalars["String"];
+  userSyncBalance: Scalars["String"];
+  userSyncBalanceAllPools: Scalars["String"];
+  userSyncChangedStakedBalances: Scalars["String"];
+  userSyncChangedWalletBalancesForAllPools: Scalars["String"];
+  veBalSyncAllUserBalances: Scalars["String"];
+  veBalSyncTotalSupply: Scalars["String"];
+}
+
+export interface MutationLgeCreateArgs {
+  lge: GqlLgeCreateInput;
+}
+
+export interface MutationPoolBlackListAddPoolArgs {
+  poolId: Scalars["String"];
+}
+
+export interface MutationPoolBlackListRemovePoolArgs {
+  poolId: Scalars["String"];
+}
+
+export interface MutationPoolDeletePoolArgs {
+  poolId: Scalars["String"];
+}
+
+export interface MutationPoolInitializeSnapshotsForPoolArgs {
+  poolId: Scalars["String"];
+}
+
+export interface MutationPoolLoadSnapshotsForPoolsArgs {
+  poolIds: Array<Scalars["String"]>;
+  reload?: InputMaybe<Scalars["Boolean"]>;
+}
+
+export interface MutationPoolReloadPoolNestedTokensArgs {
+  poolId: Scalars["String"];
+}
+
+export interface MutationPoolReloadPoolTokenIndexesArgs {
+  poolId: Scalars["String"];
+}
+
+export interface MutationPoolReloadStakingForAllPoolsArgs {
+  stakingTypes: Array<GqlPoolStakingType>;
+}
+
+export interface MutationPoolSyncLatestSnapshotsForAllPoolsArgs {
+  daysToSync?: InputMaybe<Scalars["Int"]>;
+}
+
+export interface MutationPoolSyncPoolArgs {
+  poolId: Scalars["String"];
+}
+
+export interface MutationTokenDeletePriceArgs {
+  timestamp: Scalars["Int"];
+  tokenAddress: Scalars["String"];
+}
+
+export interface MutationTokenDeleteTokenTypeArgs {
+  tokenAddress: Scalars["String"];
+  type: GqlTokenType;
+}
+
+export interface MutationTokenInitChartDataArgs {
+  tokenAddress: Scalars["String"];
+}
+
+export interface MutationUserInitStakedBalancesArgs {
+  stakingTypes: Array<GqlPoolStakingType>;
+}
+
+export interface MutationUserInitWalletBalancesForPoolArgs {
+  poolId: Scalars["String"];
+}
+
+export interface MutationUserSyncBalanceArgs {
+  poolId: Scalars["String"];
+}
 
 export interface OmniVotingEscrowLock {
   __typename: "OmniVotingEscrowLock";
@@ -1937,6 +3507,8 @@ export interface OmniVotingEscrowLock {
   remoteUser: Scalars["Bytes"];
   /**  veBAL decay rate (per second)  */
   slope: Scalars["BigDecimal"];
+  /**  Timestamp the lock was created [seconds]  */
+  timestamp: Scalars["Int"];
   /**  Reference to VotingEscrow entity  */
   votingEscrowID: VotingEscrow;
 }
@@ -2009,6 +3581,14 @@ export interface OmniVotingEscrowLock_Filter {
   slope_lte?: InputMaybe<Scalars["BigDecimal"]>;
   slope_not?: InputMaybe<Scalars["BigDecimal"]>;
   slope_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  timestamp?: InputMaybe<Scalars["Int"]>;
+  timestamp_gt?: InputMaybe<Scalars["Int"]>;
+  timestamp_gte?: InputMaybe<Scalars["Int"]>;
+  timestamp_in?: InputMaybe<Array<Scalars["Int"]>>;
+  timestamp_lt?: InputMaybe<Scalars["Int"]>;
+  timestamp_lte?: InputMaybe<Scalars["Int"]>;
+  timestamp_not?: InputMaybe<Scalars["Int"]>;
+  timestamp_not_in?: InputMaybe<Array<Scalars["Int"]>>;
   votingEscrowID?: InputMaybe<Scalars["String"]>;
   votingEscrowID_?: InputMaybe<VotingEscrow_Filter>;
   votingEscrowID_contains?: InputMaybe<Scalars["String"]>;
@@ -2040,6 +3620,7 @@ export type OmniVotingEscrowLock_OrderBy =
   | "localUser__id"
   | "remoteUser"
   | "slope"
+  | "timestamp"
   | "votingEscrowID"
   | "votingEscrowID__id"
   | "votingEscrowID__stakedSupply";
@@ -2058,6 +3639,7 @@ export interface Pool {
   baseToken?: Maybe<Scalars["Bytes"]>;
   beta?: Maybe<Scalars["BigDecimal"]>;
   c?: Maybe<Scalars["BigDecimal"]>;
+  circuitBreakers?: Maybe<Array<CircuitBreaker>>;
   createTime: Scalars["Int"];
   dSq?: Maybe<Scalars["BigDecimal"]>;
   delta?: Maybe<Scalars["BigDecimal"]>;
@@ -2074,11 +3656,15 @@ export interface Pool {
   id: Scalars["ID"];
   isInRecoveryMode?: Maybe<Scalars["Boolean"]>;
   isPaused?: Maybe<Scalars["Boolean"]>;
+  joinExitEnabled?: Maybe<Scalars["Boolean"]>;
   lambda?: Maybe<Scalars["BigDecimal"]>;
+  lastJoinExitAmp?: Maybe<Scalars["BigInt"]>;
   lastPostJoinExitInvariant?: Maybe<Scalars["BigDecimal"]>;
   lowerTarget?: Maybe<Scalars["BigDecimal"]>;
   mainIndex?: Maybe<Scalars["Int"]>;
+  managementAumFee?: Maybe<Scalars["BigDecimal"]>;
   managementFee?: Maybe<Scalars["BigDecimal"]>;
+  mustAllowlistLPs?: Maybe<Scalars["Boolean"]>;
   name?: Maybe<Scalars["String"]>;
   oracleEnabled: Scalars["Boolean"];
   owner?: Maybe<Scalars["Bytes"]>;
@@ -2113,7 +3699,10 @@ export interface Pool {
   tauBetaY?: Maybe<Scalars["BigDecimal"]>;
   tokens?: Maybe<Array<PoolToken>>;
   tokensList: Array<Scalars["Bytes"]>;
+  totalAumFeeCollectedInBPT?: Maybe<Scalars["BigDecimal"]>;
   totalLiquidity: Scalars["BigDecimal"];
+  totalProtocolFee?: Maybe<Scalars["BigDecimal"]>;
+  totalProtocolFeePaidInBPT?: Maybe<Scalars["BigDecimal"]>;
   totalShares: Scalars["BigDecimal"];
   totalSwapFee: Scalars["BigDecimal"];
   totalSwapVolume: Scalars["BigDecimal"];
@@ -2128,6 +3717,14 @@ export interface Pool {
   weightUpdates?: Maybe<Array<GradualWeightUpdate>>;
   wrappedIndex?: Maybe<Scalars["Int"]>;
   z?: Maybe<Scalars["BigDecimal"]>;
+}
+
+export interface PoolCircuitBreakersArgs {
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<CircuitBreaker_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<CircuitBreaker_Filter>;
 }
 
 export interface PoolGaugesArgs {
@@ -2255,11 +3852,15 @@ export type PoolContract_OrderBy =
   | "pool__id"
   | "pool__isInRecoveryMode"
   | "pool__isPaused"
+  | "pool__joinExitEnabled"
   | "pool__lambda"
+  | "pool__lastJoinExitAmp"
   | "pool__lastPostJoinExitInvariant"
   | "pool__lowerTarget"
   | "pool__mainIndex"
+  | "pool__managementAumFee"
   | "pool__managementFee"
+  | "pool__mustAllowlistLPs"
   | "pool__name"
   | "pool__oracleEnabled"
   | "pool__owner"
@@ -2283,7 +3884,10 @@ export type PoolContract_OrderBy =
   | "pool__tauAlphaY"
   | "pool__tauBetaX"
   | "pool__tauBetaY"
+  | "pool__totalAumFeeCollectedInBPT"
   | "pool__totalLiquidity"
+  | "pool__totalProtocolFee"
+  | "pool__totalProtocolFeePaidInBPT"
   | "pool__totalShares"
   | "pool__totalSwapFee"
   | "pool__totalSwapVolume"
@@ -2406,11 +4010,15 @@ export type PoolHistoricalLiquidity_OrderBy =
   | "poolId__id"
   | "poolId__isInRecoveryMode"
   | "poolId__isPaused"
+  | "poolId__joinExitEnabled"
   | "poolId__lambda"
+  | "poolId__lastJoinExitAmp"
   | "poolId__lastPostJoinExitInvariant"
   | "poolId__lowerTarget"
   | "poolId__mainIndex"
+  | "poolId__managementAumFee"
   | "poolId__managementFee"
+  | "poolId__mustAllowlistLPs"
   | "poolId__name"
   | "poolId__oracleEnabled"
   | "poolId__owner"
@@ -2434,7 +4042,10 @@ export type PoolHistoricalLiquidity_OrderBy =
   | "poolId__tauAlphaY"
   | "poolId__tauBetaX"
   | "poolId__tauBetaY"
+  | "poolId__totalAumFeeCollectedInBPT"
   | "poolId__totalLiquidity"
+  | "poolId__totalProtocolFee"
+  | "poolId__totalProtocolFeePaidInBPT"
   | "poolId__totalShares"
   | "poolId__totalSwapFee"
   | "poolId__totalSwapVolume"
@@ -2545,11 +4156,15 @@ export type PoolShare_OrderBy =
   | "poolId__id"
   | "poolId__isInRecoveryMode"
   | "poolId__isPaused"
+  | "poolId__joinExitEnabled"
   | "poolId__lambda"
+  | "poolId__lastJoinExitAmp"
   | "poolId__lastPostJoinExitInvariant"
   | "poolId__lowerTarget"
   | "poolId__mainIndex"
+  | "poolId__managementAumFee"
   | "poolId__managementFee"
+  | "poolId__mustAllowlistLPs"
   | "poolId__name"
   | "poolId__oracleEnabled"
   | "poolId__owner"
@@ -2573,7 +4188,10 @@ export type PoolShare_OrderBy =
   | "poolId__tauAlphaY"
   | "poolId__tauBetaX"
   | "poolId__tauBetaY"
+  | "poolId__totalAumFeeCollectedInBPT"
   | "poolId__totalLiquidity"
+  | "poolId__totalProtocolFee"
+  | "poolId__totalProtocolFeePaidInBPT"
   | "poolId__totalShares"
   | "poolId__totalSwapFee"
   | "poolId__totalSwapVolume"
@@ -2596,6 +4214,7 @@ export interface PoolSnapshot {
   id: Scalars["ID"];
   liquidity: Scalars["BigDecimal"];
   pool: Pool;
+  protocolFee?: Maybe<Scalars["BigDecimal"]>;
   swapFees: Scalars["BigDecimal"];
   swapVolume: Scalars["BigDecimal"];
   swapsCount: Scalars["BigInt"];
@@ -2659,6 +4278,14 @@ export interface PoolSnapshot_Filter {
   pool_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   pool_starts_with?: InputMaybe<Scalars["String"]>;
   pool_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  protocolFee?: InputMaybe<Scalars["BigDecimal"]>;
+  protocolFee_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  protocolFee_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  protocolFee_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  protocolFee_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  protocolFee_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  protocolFee_not?: InputMaybe<Scalars["BigDecimal"]>;
+  protocolFee_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
   swapFees?: InputMaybe<Scalars["BigDecimal"]>;
   swapFees_gt?: InputMaybe<Scalars["BigDecimal"]>;
   swapFees_gte?: InputMaybe<Scalars["BigDecimal"]>;
@@ -2723,11 +4350,15 @@ export type PoolSnapshot_OrderBy =
   | "pool__id"
   | "pool__isInRecoveryMode"
   | "pool__isPaused"
+  | "pool__joinExitEnabled"
   | "pool__lambda"
+  | "pool__lastJoinExitAmp"
   | "pool__lastPostJoinExitInvariant"
   | "pool__lowerTarget"
   | "pool__mainIndex"
+  | "pool__managementAumFee"
   | "pool__managementFee"
+  | "pool__mustAllowlistLPs"
   | "pool__name"
   | "pool__oracleEnabled"
   | "pool__owner"
@@ -2751,7 +4382,10 @@ export type PoolSnapshot_OrderBy =
   | "pool__tauAlphaY"
   | "pool__tauBetaX"
   | "pool__tauBetaY"
+  | "pool__totalAumFeeCollectedInBPT"
   | "pool__totalLiquidity"
+  | "pool__totalProtocolFee"
+  | "pool__totalProtocolFeePaidInBPT"
   | "pool__totalShares"
   | "pool__totalSwapFee"
   | "pool__totalSwapVolume"
@@ -2764,6 +4398,7 @@ export type PoolSnapshot_OrderBy =
   | "pool__w"
   | "pool__wrappedIndex"
   | "pool__z"
+  | "protocolFee"
   | "swapFees"
   | "swapVolume"
   | "swapsCount"
@@ -2776,6 +4411,7 @@ export interface PoolToken {
   assetManager: Scalars["Bytes"];
   balance: Scalars["BigDecimal"];
   cashBalance: Scalars["BigDecimal"];
+  circuitBreaker?: Maybe<CircuitBreaker>;
   decimals: Scalars["Int"];
   id: Scalars["ID"];
   index?: Maybe<Scalars["Int"]>;
@@ -2784,6 +4420,7 @@ export interface PoolToken {
   managements?: Maybe<Array<ManagementOperation>>;
   name: Scalars["String"];
   oldPriceRate?: Maybe<Scalars["BigDecimal"]>;
+  paidProtocolFees?: Maybe<Scalars["BigDecimal"]>;
   poolId?: Maybe<Pool>;
   priceRate: Scalars["BigDecimal"];
   symbol: Scalars["String"];
@@ -2849,6 +4486,27 @@ export interface PoolToken_Filter {
   cashBalance_lte?: InputMaybe<Scalars["BigDecimal"]>;
   cashBalance_not?: InputMaybe<Scalars["BigDecimal"]>;
   cashBalance_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  circuitBreaker?: InputMaybe<Scalars["String"]>;
+  circuitBreaker_?: InputMaybe<CircuitBreaker_Filter>;
+  circuitBreaker_contains?: InputMaybe<Scalars["String"]>;
+  circuitBreaker_contains_nocase?: InputMaybe<Scalars["String"]>;
+  circuitBreaker_ends_with?: InputMaybe<Scalars["String"]>;
+  circuitBreaker_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  circuitBreaker_gt?: InputMaybe<Scalars["String"]>;
+  circuitBreaker_gte?: InputMaybe<Scalars["String"]>;
+  circuitBreaker_in?: InputMaybe<Array<Scalars["String"]>>;
+  circuitBreaker_lt?: InputMaybe<Scalars["String"]>;
+  circuitBreaker_lte?: InputMaybe<Scalars["String"]>;
+  circuitBreaker_not?: InputMaybe<Scalars["String"]>;
+  circuitBreaker_not_contains?: InputMaybe<Scalars["String"]>;
+  circuitBreaker_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  circuitBreaker_not_ends_with?: InputMaybe<Scalars["String"]>;
+  circuitBreaker_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  circuitBreaker_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  circuitBreaker_not_starts_with?: InputMaybe<Scalars["String"]>;
+  circuitBreaker_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  circuitBreaker_starts_with?: InputMaybe<Scalars["String"]>;
+  circuitBreaker_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   decimals?: InputMaybe<Scalars["Int"]>;
   decimals_gt?: InputMaybe<Scalars["Int"]>;
   decimals_gte?: InputMaybe<Scalars["Int"]>;
@@ -2915,6 +4573,14 @@ export interface PoolToken_Filter {
   oldPriceRate_not?: InputMaybe<Scalars["BigDecimal"]>;
   oldPriceRate_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
   or?: InputMaybe<Array<InputMaybe<PoolToken_Filter>>>;
+  paidProtocolFees?: InputMaybe<Scalars["BigDecimal"]>;
+  paidProtocolFees_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  paidProtocolFees_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  paidProtocolFees_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  paidProtocolFees_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  paidProtocolFees_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  paidProtocolFees_not?: InputMaybe<Scalars["BigDecimal"]>;
+  paidProtocolFees_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
   poolId?: InputMaybe<Scalars["String"]>;
   poolId_?: InputMaybe<Pool_Filter>;
   poolId_contains?: InputMaybe<Scalars["String"]>;
@@ -3000,6 +4666,11 @@ export type PoolToken_OrderBy =
   | "assetManager"
   | "balance"
   | "cashBalance"
+  | "circuitBreaker"
+  | "circuitBreaker__bptPrice"
+  | "circuitBreaker__id"
+  | "circuitBreaker__lowerBoundPercentage"
+  | "circuitBreaker__upperBoundPercentage"
   | "decimals"
   | "id"
   | "index"
@@ -3008,6 +4679,7 @@ export type PoolToken_OrderBy =
   | "managements"
   | "name"
   | "oldPriceRate"
+  | "paidProtocolFees"
   | "poolId"
   | "poolId__address"
   | "poolId__alpha"
@@ -3025,11 +4697,15 @@ export type PoolToken_OrderBy =
   | "poolId__id"
   | "poolId__isInRecoveryMode"
   | "poolId__isPaused"
+  | "poolId__joinExitEnabled"
   | "poolId__lambda"
+  | "poolId__lastJoinExitAmp"
   | "poolId__lastPostJoinExitInvariant"
   | "poolId__lowerTarget"
   | "poolId__mainIndex"
+  | "poolId__managementAumFee"
   | "poolId__managementFee"
+  | "poolId__mustAllowlistLPs"
   | "poolId__name"
   | "poolId__oracleEnabled"
   | "poolId__owner"
@@ -3053,7 +4729,10 @@ export type PoolToken_OrderBy =
   | "poolId__tauAlphaY"
   | "poolId__tauBetaX"
   | "poolId__tauBetaY"
+  | "poolId__totalAumFeeCollectedInBPT"
   | "poolId__totalLiquidity"
+  | "poolId__totalProtocolFee"
+  | "poolId__totalProtocolFeePaidInBPT"
   | "poolId__totalShares"
   | "poolId__totalSwapFee"
   | "poolId__totalSwapVolume"
@@ -3071,6 +4750,7 @@ export type PoolToken_OrderBy =
   | "token"
   | "token__address"
   | "token__decimals"
+  | "token__fxOracleDecimals"
   | "token__id"
   | "token__latestFXPrice"
   | "token__latestUSDPrice"
@@ -3140,6 +4820,7 @@ export interface Pool_Filter {
   c_lte?: InputMaybe<Scalars["BigDecimal"]>;
   c_not?: InputMaybe<Scalars["BigDecimal"]>;
   c_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  circuitBreakers_?: InputMaybe<CircuitBreaker_Filter>;
   createTime?: InputMaybe<Scalars["Int"]>;
   createTime_gt?: InputMaybe<Scalars["Int"]>;
   createTime_gte?: InputMaybe<Scalars["Int"]>;
@@ -3222,6 +4903,10 @@ export interface Pool_Filter {
   isPaused_in?: InputMaybe<Array<Scalars["Boolean"]>>;
   isPaused_not?: InputMaybe<Scalars["Boolean"]>;
   isPaused_not_in?: InputMaybe<Array<Scalars["Boolean"]>>;
+  joinExitEnabled?: InputMaybe<Scalars["Boolean"]>;
+  joinExitEnabled_in?: InputMaybe<Array<Scalars["Boolean"]>>;
+  joinExitEnabled_not?: InputMaybe<Scalars["Boolean"]>;
+  joinExitEnabled_not_in?: InputMaybe<Array<Scalars["Boolean"]>>;
   lambda?: InputMaybe<Scalars["BigDecimal"]>;
   lambda_gt?: InputMaybe<Scalars["BigDecimal"]>;
   lambda_gte?: InputMaybe<Scalars["BigDecimal"]>;
@@ -3230,6 +4915,14 @@ export interface Pool_Filter {
   lambda_lte?: InputMaybe<Scalars["BigDecimal"]>;
   lambda_not?: InputMaybe<Scalars["BigDecimal"]>;
   lambda_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  lastJoinExitAmp?: InputMaybe<Scalars["BigInt"]>;
+  lastJoinExitAmp_gt?: InputMaybe<Scalars["BigInt"]>;
+  lastJoinExitAmp_gte?: InputMaybe<Scalars["BigInt"]>;
+  lastJoinExitAmp_in?: InputMaybe<Array<Scalars["BigInt"]>>;
+  lastJoinExitAmp_lt?: InputMaybe<Scalars["BigInt"]>;
+  lastJoinExitAmp_lte?: InputMaybe<Scalars["BigInt"]>;
+  lastJoinExitAmp_not?: InputMaybe<Scalars["BigInt"]>;
+  lastJoinExitAmp_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
   lastPostJoinExitInvariant?: InputMaybe<Scalars["BigDecimal"]>;
   lastPostJoinExitInvariant_gt?: InputMaybe<Scalars["BigDecimal"]>;
   lastPostJoinExitInvariant_gte?: InputMaybe<Scalars["BigDecimal"]>;
@@ -3254,6 +4947,14 @@ export interface Pool_Filter {
   mainIndex_lte?: InputMaybe<Scalars["Int"]>;
   mainIndex_not?: InputMaybe<Scalars["Int"]>;
   mainIndex_not_in?: InputMaybe<Array<Scalars["Int"]>>;
+  managementAumFee?: InputMaybe<Scalars["BigDecimal"]>;
+  managementAumFee_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  managementAumFee_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  managementAumFee_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  managementAumFee_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  managementAumFee_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  managementAumFee_not?: InputMaybe<Scalars["BigDecimal"]>;
+  managementAumFee_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
   managementFee?: InputMaybe<Scalars["BigDecimal"]>;
   managementFee_gt?: InputMaybe<Scalars["BigDecimal"]>;
   managementFee_gte?: InputMaybe<Scalars["BigDecimal"]>;
@@ -3262,6 +4963,10 @@ export interface Pool_Filter {
   managementFee_lte?: InputMaybe<Scalars["BigDecimal"]>;
   managementFee_not?: InputMaybe<Scalars["BigDecimal"]>;
   managementFee_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  mustAllowlistLPs?: InputMaybe<Scalars["Boolean"]>;
+  mustAllowlistLPs_in?: InputMaybe<Array<Scalars["Boolean"]>>;
+  mustAllowlistLPs_not?: InputMaybe<Scalars["Boolean"]>;
+  mustAllowlistLPs_not_in?: InputMaybe<Array<Scalars["Boolean"]>>;
   name?: InputMaybe<Scalars["String"]>;
   name_contains?: InputMaybe<Scalars["String"]>;
   name_contains_nocase?: InputMaybe<Scalars["String"]>;
@@ -3542,6 +5247,14 @@ export interface Pool_Filter {
   tokensList_not_contains?: InputMaybe<Array<Scalars["Bytes"]>>;
   tokensList_not_contains_nocase?: InputMaybe<Array<Scalars["Bytes"]>>;
   tokens_?: InputMaybe<PoolToken_Filter>;
+  totalAumFeeCollectedInBPT?: InputMaybe<Scalars["BigDecimal"]>;
+  totalAumFeeCollectedInBPT_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  totalAumFeeCollectedInBPT_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  totalAumFeeCollectedInBPT_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  totalAumFeeCollectedInBPT_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  totalAumFeeCollectedInBPT_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  totalAumFeeCollectedInBPT_not?: InputMaybe<Scalars["BigDecimal"]>;
+  totalAumFeeCollectedInBPT_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
   totalLiquidity?: InputMaybe<Scalars["BigDecimal"]>;
   totalLiquidity_gt?: InputMaybe<Scalars["BigDecimal"]>;
   totalLiquidity_gte?: InputMaybe<Scalars["BigDecimal"]>;
@@ -3550,6 +5263,22 @@ export interface Pool_Filter {
   totalLiquidity_lte?: InputMaybe<Scalars["BigDecimal"]>;
   totalLiquidity_not?: InputMaybe<Scalars["BigDecimal"]>;
   totalLiquidity_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  totalProtocolFee?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFeePaidInBPT?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFeePaidInBPT_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFeePaidInBPT_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFeePaidInBPT_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  totalProtocolFeePaidInBPT_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFeePaidInBPT_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFeePaidInBPT_not?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFeePaidInBPT_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  totalProtocolFee_gt?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFee_gte?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFee_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  totalProtocolFee_lt?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFee_lte?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFee_not?: InputMaybe<Scalars["BigDecimal"]>;
+  totalProtocolFee_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
   totalShares?: InputMaybe<Scalars["BigDecimal"]>;
   totalShares_gt?: InputMaybe<Scalars["BigDecimal"]>;
   totalShares_gte?: InputMaybe<Scalars["BigDecimal"]>;
@@ -3679,6 +5408,7 @@ export type Pool_OrderBy =
   | "baseToken"
   | "beta"
   | "c"
+  | "circuitBreakers"
   | "createTime"
   | "dSq"
   | "delta"
@@ -3692,11 +5422,15 @@ export type Pool_OrderBy =
   | "id"
   | "isInRecoveryMode"
   | "isPaused"
+  | "joinExitEnabled"
   | "lambda"
+  | "lastJoinExitAmp"
   | "lastPostJoinExitInvariant"
   | "lowerTarget"
   | "mainIndex"
+  | "managementAumFee"
   | "managementFee"
+  | "mustAllowlistLPs"
   | "name"
   | "oracleEnabled"
   | "owner"
@@ -3740,7 +5474,10 @@ export type Pool_OrderBy =
   | "tauBetaY"
   | "tokens"
   | "tokensList"
+  | "totalAumFeeCollectedInBPT"
   | "totalLiquidity"
+  | "totalProtocolFee"
+  | "totalProtocolFeePaidInBPT"
   | "totalShares"
   | "totalSwapFee"
   | "totalSwapVolume"
@@ -3753,7 +5490,9 @@ export type Pool_OrderBy =
   | "vaultID"
   | "vaultID__id"
   | "vaultID__poolCount"
+  | "vaultID__protocolFeesCollector"
   | "vaultID__totalLiquidity"
+  | "vaultID__totalProtocolFee"
   | "vaultID__totalSwapCount"
   | "vaultID__totalSwapFee"
   | "vaultID__totalSwapVolume"
@@ -3896,11 +5635,15 @@ export type PriceRateProvider_OrderBy =
   | "poolId__id"
   | "poolId__isInRecoveryMode"
   | "poolId__isPaused"
+  | "poolId__joinExitEnabled"
   | "poolId__lambda"
+  | "poolId__lastJoinExitAmp"
   | "poolId__lastPostJoinExitInvariant"
   | "poolId__lowerTarget"
   | "poolId__mainIndex"
+  | "poolId__managementAumFee"
   | "poolId__managementFee"
+  | "poolId__mustAllowlistLPs"
   | "poolId__name"
   | "poolId__oracleEnabled"
   | "poolId__owner"
@@ -3924,7 +5667,10 @@ export type PriceRateProvider_OrderBy =
   | "poolId__tauAlphaY"
   | "poolId__tauBetaX"
   | "poolId__tauBetaY"
+  | "poolId__totalAumFeeCollectedInBPT"
   | "poolId__totalLiquidity"
+  | "poolId__totalProtocolFee"
+  | "poolId__totalProtocolFeePaidInBPT"
   | "poolId__totalShares"
   | "poolId__totalSwapFee"
   | "poolId__totalSwapVolume"
@@ -3950,6 +5696,7 @@ export type PriceRateProvider_OrderBy =
   | "token__managedBalance"
   | "token__name"
   | "token__oldPriceRate"
+  | "token__paidProtocolFees"
   | "token__priceRate"
   | "token__symbol"
   | "token__weight";
@@ -4007,8 +5754,17 @@ export interface Query {
   balancerSnapshot?: Maybe<BalancerSnapshot>;
   balancerSnapshots: Array<BalancerSnapshot>;
   balancers: Array<Balancer>;
+  beetsGetFbeetsRatio: Scalars["String"];
+  beetsPoolGetReliquaryFarmSnapshots: Array<GqlReliquaryFarmSnapshot>;
   block?: Maybe<Block>;
   blocks: Array<Block>;
+  blocksGetAverageBlockTime: Scalars["Float"];
+  blocksGetBlocksPerDay: Scalars["Float"];
+  blocksGetBlocksPerSecond: Scalars["Float"];
+  blocksGetBlocksPerYear: Scalars["Float"];
+  circuitBreaker?: Maybe<CircuitBreaker>;
+  circuitBreakers: Array<CircuitBreaker>;
+  contentGetNewsItems: Array<GqlContentNewsItem>;
   gauge?: Maybe<Gauge>;
   gaugeFactories: Array<GaugeFactory>;
   gaugeFactory?: Maybe<GaugeFactory>;
@@ -4025,6 +5781,10 @@ export interface Query {
   joinExits: Array<JoinExit>;
   latestPrice?: Maybe<LatestPrice>;
   latestPrices: Array<LatestPrice>;
+  latestSyncedBlocks: GqlLatestSyncedBlocks;
+  lge: GqlLge;
+  lgeGetChartData: Array<Maybe<GqlLgePriceData>>;
+  lges: Array<GqlLge>;
   liquidityGauge?: Maybe<LiquidityGauge>;
   liquidityGauges: Array<LiquidityGauge>;
   lockSnapshot?: Maybe<LockSnapshot>;
@@ -4036,6 +5796,18 @@ export interface Query {
   pool?: Maybe<Pool>;
   poolContract?: Maybe<PoolContract>;
   poolContracts: Array<PoolContract>;
+  poolGetAllPoolsSnapshots: Array<GqlPoolSnapshot>;
+  poolGetBatchSwaps: Array<GqlPoolBatchSwap>;
+  poolGetFeaturedPoolGroups: Array<GqlPoolFeaturedPoolGroup>;
+  poolGetJoinExits: Array<GqlPoolJoinExit>;
+  poolGetLinearPools: Array<GqlPoolLinear>;
+  poolGetPool: GqlPoolBase;
+  poolGetPoolFilters: Array<GqlPoolFilterDefinition>;
+  poolGetPools: Array<GqlPoolMinimal>;
+  poolGetPoolsCount: Scalars["Int"];
+  poolGetSnapshots: Array<GqlPoolSnapshot>;
+  poolGetSwaps: Array<GqlPoolSwap>;
+  poolGetUserSwapVolume: Array<GqlPoolUserSwapVolume>;
   poolHistoricalLiquidities: Array<PoolHistoricalLiquidity>;
   poolHistoricalLiquidity?: Maybe<PoolHistoricalLiquidity>;
   poolShare?: Maybe<PoolShare>;
@@ -4049,17 +5821,32 @@ export interface Query {
   priceRateProviders: Array<PriceRateProvider>;
   protocolIdData?: Maybe<ProtocolIdData>;
   protocolIdDatas: Array<ProtocolIdData>;
+  protocolMetricsAggregated: GqlProtocolMetricsAggregated;
+  protocolMetricsChain: GqlProtocolMetricsChain;
   rewardToken?: Maybe<RewardToken>;
   rewardTokens: Array<RewardToken>;
   rootGauge?: Maybe<RootGauge>;
   rootGauges: Array<RootGauge>;
   singleRecipientGauge?: Maybe<SingleRecipientGauge>;
   singleRecipientGauges: Array<SingleRecipientGauge>;
+  sorGetBatchSwapForTokensIn: GqlSorGetBatchSwapForTokensInResponse;
+  sorGetSwaps: GqlSorGetSwapsResponse;
   swap?: Maybe<Swap>;
   swapFeeUpdate?: Maybe<SwapFeeUpdate>;
   swapFeeUpdates: Array<SwapFeeUpdate>;
   swaps: Array<Swap>;
   token?: Maybe<Token>;
+  tokenGetCandlestickChartData: Array<GqlTokenCandlestickChartDataItem>;
+  tokenGetCurrentPrices: Array<GqlTokenPrice>;
+  tokenGetHistoricalPrices: Array<GqlHistoricalTokenPrice>;
+  tokenGetPriceChartData: Array<GqlTokenPriceChartDataItem>;
+  tokenGetProtocolTokenPrice: Scalars["AmountHumanReadable"];
+  tokenGetRelativePriceChartData: Array<GqlTokenPriceChartDataItem>;
+  tokenGetTokenData?: Maybe<GqlTokenData>;
+  tokenGetTokenDynamicData?: Maybe<GqlTokenDynamicData>;
+  tokenGetTokens: Array<GqlToken>;
+  tokenGetTokensData: Array<GqlTokenData>;
+  tokenGetTokensDynamicData: Array<GqlTokenDynamicData>;
   tokenPrice?: Maybe<TokenPrice>;
   tokenPrices: Array<TokenPrice>;
   tokenSnapshot?: Maybe<TokenSnapshot>;
@@ -4070,9 +5857,19 @@ export interface Query {
   tradePairSnapshots: Array<TradePairSnapshot>;
   tradePairs: Array<TradePair>;
   user?: Maybe<User>;
+  userGetFbeetsBalance: GqlUserFbeetsBalance;
+  userGetPoolBalances: Array<GqlUserPoolBalance>;
+  userGetPoolJoinExits: Array<GqlPoolJoinExit>;
+  userGetPoolSnapshots: Array<GqlUserPoolSnapshot>;
+  userGetPortfolioSnapshots: Array<GqlUserPortfolioSnapshot>;
+  userGetRelicSnapshots: Array<GqlUserRelicSnapshot>;
+  userGetStaking: Array<GqlPoolStaking>;
+  userGetSwaps: Array<GqlPoolSwap>;
   userInternalBalance?: Maybe<UserInternalBalance>;
   userInternalBalances: Array<UserInternalBalance>;
   users: Array<User>;
+  veBalGetTotalSupply: Scalars["AmountHumanReadable"];
+  veBalGetUserBalance: Scalars["AmountHumanReadable"];
   votingEscrow?: Maybe<VotingEscrow>;
   votingEscrowLock?: Maybe<VotingEscrowLock>;
   votingEscrowLocks: Array<VotingEscrowLock>;
@@ -4131,6 +5928,11 @@ export interface QueryBalancersArgs {
   where?: InputMaybe<Balancer_Filter>;
 }
 
+export interface QueryBeetsPoolGetReliquaryFarmSnapshotsArgs {
+  id: Scalars["String"];
+  range: GqlPoolSnapshotDataRange;
+}
+
 export interface QueryBlockArgs {
   block?: InputMaybe<Block_Height>;
   id: Scalars["ID"];
@@ -4145,6 +5947,22 @@ export interface QueryBlocksArgs {
   skip?: InputMaybe<Scalars["Int"]>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<Block_Filter>;
+}
+
+export interface QueryCircuitBreakerArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface QueryCircuitBreakersArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<CircuitBreaker_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<CircuitBreaker_Filter>;
 }
 
 export interface QueryGaugeArgs {
@@ -4275,6 +6093,14 @@ export interface QueryLatestPricesArgs {
   where?: InputMaybe<LatestPrice_Filter>;
 }
 
+export interface QueryLgeArgs {
+  id: Scalars["ID"];
+}
+
+export interface QueryLgeGetChartDataArgs {
+  id: Scalars["ID"];
+}
+
 export interface QueryLiquidityGaugeArgs {
   block?: InputMaybe<Block_Height>;
   id: Scalars["ID"];
@@ -4359,6 +6185,61 @@ export interface QueryPoolContractsArgs {
   skip?: InputMaybe<Scalars["Int"]>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<PoolContract_Filter>;
+}
+
+export interface QueryPoolGetAllPoolsSnapshotsArgs {
+  range: GqlPoolSnapshotDataRange;
+}
+
+export interface QueryPoolGetBatchSwapsArgs {
+  first?: InputMaybe<Scalars["Int"]>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<GqlPoolSwapFilter>;
+}
+
+export interface QueryPoolGetJoinExitsArgs {
+  first?: InputMaybe<Scalars["Int"]>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<GqlPoolJoinExitFilter>;
+}
+
+export interface QueryPoolGetPoolArgs {
+  id: Scalars["String"];
+}
+
+export interface QueryPoolGetPoolsArgs {
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<GqlPoolOrderBy>;
+  orderDirection?: InputMaybe<GqlPoolOrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  textSearch?: InputMaybe<Scalars["String"]>;
+  where?: InputMaybe<GqlPoolFilter>;
+}
+
+export interface QueryPoolGetPoolsCountArgs {
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<GqlPoolOrderBy>;
+  orderDirection?: InputMaybe<GqlPoolOrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  textSearch?: InputMaybe<Scalars["String"]>;
+  where?: InputMaybe<GqlPoolFilter>;
+}
+
+export interface QueryPoolGetSnapshotsArgs {
+  id: Scalars["String"];
+  range: GqlPoolSnapshotDataRange;
+}
+
+export interface QueryPoolGetSwapsArgs {
+  first?: InputMaybe<Scalars["Int"]>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<GqlPoolSwapFilter>;
+}
+
+export interface QueryPoolGetUserSwapVolumeArgs {
+  first?: InputMaybe<Scalars["Int"]>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  where?: InputMaybe<GqlUserSwapVolumeFilter>;
 }
 
 export interface QueryPoolHistoricalLiquiditiesArgs {
@@ -4467,6 +6348,10 @@ export interface QueryProtocolIdDatasArgs {
   where?: InputMaybe<ProtocolIdData_Filter>;
 }
 
+export interface QueryProtocolMetricsAggregatedArgs {
+  chainIds: Array<Scalars["String"]>;
+}
+
 export interface QueryRewardTokenArgs {
   block?: InputMaybe<Block_Height>;
   id: Scalars["ID"];
@@ -4515,6 +6400,20 @@ export interface QuerySingleRecipientGaugesArgs {
   where?: InputMaybe<SingleRecipientGauge_Filter>;
 }
 
+export interface QuerySorGetBatchSwapForTokensInArgs {
+  swapOptions: GqlSorSwapOptionsInput;
+  tokenOut: Scalars["String"];
+  tokensIn: Array<GqlTokenAmountHumanReadable>;
+}
+
+export interface QuerySorGetSwapsArgs {
+  swapAmount: Scalars["BigDecimal"];
+  swapOptions: GqlSorSwapOptionsInput;
+  swapType: GqlSorSwapType;
+  tokenIn: Scalars["String"];
+  tokenOut: Scalars["String"];
+}
+
 export interface QuerySwapArgs {
   block?: InputMaybe<Block_Height>;
   id: Scalars["ID"];
@@ -4551,6 +6450,42 @@ export interface QueryTokenArgs {
   block?: InputMaybe<Block_Height>;
   id: Scalars["ID"];
   subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface QueryTokenGetCandlestickChartDataArgs {
+  address: Scalars["String"];
+  range: GqlTokenChartDataRange;
+}
+
+export interface QueryTokenGetHistoricalPricesArgs {
+  addresses: Array<Scalars["String"]>;
+}
+
+export interface QueryTokenGetPriceChartDataArgs {
+  address: Scalars["String"];
+  range: GqlTokenChartDataRange;
+}
+
+export interface QueryTokenGetRelativePriceChartDataArgs {
+  range: GqlTokenChartDataRange;
+  tokenIn: Scalars["String"];
+  tokenOut: Scalars["String"];
+}
+
+export interface QueryTokenGetTokenDataArgs {
+  address: Scalars["String"];
+}
+
+export interface QueryTokenGetTokenDynamicDataArgs {
+  address: Scalars["String"];
+}
+
+export interface QueryTokenGetTokensDataArgs {
+  addresses: Array<Scalars["String"]>;
+}
+
+export interface QueryTokenGetTokensDynamicDataArgs {
+  addresses: Array<Scalars["String"]>;
 }
 
 export interface QueryTokenPriceArgs {
@@ -4631,6 +6566,32 @@ export interface QueryUserArgs {
   block?: InputMaybe<Block_Height>;
   id: Scalars["ID"];
   subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface QueryUserGetPoolJoinExitsArgs {
+  first?: InputMaybe<Scalars["Int"]>;
+  poolId: Scalars["String"];
+  skip?: InputMaybe<Scalars["Int"]>;
+}
+
+export interface QueryUserGetPoolSnapshotsArgs {
+  poolId: Scalars["String"];
+  range: GqlUserSnapshotDataRange;
+}
+
+export interface QueryUserGetPortfolioSnapshotsArgs {
+  days: Scalars["Int"];
+}
+
+export interface QueryUserGetRelicSnapshotsArgs {
+  farmId: Scalars["String"];
+  range: GqlUserSnapshotDataRange;
+}
+
+export interface QueryUserGetSwapsArgs {
+  first?: InputMaybe<Scalars["Int"]>;
+  poolId: Scalars["String"];
+  skip?: InputMaybe<Scalars["Int"]>;
 }
 
 export interface QueryUserInternalBalanceArgs {
@@ -5050,6 +7011,8 @@ export interface Subscription {
   balancers: Array<Balancer>;
   block?: Maybe<Block>;
   blocks: Array<Block>;
+  circuitBreaker?: Maybe<CircuitBreaker>;
+  circuitBreakers: Array<CircuitBreaker>;
   gauge?: Maybe<Gauge>;
   gaugeFactories: Array<GaugeFactory>;
   gaugeFactory?: Maybe<GaugeFactory>;
@@ -5186,6 +7149,22 @@ export interface SubscriptionBlocksArgs {
   skip?: InputMaybe<Scalars["Int"]>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<Block_Filter>;
+}
+
+export interface SubscriptionCircuitBreakerArgs {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars["ID"];
+  subgraphError?: _SubgraphErrorPolicy_;
+}
+
+export interface SubscriptionCircuitBreakersArgs {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars["Int"]>;
+  orderBy?: InputMaybe<CircuitBreaker_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars["Int"]>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<CircuitBreaker_Filter>;
 }
 
 export interface SubscriptionGaugeArgs {
@@ -5857,11 +7836,15 @@ export type SwapFeeUpdate_OrderBy =
   | "pool__id"
   | "pool__isInRecoveryMode"
   | "pool__isPaused"
+  | "pool__joinExitEnabled"
   | "pool__lambda"
+  | "pool__lastJoinExitAmp"
   | "pool__lastPostJoinExitInvariant"
   | "pool__lowerTarget"
   | "pool__mainIndex"
+  | "pool__managementAumFee"
   | "pool__managementFee"
+  | "pool__mustAllowlistLPs"
   | "pool__name"
   | "pool__oracleEnabled"
   | "pool__owner"
@@ -5885,7 +7868,10 @@ export type SwapFeeUpdate_OrderBy =
   | "pool__tauAlphaY"
   | "pool__tauBetaX"
   | "pool__tauBetaY"
+  | "pool__totalAumFeeCollectedInBPT"
   | "pool__totalLiquidity"
+  | "pool__totalProtocolFee"
+  | "pool__totalProtocolFeePaidInBPT"
   | "pool__totalShares"
   | "pool__totalSwapFee"
   | "pool__totalSwapVolume"
@@ -6091,11 +8077,15 @@ export type Swap_OrderBy =
   | "poolId__id"
   | "poolId__isInRecoveryMode"
   | "poolId__isPaused"
+  | "poolId__joinExitEnabled"
   | "poolId__lambda"
+  | "poolId__lastJoinExitAmp"
   | "poolId__lastPostJoinExitInvariant"
   | "poolId__lowerTarget"
   | "poolId__mainIndex"
+  | "poolId__managementAumFee"
   | "poolId__managementFee"
+  | "poolId__mustAllowlistLPs"
   | "poolId__name"
   | "poolId__oracleEnabled"
   | "poolId__owner"
@@ -6119,7 +8109,10 @@ export type Swap_OrderBy =
   | "poolId__tauAlphaY"
   | "poolId__tauBetaX"
   | "poolId__tauBetaY"
+  | "poolId__totalAumFeeCollectedInBPT"
   | "poolId__totalLiquidity"
+  | "poolId__totalProtocolFee"
+  | "poolId__totalProtocolFeePaidInBPT"
   | "poolId__totalShares"
   | "poolId__totalSwapFee"
   | "poolId__totalSwapVolume"
@@ -6148,6 +8141,7 @@ export interface Token {
   __typename: "Token";
   address: Scalars["String"];
   decimals: Scalars["Int"];
+  fxOracleDecimals?: Maybe<Scalars["Int"]>;
   id: Scalars["ID"];
   latestFXPrice?: Maybe<Scalars["BigDecimal"]>;
   latestPrice?: Maybe<LatestPrice>;
@@ -6285,11 +8279,15 @@ export type TokenPrice_OrderBy =
   | "poolId__id"
   | "poolId__isInRecoveryMode"
   | "poolId__isPaused"
+  | "poolId__joinExitEnabled"
   | "poolId__lambda"
+  | "poolId__lastJoinExitAmp"
   | "poolId__lastPostJoinExitInvariant"
   | "poolId__lowerTarget"
   | "poolId__mainIndex"
+  | "poolId__managementAumFee"
   | "poolId__managementFee"
+  | "poolId__mustAllowlistLPs"
   | "poolId__name"
   | "poolId__oracleEnabled"
   | "poolId__owner"
@@ -6313,7 +8311,10 @@ export type TokenPrice_OrderBy =
   | "poolId__tauAlphaY"
   | "poolId__tauBetaX"
   | "poolId__tauBetaY"
+  | "poolId__totalAumFeeCollectedInBPT"
   | "poolId__totalLiquidity"
+  | "poolId__totalProtocolFee"
+  | "poolId__totalProtocolFeePaidInBPT"
   | "poolId__totalShares"
   | "poolId__totalSwapFee"
   | "poolId__totalSwapVolume"
@@ -6432,6 +8433,7 @@ export type TokenSnapshot_OrderBy =
   | "token"
   | "token__address"
   | "token__decimals"
+  | "token__fxOracleDecimals"
   | "token__id"
   | "token__latestFXPrice"
   | "token__latestUSDPrice"
@@ -6481,6 +8483,14 @@ export interface Token_Filter {
   decimals_lte?: InputMaybe<Scalars["Int"]>;
   decimals_not?: InputMaybe<Scalars["Int"]>;
   decimals_not_in?: InputMaybe<Array<Scalars["Int"]>>;
+  fxOracleDecimals?: InputMaybe<Scalars["Int"]>;
+  fxOracleDecimals_gt?: InputMaybe<Scalars["Int"]>;
+  fxOracleDecimals_gte?: InputMaybe<Scalars["Int"]>;
+  fxOracleDecimals_in?: InputMaybe<Array<Scalars["Int"]>>;
+  fxOracleDecimals_lt?: InputMaybe<Scalars["Int"]>;
+  fxOracleDecimals_lte?: InputMaybe<Scalars["Int"]>;
+  fxOracleDecimals_not?: InputMaybe<Scalars["Int"]>;
+  fxOracleDecimals_not_in?: InputMaybe<Array<Scalars["Int"]>>;
   id?: InputMaybe<Scalars["ID"]>;
   id_gt?: InputMaybe<Scalars["ID"]>;
   id_gte?: InputMaybe<Scalars["ID"]>;
@@ -6641,6 +8651,7 @@ export interface Token_Filter {
 export type Token_OrderBy =
   | "address"
   | "decimals"
+  | "fxOracleDecimals"
   | "id"
   | "latestFXPrice"
   | "latestPrice"
@@ -6669,11 +8680,15 @@ export type Token_OrderBy =
   | "pool__id"
   | "pool__isInRecoveryMode"
   | "pool__isPaused"
+  | "pool__joinExitEnabled"
   | "pool__lambda"
+  | "pool__lastJoinExitAmp"
   | "pool__lastPostJoinExitInvariant"
   | "pool__lowerTarget"
   | "pool__mainIndex"
+  | "pool__managementAumFee"
   | "pool__managementFee"
+  | "pool__mustAllowlistLPs"
   | "pool__name"
   | "pool__oracleEnabled"
   | "pool__owner"
@@ -6697,7 +8712,10 @@ export type Token_OrderBy =
   | "pool__tauAlphaY"
   | "pool__tauBetaX"
   | "pool__tauBetaY"
+  | "pool__totalAumFeeCollectedInBPT"
   | "pool__totalLiquidity"
+  | "pool__totalProtocolFee"
+  | "pool__totalProtocolFeePaidInBPT"
   | "pool__totalShares"
   | "pool__totalSwapFee"
   | "pool__totalSwapVolume"
@@ -6884,6 +8902,7 @@ export type TradePair_OrderBy =
   | "token0"
   | "token0__address"
   | "token0__decimals"
+  | "token0__fxOracleDecimals"
   | "token0__id"
   | "token0__latestFXPrice"
   | "token0__latestUSDPrice"
@@ -6898,6 +8917,7 @@ export type TradePair_OrderBy =
   | "token1"
   | "token1__address"
   | "token1__decimals"
+  | "token1__fxOracleDecimals"
   | "token1__id"
   | "token1__latestFXPrice"
   | "token1__latestUSDPrice"
@@ -7076,6 +9096,7 @@ export type UserInternalBalance_OrderBy =
   | "tokenInfo"
   | "tokenInfo__address"
   | "tokenInfo__decimals"
+  | "tokenInfo__fxOracleDecimals"
   | "tokenInfo__id"
   | "tokenInfo__latestFXPrice"
   | "tokenInfo__latestUSDPrice"
@@ -7160,9 +9181,11 @@ export interface VotingEscrowLock {
   lockedBalance: Scalars["BigDecimal"];
   /**  veBAL decay rate (per second)  */
   slope: Scalars["BigDecimal"];
+  /**  Timestamp at which the lock was created [seconds]  */
+  timestamp: Scalars["Int"];
   /**  Timestamp at which B-80BAL-20WETH BPT can be unlocked by user [seconds]  */
   unlockTime: Scalars["BigInt"];
-  /**  Timestamp at which the lock was updated [seconds]  */
+  /**  Timestamp at which the lcok was created [seconds]. Same as timestamp  */
   updatedAt: Scalars["Int"];
   /**  Reference to User entity  */
   user: User;
@@ -7207,6 +9230,14 @@ export interface VotingEscrowLock_Filter {
   slope_lte?: InputMaybe<Scalars["BigDecimal"]>;
   slope_not?: InputMaybe<Scalars["BigDecimal"]>;
   slope_not_in?: InputMaybe<Array<Scalars["BigDecimal"]>>;
+  timestamp?: InputMaybe<Scalars["Int"]>;
+  timestamp_gt?: InputMaybe<Scalars["Int"]>;
+  timestamp_gte?: InputMaybe<Scalars["Int"]>;
+  timestamp_in?: InputMaybe<Array<Scalars["Int"]>>;
+  timestamp_lt?: InputMaybe<Scalars["Int"]>;
+  timestamp_lte?: InputMaybe<Scalars["Int"]>;
+  timestamp_not?: InputMaybe<Scalars["Int"]>;
+  timestamp_not_in?: InputMaybe<Array<Scalars["Int"]>>;
   unlockTime?: InputMaybe<Scalars["BigInt"]>;
   unlockTime_gt?: InputMaybe<Scalars["BigInt"]>;
   unlockTime_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -7272,6 +9303,7 @@ export type VotingEscrowLock_OrderBy =
   | "id"
   | "lockedBalance"
   | "slope"
+  | "timestamp"
   | "unlockTime"
   | "updatedAt"
   | "user"
@@ -8563,6 +10595,18 @@ export type GetLatestBlockQuery = {
     id: string;
     number: string;
     timestamp: string;
+  }>;
+};
+
+export type GetTokenListQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetTokenListQuery = {
+  __typename: "Query";
+  tokenGetTokens: Array<{
+    __typename: "GqlToken";
+    address: string;
+    name: string;
+    logoURI?: string | null;
   }>;
 };
 
@@ -10980,4 +13024,63 @@ export type GetLatestBlockLazyQueryHookResult = ReturnType<
 export type GetLatestBlockQueryResult = Apollo.QueryResult<
   GetLatestBlockQuery,
   GetLatestBlockQueryVariables
+>;
+export const GetTokenListDocument = gql`
+  query GetTokenList {
+    tokenGetTokens {
+      address
+      name
+      logoURI
+    }
+  }
+`;
+
+/**
+ * __useGetTokenListQuery__
+ *
+ * To run a query within a React component, call `useGetTokenListQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTokenListQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTokenListQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetTokenListQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetTokenListQuery,
+    GetTokenListQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetTokenListQuery, GetTokenListQueryVariables>(
+    GetTokenListDocument,
+    options
+  );
+}
+export function useGetTokenListLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTokenListQuery,
+    GetTokenListQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetTokenListQuery, GetTokenListQueryVariables>(
+    GetTokenListDocument,
+    options
+  );
+}
+export type GetTokenListQueryHookResult = ReturnType<
+  typeof useGetTokenListQuery
+>;
+export type GetTokenListLazyQueryHookResult = ReturnType<
+  typeof useGetTokenListLazyQuery
+>;
+export type GetTokenListQueryResult = Apollo.QueryResult<
+  GetTokenListQuery,
+  GetTokenListQueryVariables
 >;

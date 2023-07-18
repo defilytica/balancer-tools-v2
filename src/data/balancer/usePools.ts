@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 import { unixToDate } from '../../utils/date';
 import { BalancerChartDataItem, PoolData } from './balancerTypes';
 import {CoingeckoRawData, CoingeckoSnapshotPriceData} from './useTokens';
+import {optimismBlockClient} from "../../apollo/client";
 
 function getPoolValues(
     poolId: string,
@@ -251,9 +252,6 @@ export function useBalancerPoolSingleData(poolId: string): PoolData | null {
     const { blocks, error: blockError } = useBlocksFromTimestamps([t24, t48, tWeek]);
     const [block24, block48, blockWeek] = blocks ?? [];
     const [getPoolData, { data }] = useGetBalancerPoolLazyQuery();
-
-    //const incentives = GetIncentiveList();
-    //console.log("incentives", incentives['week_52']);
 
     useEffect(() => {
         if (block24) {
