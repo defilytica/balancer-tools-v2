@@ -18,7 +18,6 @@ const NETWORK_PROVIDERS = {
     "100": 'https://rpc.gnosischain.com',
     [PolygonNetworkInfo.chainId]: 'https://polygon-bor.publicnode.com',
     [ArbitrumNetworkInfo.chainId]: 'https://rpc.ankr.com/arbitrum',
-    [PolygonZkEVMNetworkInfo.chainId]: 'https://polygon-zkevm.blockpi.network/v1/rpc/public',
 };
 
 interface MulticallItem {
