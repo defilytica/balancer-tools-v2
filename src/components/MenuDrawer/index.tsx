@@ -2,16 +2,14 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles'
 import { styled } from '@mui/material/styles';
-import {Drawer, Box, Link, ListItem, Button} from "@mui/material"
+import {Drawer, Box, Link, ListItem, Button, Accordion, AccordionSummary, AccordionDetails} from "@mui/material"
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import LinkIcon from '@mui/icons-material/Link';
-import WavesIcon from '@mui/icons-material/Waves';
-import TokenIcon from '@mui/icons-material/Token';
 import SecurityIcon from '@mui/icons-material/Security';
-import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import MapIcon from '@mui/icons-material/Map';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import DiscordIconLight from '../../assets/svg/discord-light.svg'
 import GitHubIcon from '@mui/icons-material/GitHub';
@@ -95,15 +93,23 @@ const MenuDrawer = ({
                     </ListItemIcon>
                     <ListItemText primary={'veBAL Multi-Voter'} />
                 </ListItemButton>
-            </List>
-            <List>
-                <Divider />
                 <ListItemButton key={'Authorizations'} component={NavLink} to={networkPrefix(activeNetwork) + 'authorizations'}>
                     <ListItemIcon>
                         <SecurityIcon />
                     </ListItemIcon>
                     <ListItemText primary={'Authorizations'} />
                 </ListItemButton>
+                <Accordion>
+                    <AccordionSummary>Gov Tools</AccordionSummary>
+                    <AccordionDetails>
+                        <ListItemButton key={'Gauge Mapper'} component={NavLink} to={'balancer/gaugeMap'}>
+                            <ListItemIcon>
+                                <MapIcon />
+                            </ListItemIcon>
+                            <ListItemText primary={'Gauge Mapper'} />
+                        </ListItemButton>
+                    </AccordionDetails>
+                </Accordion>
             </List>
             <List>
                 <Divider />
