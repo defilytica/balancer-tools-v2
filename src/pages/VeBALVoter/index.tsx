@@ -163,6 +163,12 @@ export default function VeBALVoter() {
                 allocElement.userValuePerVote = matchingHiddenHandData.totalValue / newVoteValue
             }
             setAllocations([...allocations]);
+        } else {
+            // handle deprecated gauges
+            allocElement.percentage = inputPercentage;
+            allocElement.rewardInUSD = 0;
+            allocElement.userValuePerVote = 0;
+            setAllocations([...allocations]);
         }
     };
 
@@ -171,6 +177,8 @@ export default function VeBALVoter() {
         const totalVotes = gauges.reduce((sum, gauge) => sum + (gauge.totalRewards ? gauge.voteCount : 0), 0);
         return totalRewards / totalVotes;
     };
+
+    console.log("allocations", allocations)
 
 
     //Load gauge and Staking information
@@ -215,12 +223,12 @@ export default function VeBALVoter() {
         if (userVotingGauges.length > 0 && allocations.length === 0 && fullyDecoratedGauges.length > 0) {
             const newAllocations = userVotingGauges.map((vote) => {
                 const matchingGauge = fullyDecoratedGauges.find((gauge) => gauge.address === vote.address);
-                const rewardInUSD = matchingGauge ? userVeBAL  * matchingGauge.valuePerVote : 0;
+                const rewardInUSD = matchingGauge ? userVeBAL  * (matchingGauge.valuePerVote ? matchingGauge.valuePerVote : 0) : 0;
                 return {
                     gaugeAddress: vote.address,
                     percentage: vote.userVotingPower ? vote.userVotingPower : 0,
                     rewardInUSD: rewardInUSD,
-                    userValuePerVote: matchingGauge ? matchingGauge.valuePerVote  : 0,
+                    userValuePerVote: matchingGauge ? (matchingGauge.valuePerVote ? matchingGauge.valuePerVote : 0)  : 0,
                     isNew: false
                 };
             });
