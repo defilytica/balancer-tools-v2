@@ -1,6 +1,7 @@
+import {useState} from "react";
+import { useTheme } from '@mui/material/styles'
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { useTheme } from '@mui/material/styles'
 import { styled } from '@mui/material/styles';
 import {Drawer, Box, Link, ListItem, Button, Accordion, AccordionSummary, AccordionDetails} from "@mui/material"
 import List from '@mui/material/List';
@@ -15,6 +16,7 @@ import DiscordIconLight from '../../assets/svg/discord-light.svg'
 import GitHubIcon from '@mui/icons-material/GitHub';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import ListItemButton from '@mui/material/ListItemButton';
+import HandymanIcon from '@mui/icons-material/Handyman';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import CoingeckoColor from '../../assets/svg/coingecko-color.svg'
@@ -22,8 +24,12 @@ import DebankColor from '../../assets/svg/debank-symbol.svg'
 import AlchemyBlue from '../../assets/svg/alchemy-mark-blue-gradient.svg'
 import Polling from '../Header/Polling';
 import { NavLink } from "react-router-dom";
-import { EthereumNetworkInfo, NetworkInfo } from '../../constants/networks';
+import { NetworkInfo } from '../../constants/networks';
 import { networkPrefix } from '../../utils/networkPrefix';
+import Collapse from '@mui/material/Collapse';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+
 
 export type MenuDrawerProps = {
     drawerWidth: number,
@@ -40,18 +46,22 @@ const MenuDrawer = ({
 
     const theme = useTheme();
 
+    //Handle Gov Tools Section
+    const [openGov, setOpenGov] = useState(false);
+
+    const handleGovClick = () => {
+        setOpenGov(!openGov);
+    };
+
 
     //Styled Drawer settings
     const DrawerHeader = styled('div')(({ theme }) => ({
         display: 'flex',
         alignItems: 'center',
         padding: theme.spacing(0, 1),
-        // necessary for content to be below app bar
         ...theme.mixins.toolbar,
         justifyContent: 'flex-end',
     }));
-
-    const route = activeNetwork === EthereumNetworkInfo ? '' : activeNetwork.route + '/';
 
     return (
         <Drawer
@@ -62,9 +72,6 @@ const MenuDrawer = ({
                     width: drawerWidth,
                     boxSizing: 'border-box',
                 },
-                //backgroundColor: {
-                //    opacity: 0.5,
-                // }
             }}
             variant="persistent"
             anchor="left"
@@ -99,17 +106,23 @@ const MenuDrawer = ({
                     </ListItemIcon>
                     <ListItemText primary={'Authorizations'} />
                 </ListItemButton>
-                <Accordion>
-                    <AccordionSummary>Gov Tools</AccordionSummary>
-                    <AccordionDetails>
+                <ListItemButton onClick={handleGovClick}>
+                    <ListItemIcon>
+                        <HandymanIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Gov Tools" />
+                    {openGov ? <ExpandLess /> : <ExpandMore />}
+                </ListItemButton>
+                <Collapse in={openGov} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
                         <ListItemButton key={'Gauge Mapper'} component={NavLink} to={'balancer/gaugeMap'}>
                             <ListItemIcon>
                                 <MapIcon />
                             </ListItemIcon>
                             <ListItemText primary={'Gauge Mapper'} />
                         </ListItemButton>
-                    </AccordionDetails>
-                </Accordion>
+                    </List>
+                </Collapse>
             </List>
             <List>
                 <Divider />

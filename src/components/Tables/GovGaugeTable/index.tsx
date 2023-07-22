@@ -385,7 +385,7 @@ export default function GovGaugeTable({gaugeDatas}: {
                                                 {row.poolId}
                                             </TableCell>
                                             <TableCell>
-                                                {row.isKilled ? 'yes' : 'no'}
+                                                {row.isKilled ? 'Yes' : 'No'}
                                             </TableCell>
                                         </TableRow>
                                     );
