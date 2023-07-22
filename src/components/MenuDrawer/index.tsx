@@ -26,6 +26,7 @@ import Polling from '../Header/Polling';
 import { NavLink } from "react-router-dom";
 import { NetworkInfo } from '../../constants/networks';
 import { networkPrefix } from '../../utils/networkPrefix';
+import HowToVoteIcon from '@mui/icons-material/HowToVote';
 import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
@@ -99,6 +100,12 @@ const MenuDrawer = ({
                         <LinkIcon />
                     </ListItemIcon>
                     <ListItemText primary={'veBAL Multi-Voter'} />
+                </ListItemButton>
+                <ListItemButton key={'Incentive Simulator'} component={NavLink} to={'/balancer/incentiveSimulator'}>
+                    <ListItemIcon>
+                        <HowToVoteIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={'Incentive Simulator'} />
                 </ListItemButton>
                 <ListItemButton key={'Authorizations'} component={NavLink} to={networkPrefix(activeNetwork) + 'authorizations'}>
                     <ListItemIcon>
