@@ -1,22 +1,22 @@
+import {useState} from "react";
+import { useTheme } from '@mui/material/styles'
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { useTheme } from '@mui/material/styles'
 import { styled } from '@mui/material/styles';
-import {Drawer, Box, Link, ListItem, Button} from "@mui/material"
+import {Drawer, Box, Link, ListItem, Button, Accordion, AccordionSummary, AccordionDetails} from "@mui/material"
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import LinkIcon from '@mui/icons-material/Link';
-import WavesIcon from '@mui/icons-material/Waves';
-import TokenIcon from '@mui/icons-material/Token';
 import SecurityIcon from '@mui/icons-material/Security';
-import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import MapIcon from '@mui/icons-material/Map';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import DiscordIconLight from '../../assets/svg/discord-light.svg'
 import GitHubIcon from '@mui/icons-material/GitHub';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import ListItemButton from '@mui/material/ListItemButton';
+import HandymanIcon from '@mui/icons-material/Handyman';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import CoingeckoColor from '../../assets/svg/coingecko-color.svg'
@@ -24,8 +24,12 @@ import DebankColor from '../../assets/svg/debank-symbol.svg'
 import AlchemyBlue from '../../assets/svg/alchemy-mark-blue-gradient.svg'
 import Polling from '../Header/Polling';
 import { NavLink } from "react-router-dom";
-import { EthereumNetworkInfo, NetworkInfo } from '../../constants/networks';
+import { NetworkInfo } from '../../constants/networks';
 import { networkPrefix } from '../../utils/networkPrefix';
+import Collapse from '@mui/material/Collapse';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+
 
 export type MenuDrawerProps = {
     drawerWidth: number,
@@ -42,18 +46,22 @@ const MenuDrawer = ({
 
     const theme = useTheme();
 
+    //Handle Gov Tools Section
+    const [openGov, setOpenGov] = useState(false);
+
+    const handleGovClick = () => {
+        setOpenGov(!openGov);
+    };
+
 
     //Styled Drawer settings
     const DrawerHeader = styled('div')(({ theme }) => ({
         display: 'flex',
         alignItems: 'center',
         padding: theme.spacing(0, 1),
-        // necessary for content to be below app bar
         ...theme.mixins.toolbar,
         justifyContent: 'flex-end',
     }));
-
-    const route = activeNetwork === EthereumNetworkInfo ? '' : activeNetwork.route + '/';
 
     return (
         <Drawer
@@ -64,9 +72,6 @@ const MenuDrawer = ({
                     width: drawerWidth,
                     boxSizing: 'border-box',
                 },
-                //backgroundColor: {
-                //    opacity: 0.5,
-                // }
             }}
             variant="persistent"
             anchor="left"
@@ -95,15 +100,29 @@ const MenuDrawer = ({
                     </ListItemIcon>
                     <ListItemText primary={'veBAL Multi-Voter'} />
                 </ListItemButton>
-            </List>
-            <List>
-                <Divider />
                 <ListItemButton key={'Authorizations'} component={NavLink} to={networkPrefix(activeNetwork) + 'authorizations'}>
                     <ListItemIcon>
                         <SecurityIcon />
                     </ListItemIcon>
                     <ListItemText primary={'Authorizations'} />
                 </ListItemButton>
+                <ListItemButton onClick={handleGovClick}>
+                    <ListItemIcon>
+                        <HandymanIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Gov Tools" />
+                    {openGov ? <ExpandLess /> : <ExpandMore />}
+                </ListItemButton>
+                <Collapse in={openGov} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
+                        <ListItemButton key={'Gauge Mapper'} component={NavLink} to={'balancer/gaugeMap'}>
+                            <ListItemIcon>
+                                <MapIcon />
+                            </ListItemIcon>
+                            <ListItemText primary={'Gauge Mapper'} />
+                        </ListItemButton>
+                    </List>
+                </Collapse>
             </List>
             <List>
                 <Divider />

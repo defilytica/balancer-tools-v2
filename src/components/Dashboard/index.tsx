@@ -28,6 +28,7 @@ import {ConnectButton, darkTheme, lightTheme, RainbowKitProvider} from "@rainbow
 import {WagmiConfig} from "wagmi";
 import {chains, wagmiConfig} from "../../wagmi/wagmiConfig";
 import {alpha} from "@mui/material";
+import GaugeMapper from "../../pages/GaugeMapper";
 
 
 interface AppBarProps extends MuiAppBarProps {
@@ -256,6 +257,8 @@ function Dashboard() {
                                            element={<ImpermanentLoss/>}/>
                                     <Route path={networkPrefix(activeNetwork) + 'authorizations'}
                                            element={<Authorizations/>}/>
+                                    <Route path={'balancer/gaugeMap'}
+                                           element={<GaugeMapper/>}/>
                                     {/* Router v6: no query searches possible anymore. Provide all possible paths */}
                                 </Routes>
                             </MainContent>
