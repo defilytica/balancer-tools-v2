@@ -283,9 +283,6 @@ export default function VeBALVoter() {
         setAllocations([...newAllocations]);
     }
 
-
-
-
     return (
          !isConnected ?
              <Box

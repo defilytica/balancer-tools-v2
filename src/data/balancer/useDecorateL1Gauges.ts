@@ -38,8 +38,8 @@ const useDecorateL1Gauges = (stakingGaugeData: BalancerStakingGauges[]): Balance
                     calls: [
                         {reference: "workingSupply", methodName: 'working_supply', methodParameters: []},
                         {reference: "totalSupply", methodName: 'totalSupply', methodParameters: []},
-                        {reference: "workingBalance", methodName: 'working_balances', methodParameters: [address]},
-                        {reference: "userBalance", methodName: 'balanceOf', methodParameters: [address]},
+                        {reference: "workingBalance", methodName: 'working_balances', methodParameters: [address ? address : '0x3B8910F378034FD6E103Df958863e5c684072693']},
+                        {reference: "userBalance", methodName: 'balanceOf', methodParameters: [address ? address : '0x3B8910F378034FD6E103Df958863e5c684072693']},
                     ],
                 }));
                 multicalls.push(multicall.call(contractCallContext));
