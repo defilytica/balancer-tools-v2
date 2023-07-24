@@ -1,6 +1,6 @@
 import * as React from "react";
 import Box from '@mui/material/Box';
-import {FormControl, Grid, InputLabel, MenuItem, TextField, Typography} from '@mui/material';
+import {FormControl, Grid, InputLabel, MenuItem, TextField, Typography, FormControlLabel, Checkbox} from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import {BalancerSDK, balEmissions} from "@balancer-labs/sdk";
 import {useActiveNetworkVersion} from "../../state/application/hooks";
@@ -64,6 +64,11 @@ export default function BribeSimulator() {
     const totalVeBAL = useGetTotalVeBAL();
     const pools = useBalancerPools()
     const hhIncentives = useGetHHVotingIncentives();
+    
+    // New state to hold the checkbox value
+    const [useNewTotalValue, setUseNewTotalValue] = useState(false);
+    const [customTotalValue, setCustomTotalValue] = useState<number>(0); // New state to hold the custom totalValue
+    const [hidePoolSelect, setHidePoolSelect] = useState<boolean>(false); // New state to hide the "Select a Pool" component
 
     const coinData = useCoinGeckoSimpleTokenPrices([balAddress]);
     //Load gauge and Staking information
@@ -88,6 +93,7 @@ export default function BribeSimulator() {
     const [incentivePerVote, setIncentivePerVote] = useState<number>(0);
     const [emissionPerVote, setEmissionPerVote] = useState<number>(0);
     const [roundIncentives, setRoundIncentives] = useState<number>(0);
+    const [bribeValue, setBribeValue] = useState<number>(0);
 
     // Handler for selecting a pool from the dropdown menu
     const handlePoolChange = (event: SelectChangeEvent) => {
@@ -106,8 +112,27 @@ export default function BribeSimulator() {
 
     // Handler for entering the target APR in the input field
     const handleTargetAPRChange = (event: React.ChangeEvent<HTMLInputElement>) =>  {
+        const newBribeValue = parseFloat(event.target.value);
+        setTargetAPR(isNaN(newBribeValue) ? 0 : newBribeValue);
+    };
+
+    // Handler for when a project wants to experiment with the amount of their bribe
+    const handleBribeValueChange = (event: React.ChangeEvent<HTMLInputElement>) =>  {
         const newTargetAPR = parseFloat(event.target.value);
         setTargetAPR(isNaN(newTargetAPR) ? 0 : newTargetAPR);
+    };
+
+    // Handler for the checkbox change event
+    const handleUseNewTotalValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setUseNewTotalValue(event.target.checked);
+        // Set hidePoolSelect to true when the checkbox is checked
+        setHidePoolSelect(event.target.checked);        
+    };
+
+    // Handler for the new custom totalValue input field
+    const handleCustomTotalValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newCustomTotalValue = parseFloat(event.target.value);
+        setCustomTotalValue(isNaN(newCustomTotalValue) ? 0 : newCustomTotalValue);
     };
 
     useEffect(() => {
@@ -116,6 +141,16 @@ export default function BribeSimulator() {
             //calculate inventives and emission per vote Metrics for a given round
             let totalVotes = 0;
             let totalValue = 0;
+            if (useNewTotalValue) {
+                // Use the new custom totalValue if the checkbox is checked
+                totalValue = customTotalValue;
+            } else {
+                // Otherwise, use the totalValue from the pools object
+                hhIncentives.incentives.data.forEach((item) => {
+                    totalValue += item.totalValue;
+                    totalVotes += item.voteCount;
+                });
+            }
             let emissionVotes = 0;
             let emissionValue = 0;
             hhIncentives.incentives.data.forEach((item) => {
@@ -132,7 +167,7 @@ export default function BribeSimulator() {
             setEmissionPerVote(emissionEff)
             setRoundIncentives(totalValue)
         }
-    }, [gaugeData, hhIncentives.incentives]);
+    }, [gaugeData, hhIncentives.incentives, useNewTotalValue, customTotalValue]);
 
     return (
         <Box sx={{flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
@@ -154,7 +189,6 @@ export default function BribeSimulator() {
                                 tokenName='BAL'
                                 tokenPrice={coinData[balAddress].usd}
                                 tokenPriceChange={coinData[balAddress].usd_24h_change}
-
                             />
                             </Box>
                             : <CircularProgress />}
@@ -203,26 +237,49 @@ export default function BribeSimulator() {
                     />
                 </Grid>
                 <Grid item xs={11}>
-                    <FormControl >
-                        <InputLabel>Select a Pool</InputLabel>
-                        <Select
-                            value={selectedPoolId}
-                            onChange={handlePoolChange}
-                        >
-                            {pools.map((pool) => (
-                                <MenuItem key={pool.address} value={pool.address}>
-                                    <Box display="flex" alignItems="center">
-                                        <Box mr={1}>
-                                            {pool.name}
-                                        </Box>
-                                        <PoolComposition poolData={pool} />
-                                        <Box ml={1}>{formatDollarAmount(pool.tvlUSD)}</Box>
-                                    </Box>
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={useNewTotalValue}
+                                onChange={handleUseNewTotalValueChange}
+                            />
+                        }
+                        label="Use Theoretical Pool Value ($)"
+                    />
                 </Grid>
+                {useNewTotalValue && (
+                    <Grid item xs={11}>
+                        <TextField
+                            label="Theoretical Pool Value ($)"
+                            type="number"
+                            value={customTotalValue}
+                            onChange={handleCustomTotalValueChange}
+                        />
+                    </Grid> 
+                )}               
+                {!hidePoolSelect && (
+                    <Grid item xs={11}>
+                        <FormControl>
+                            <InputLabel>Select a Pool</InputLabel>
+                            <Select
+                                value={selectedPoolId}
+                                onChange={handlePoolChange}
+                            >
+                                {pools.map((pool) => (
+                                    <MenuItem key={pool.address} value={pool.address}>
+                                        <Box display="flex" alignItems="center">
+                                            <Box mr={1}>
+                                                {pool.name}
+                                            </Box>
+                                            <PoolComposition poolData={pool} />
+                                            <Box ml={1}>{formatDollarAmount(pool.tvlUSD)}</Box>
+                                        </Box>
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                )}
                 <Grid item xs={11}>
                     <Typography>Found gauge with votes {allocatedVotes}</Typography>
                 </Grid>
@@ -230,9 +287,14 @@ export default function BribeSimulator() {
                     <Typography>TODO: target votes</Typography>
                 </Grid>
                 <Grid item xs={11}>
-                    <Typography>TODO: cost to achieve target votes infer from last voting round emissions per
-                        $ spent (see formula / value from corresponding card card)
-                    </Typography>
+                <Grid item xs={11}>
+                    <TextField
+                        label="Bribe Value ($)"
+                        type="number"
+                        value={bribeValue}
+                        onChange={handleBribeValueChange}
+                    />
+                </Grid>
                     <Typography> Calculation of target APR is probably ratio of tvl vs weekly emission fraction to receive bal with that price.
                         Bribe value is then probably inferred from target bal emission and emission / $ spent
                     </Typography>
