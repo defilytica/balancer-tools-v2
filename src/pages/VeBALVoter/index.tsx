@@ -66,6 +66,13 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
         {...props} />;
 });
 
+// Helper function to sort gauges based on value per vote in descending order
+const sortGaugesByValuePerVote = (gauges: BalancerStakingGauges[]) => {
+    return gauges.sort((a, b) => b.valuePerVote - a.valuePerVote);
+};
+
+
+
 export default function VeBALVoter() {
 
     //Load user wallet stats
@@ -81,6 +88,78 @@ export default function VeBALVoter() {
     const [alertOpen, setAlertOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [userVotingGauges, setUserVotingGauges] = useState<BalancerStakingGauges[]>([]);
+
+    // Helper function to check if the current allocation combination is valid
+    const isValidCombination = (allocations: GaugeAllocation[], maxAllocationLength: number) => {
+        const totalPercentage = allocations.reduce((sum, alloc) => sum + alloc.percentage, 0);
+        return totalPercentage <= 100 && allocations.length <= maxAllocationLength;
+    };
+
+// Function to calculate optimal allocations using a greedy algorithm
+    const calculateOptimalAllocations = () => {
+        const maxAllocationLength = 8; // Maximum number of allocations allowed
+
+        // Combine existing allocations with new gauges
+        const existingAllocations = allocations.filter((alloc) => !alloc.isNew);
+        let combinedAllocations = [...existingAllocations];
+
+        if (hhIncentives && hhIncentives.incentives && hhIncentives.incentives.data && decoratedVotingGauges && decoratedVotingGauges.length > 0) {
+            fullyDecoratedGauges = decorateGaugesWithIncentives(decoratedVotingGauges, hhIncentives.incentives);
+        }
+
+        // Calculate and add new allocations from remaining gauges
+        const remainingAllocations = maxAllocationLength - existingAllocations.length;
+
+        if (remainingAllocations > 0) {
+            const sortedGauges = fullyDecoratedGauges
+                .filter((gauge) => gauge.valuePerVote > 0) // Filter gauges with non-zero rewards
+                .sort((a, b) => b.valuePerVote - a.valuePerVote); // Sort in descending order of rewards
+
+            const availablePercentage = 100 - existingAllocations.reduce((sum, alloc) => sum + alloc.percentage, 0);
+
+            for (let i = 0; i < remainingAllocations && i < sortedGauges.length; i++) {
+                const gauge = sortedGauges[i];
+                const allocationPercentage = Math.min(gauge.valuePerVote, availablePercentage);
+                combinedAllocations.push({
+                    gaugeAddress: gauge.address,
+                    percentage: allocationPercentage * 100,
+                    rewardInUSD: (allocationPercentage * 100 * userVeBAL * gauge.valuePerVote) / 100,
+                    userValuePerVote: gauge.valuePerVote,
+                    isNew: true,
+                });
+            }
+        }
+
+        // Apply constraints
+        combinedAllocations.sort((a, b) => b.rewardInUSD - a.rewardInUSD); // Sort again after adding new allocations
+        combinedAllocations = combinedAllocations.slice(0, maxAllocationLength); // Limit to the maximum allowed length
+
+        // Calculate total percentage and reward
+        const totalPercentage = combinedAllocations.reduce((sum, alloc) => sum + alloc.percentage, 0);
+        const totalReward = combinedAllocations.reduce((sum, alloc) => sum + alloc.rewardInUSD, 0);
+
+        // Check if the total percentage exceeds 100 and adjust allocations if needed
+        if (totalPercentage > 100) {
+            const percentageDiff = totalPercentage - 100;
+            let remainingPercentageDiff = percentageDiff;
+
+            // Reduce allocations starting from the smallest ones until the total percentage is 100
+            for (let i = combinedAllocations.length - 1; i >= 0 && remainingPercentageDiff > 0; i--) {
+                const alloc = combinedAllocations[i];
+                const reduction = Math.min(remainingPercentageDiff, alloc.percentage);
+                alloc.percentage -= reduction;
+                alloc.rewardInUSD = (alloc.percentage * userVeBAL * alloc.userValuePerVote) / 100;
+                remainingPercentageDiff -= reduction;
+            }
+        }
+
+        // Set the allocations state with the final allocations
+        setAllocations(combinedAllocations);
+    };
+
+
+
+
 
     useEffect(() => {
         // reset state
@@ -132,6 +211,10 @@ export default function VeBALVoter() {
         setAlertOpen(false);
     };
 
+    const handleOptimizoor = () => {
+        calculateOptimalAllocations()
+    }
+
     const handlePercentageChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, allocElement: GaugeAllocation) => {
         const inputPercentage = Number(event.target.value);
         const matchingHiddenHandData = hhIncentives?.incentives?.data?.find(data => data.proposal.toLowerCase() === allocElement.gaugeAddress.toLowerCase());
@@ -178,8 +261,6 @@ export default function VeBALVoter() {
         return totalRewards / totalVotes;
     };
 
-    console.log("allocations", allocations)
-
 
     //Load gauge and Staking information
     const gaugeData = useGetBalancerStakingGauges();
@@ -223,7 +304,8 @@ export default function VeBALVoter() {
         if (userVotingGauges.length > 0 && allocations.length === 0 && fullyDecoratedGauges.length > 0) {
             const newAllocations = userVotingGauges.map((vote) => {
                 const matchingGauge = fullyDecoratedGauges.find((gauge) => gauge.address === vote.address);
-                const rewardInUSD = matchingGauge ? userVeBAL  * (matchingGauge.valuePerVote ? matchingGauge.valuePerVote : 0) : 0;
+                const votePower = vote.userVotingPower ? vote.userVotingPower / 100 : 0;
+                const rewardInUSD = matchingGauge ? userVeBAL  * votePower * matchingGauge.valuePerVote : 0;
                 return {
                     gaugeAddress: vote.address,
                     percentage: vote.userVotingPower ? vote.userVotingPower : 0,
@@ -513,6 +595,11 @@ export default function VeBALVoter() {
                             Clear Selection
                         </Button>
                     </Box>
+                        <Box mr={1}>
+                            <Button variant="outlined" onClick={() => handleOptimizoor()} disabled={!allocations.length}>
+                                Optimizoor
+                            </Button>
+                        </Box>
                     </Grid>
 
                 </Grid>
