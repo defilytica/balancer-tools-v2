@@ -9,4 +9,5 @@ export interface GaugeAllocation {
     rewardInUSD: number,
     userValuePerVote: number,
     isNew: boolean,
+    initialPercentage: number,
 }
