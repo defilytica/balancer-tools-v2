@@ -19,6 +19,7 @@ import {formatDollarAmount} from "../../utils/numbers";
 import {Handshake} from "@mui/icons-material";
 import useGetBalancerStakingGauges from "../../data/balancer/useGetBalancerStakingGauges";
 import { HiddenHandIncentives } from "../../data/hidden-hand/hiddenHandTypes";
+import { calculateAPR, calculateBribeValue } from "./bribeHelpers";
 
 // TODO: put somewhere else
 //  Helper functions to parse data types to Llama model
@@ -66,8 +67,8 @@ export default function BribeSimulator() {
     const hhIncentives = useGetHHVotingIncentives();
     
     // New state to hold the checkbox value
-    const [useNewTotalValue, setUseNewTotalValue] = useState(false);
-    const [customTotalValue, setCustomTotalValue] = useState<number>(0); // New state to hold the custom totalValue
+    const [useNewPoolValue, setUseNewPoolValue] = useState(false);
+    const [customPoolValue, setCustomPoolValue] = useState<number>(0); // New state to hold the custom poolValue
     const [hidePoolSelect, setHidePoolSelect] = useState<boolean>(false); // New state to hide the "Select a Pool" component
 
     const coinData = useCoinGeckoSimpleTokenPrices([balAddress]);
@@ -112,45 +113,52 @@ export default function BribeSimulator() {
 
     // Handler for entering the target APR in the input field
     const handleTargetAPRChange = (event: React.ChangeEvent<HTMLInputElement>) =>  {
-        const newBribeValue = parseFloat(event.target.value);
-        setTargetAPR(isNaN(newBribeValue) ? 0 : newBribeValue);
+        setTargetAPR(parseFloat(event.target.value));
+        let bribeValue = calculateBribeValue(Number(event.target.value), customPoolValue, emissionPerVote, incentivePerVote)
+        setBribeValue(Number(bribeValue));
     };
 
     // Handler for when a project wants to experiment with the amount of their bribe
     const handleBribeValueChange = (event: React.ChangeEvent<HTMLInputElement>) =>  {
-        const newTargetAPR = parseFloat(event.target.value);
-        setTargetAPR(isNaN(newTargetAPR) ? 0 : newTargetAPR);
+        setBribeValue(parseFloat(event.target.value));
+        let newTargetAPR = calculateAPR(Number(event.target.value), customPoolValue, emissionPerVote, incentivePerVote);
+        setTargetAPR(Number(newTargetAPR));
     };
 
     // Handler for the checkbox change event
-    const handleUseNewTotalValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setUseNewTotalValue(event.target.checked);
+    const handleUseNewPoolValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setUseNewPoolValue(event.target.checked);
         // Set hidePoolSelect to true when the checkbox is checked
         setHidePoolSelect(event.target.checked);        
     };
 
-    // Handler for the new custom totalValue input field
-    const handleCustomTotalValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const newCustomTotalValue = parseFloat(event.target.value);
-        setCustomTotalValue(isNaN(newCustomTotalValue) ? 0 : newCustomTotalValue);
+    // Handler for the new custom pool value input field
+    const handlePoolValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const newCustomPoolValue = parseFloat(event.target.value);
+        setCustomPoolValue(isNaN(newCustomPoolValue) ? 0 : newCustomPoolValue);
     };
 
     useEffect(() => {
         const data = extractPoolRewards(hhIncentives.incentives);
         if (hhIncentives.incentives && hhIncentives.incentives.data.length > 1) {
-            //calculate inventives and emission per vote Metrics for a given round
+            // Calculate incentives and emission per vote Metrics for a given round
             let totalVotes = 0;
             let totalValue = 0;
-            if (useNewTotalValue) {
-                // Use the new custom totalValue if the checkbox is checked
-                totalValue = customTotalValue;
-            } else {
-                // Otherwise, use the totalValue from the pools object
-                hhIncentives.incentives.data.forEach((item) => {
+
+            if (useNewPoolValue) {
+                // Use the custom poolValue if the checkbox is checked
+                 setCustomPoolValue(customPoolValue);
+            } else if (selectedPoolId) {
+                // Otherwise, use the TVL of the selected pool from the pools object
+                const selectedPool = pools.find((pool) => pool.address === selectedPoolId);
+                if (selectedPool) {
+                    setCustomPoolValue(selectedPool.tvlUSD);
+                }
+            }
+            hhIncentives.incentives.data.forEach((item) => {
                     totalValue += item.totalValue;
                     totalVotes += item.voteCount;
-                });
-            }
+            });
             let emissionVotes = 0;
             let emissionValue = 0;
             hhIncentives.incentives.data.forEach((item) => {
@@ -167,7 +175,7 @@ export default function BribeSimulator() {
             setEmissionPerVote(emissionEff)
             setRoundIncentives(totalValue)
         }
-    }, [gaugeData, hhIncentives.incentives, useNewTotalValue, customTotalValue]);
+    }, [gaugeData, hhIncentives.incentives, useNewPoolValue, customPoolValue, selectedPoolId]);
 
     return (
         <Box sx={{flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
@@ -230,32 +238,32 @@ export default function BribeSimulator() {
                 </Grid>
                 <Grid item xs={11}>
                     <TextField
-                        label="Target APR"
+                        label="Target APR (%)"
                         type="number"
                         value={targetAPR}
                         onChange={handleTargetAPRChange}
                     />
                 </Grid>
                 <Grid item xs={11}>
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={useNewTotalValue}
-                                onChange={handleUseNewTotalValueChange}
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={useNewPoolValue}
+                                        onChange={handleUseNewPoolValueChange}
+                                    />
+                                }
+                                label="Use Theoretical Pool Value ($)"
                             />
-                        }
-                        label="Use Theoretical Pool Value ($)"
-                    />
-                </Grid>
-                {useNewTotalValue && (
-                    <Grid item xs={11}>
-                        <TextField
-                            label="Theoretical Pool Value ($)"
-                            type="number"
-                            value={customTotalValue}
-                            onChange={handleCustomTotalValueChange}
-                        />
-                    </Grid> 
+                        </Grid>
+                        {useNewPoolValue && (
+                            <Grid item xs={11}>
+                                <TextField
+                                    label="Theoretical Pool Value ($)"
+                                    type="number"
+                                    value={customPoolValue}
+                                    onChange={handlePoolValueChange}
+                                />
+                            </Grid> 
                 )}               
                 {!hidePoolSelect && (
                     <Grid item xs={11}>
