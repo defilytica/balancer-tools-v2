@@ -52,6 +52,7 @@ import zkevmLogo from '../../assets/svg/zkevm.svg'
 import OpLogo from '../../assets/svg/optimism.svg'
 import {veBALVoteAddress} from "../../constants";
 import SelfImprovementIcon from "@mui/icons-material/SelfImprovement";
+import {useGetPaladinQuests} from "../../data/paladin/useGetPaladinQuests";
 
 
 
@@ -108,6 +109,8 @@ export default function VeBALVoter() {
     const userLocks = useUserVeBALLocks();
     const userVeBAL = useGetUserVeBAL(address ? address.toLowerCase() : '');
     const hhIncentives = useGetHHVotingIncentives();
+    const paladinIncentives = useGetPaladinQuests();
+    console.log("paladinIncentives", paladinIncentives)
 
     //States
     const [allocations, setAllocations] = useState<GaugeAllocation[]>([]);
@@ -242,8 +245,8 @@ export default function VeBALVoter() {
     let averageValuePerVote = 0
 
     // TODO: improve logic, adjust hook?
-    if (hhIncentives && hhIncentives.incentives && hhIncentives.incentives.data && decoratedVotingGauges && decoratedVotingGauges.length > 0) {
-        fullyDecoratedGauges = decorateGaugesWithIncentives(decoratedVotingGauges, hhIncentives.incentives)
+    if (hhIncentives && hhIncentives.incentives && hhIncentives.incentives.data && paladinIncentives && paladinIncentives.quests && decoratedVotingGauges && decoratedVotingGauges.length > 0) {
+        fullyDecoratedGauges = decorateGaugesWithIncentives(decoratedVotingGauges, hhIncentives.incentives, paladinIncentives.quests)
         averageValuePerVote = calculateAverageValuePerVote(fullyDecoratedGauges)
     }
 
