@@ -207,6 +207,14 @@ export interface AprSet {
     valuePerVote: number;
     totalRewards: number;
     userValue: number;
+    paladinRewards?: PaladinRewards;
+  }
+
+  export interface PaladinRewards {
+    valuePerVote: number;
+    totalRewards: number;
+    leftVotes: number,
+    isQuestComplete: boolean;
   }
 
 export interface SimplePoolTokenData {
