@@ -207,6 +207,8 @@ export interface AprSet {
     valuePerVote: number;
     totalRewards: number;
     userValue: number;
+    gaugeRelativeWeight: number;
+    gaugeVotes: number;
     paladinRewards?: PaladinRewards;
   }
 
