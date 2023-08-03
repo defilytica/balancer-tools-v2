@@ -20,6 +20,8 @@ import useGetBalancerStakingGauges from "../../data/balancer/useGetBalancerStaki
 import { HiddenHandIncentives } from "../../data/hidden-hand/hiddenHandTypes";
 import { calculateAPR, calculateBribeValue } from "./bribeHelpers";
 import useGetGaugeRelativeWeights from "../../data/balancer/useGetGaugeEmissions";
+import useDecorateL1Gauges from "../../data/balancer/useDecorateL1Gauges";
+import useDecorateL2Gauges from "../../data/balancer/useDeocrateL2Gauges";
 
 // TODO: put somewhere else
 //  Helper functions to parse data types to Llama model
@@ -73,7 +75,9 @@ export default function BribeSimulator() {
   const pools = useBalancerPools();
   const hhIncentives = useGetHHVotingIncentives();
   const gaugeData = useGetBalancerStakingGauges();
-  const gaugeRelativeWeights = useGetGaugeRelativeWeights(gaugeData);
+  const l1GaugeData = useDecorateL1Gauges(gaugeData);
+  const decoratedGaugeData = useDecorateL2Gauges(l1GaugeData);
+  const gaugeRelativeWeights = useGetGaugeRelativeWeights(decoratedGaugeData);
   console.log(gaugeRelativeWeights);
 
   // New state to hold the checkbox value
@@ -104,6 +108,7 @@ export default function BribeSimulator() {
   const [roundIncentives, setRoundIncentives] = useState<number>(0);
   const [bribeValue, setBribeValue] = useState<number>(0);
   const [gaugeRelativeWeight, setGaugeRelativeWeight] = useState<number>(0);
+  const [pricePerBPT, setPricePerBPT] = useState<number>(0);
 
   // Helper function to format dollar amount with commas
   const formatDollarAmount = (amount: number) => {
@@ -130,11 +135,19 @@ export default function BribeSimulator() {
       const selectedGauge = gaugeRelativeWeights.find(
         (gauge) => gauge.pool.address.toLowerCase() === val // Use toLowerCase() function here
       );
-  
+      if (selectedPoolId) {
+        // Otherwise, use the TVL of the selected pool from the pools object
+        const selectedPool = pools.find(
+          (pool) => pool.address === newValue.address
+        );
+        if (selectedPool) {
+          setPricePerBPT(selectedPool.tvlUSD / (selectedPool.totalShares));
+        }
+      }
       if (selectedGauge) {
         setGaugeRelativeWeight(selectedGauge.gaugeRelativeWeight);
         setAllocatedVotes(parseFloat(selectedGauge.gaugeVotes.toFixed(2)));
-        setTargetAPR(selectedGauge.gaugeRelativeWeight * weeklyEmissions * 4.39 * 52 / 1.5 / newValue.tvlUSD)
+        setTargetAPR(selectedGauge.gaugeRelativeWeight * weeklyEmissions * 4.29 * 52 / (pricePerBPT * Number(selectedGauge.totalSupply) / 10e17))
       }
     }
   };
@@ -187,7 +200,22 @@ export default function BribeSimulator() {
   };
 
   useEffect(() => {
-    const data = extractPoolRewards(hhIncentives.incentives);
+    if (gaugeRelativeWeights && selectedPoolId) {
+      const val = selectedPoolId.toLowerCase();
+      const selectedGauge = gaugeRelativeWeights.find(
+        (gauge) => gauge.pool.address.toLowerCase() === val
+      );
+      if (selectedGauge) {
+        setGaugeRelativeWeight(selectedGauge.gaugeRelativeWeight);
+        setAllocatedVotes(parseFloat(selectedGauge.gaugeVotes.toFixed(2)));
+        setTargetAPR(parseFloat(((selectedGauge.gaugeRelativeWeight * weeklyEmissions * 4.29 * 52) / pricePerBPT / (Number(selectedGauge.workingSupply) / 1e18) * 0.4).toFixed(2)));
+        console.log(selectedGauge.gaugeRelativeWeight)
+      }
+    }
+  }, [gaugeRelativeWeights, selectedPoolId, weeklyEmissions, pricePerBPT]);
+
+  // useEffect to handle other calculations and updates
+  useEffect(() => {
     if (hhIncentives.incentives && hhIncentives.incentives.data.length > 1) {
       // Calculate incentives and emission per vote Metrics for a given round
       let totalVotes = 0;
@@ -198,19 +226,21 @@ export default function BribeSimulator() {
         setCustomPoolValue(customPoolValue);
       } else if (selectedPoolId) {
         // Otherwise, use the TVL of the selected pool from the pools object
-        const selectedPool = pools.find(
-          (pool) => pool.address === selectedPoolId
-        );
+        const selectedPool = pools.find((pool) => pool.address === selectedPoolId);
         if (selectedPool) {
           setCustomPoolValue(selectedPool.tvlUSD);
+          setPricePerBPT(selectedPool.tvlUSD / selectedPool.totalShares);
         }
       }
+
       hhIncentives.incentives.data.forEach((item) => {
         totalValue += item.totalValue;
         totalVotes += item.voteCount;
       });
+
       let emissionVotes = 0;
       let emissionValue = 0;
+
       hhIncentives.incentives.data.forEach((item) => {
         totalValue += item.totalValue;
         totalVotes += item.voteCount;
@@ -219,19 +249,15 @@ export default function BribeSimulator() {
           emissionVotes += item.voteCount;
         }
       });
+
       const incentiveEfficency = totalValue / totalVotes;
       const emissionEff = emissionValue / emissionVotes;
+
       setIncentivePerVote(incentiveEfficency);
       setEmissionPerVote(emissionEff);
       setRoundIncentives(totalValue);
     }
-  }, [
-    gaugeData,
-    hhIncentives.incentives,
-    useNewPoolValue,
-    customPoolValue,
-    selectedPoolId,
-  ]);
+  }, [gaugeData, hhIncentives.incentives, useNewPoolValue, customPoolValue, selectedPoolId, pools]);
 
   return (
     <Box

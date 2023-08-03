@@ -7,7 +7,7 @@ import GenericMetricsCard from "../../components/Cards/GenericMetricCard";
 import LockClockIcon from "@mui/icons-material/LockClock";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import useGetBalancerStakingGauges from "../../data/balancer/useGetBalancerStakingGauges";
-import { useGetUserVeBAL } from "../../data/balancer/useGetUserVeBAL";
+import { useGetUserDelegatedVeBAL } from "../../data/balancer/useGetUserDelegatedVeBAL";
 import GaugeBoostTable from "../../components/Tables/GaugeBoostTable";
 import PortfolioBoostTable from "../../components/Tables/PortfolioBoostTable";
 import { useAccount } from "wagmi";
@@ -30,7 +30,7 @@ export default function VeBAL() {
   const { isConnected, address } = useAccount();
   const [activeNetworkVersion] = useActiveNetworkVersion()
   const userLocks = useUserVeBALLocks();
-  const userVeBAL = useGetUserVeBAL(address ? address : '');
+  const userVeBAL = useGetUserDelegatedVeBAL(address ? address : '');
   const totalVeBAL = useGetTotalVeBAL();
   const pools = useBalancerPools();
   const gaugeData = useGetBalancerStakingGauges();
