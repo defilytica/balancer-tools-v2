@@ -57,6 +57,7 @@ import SelfImprovementIcon from "@mui/icons-material/SelfImprovement";
 import {useGetPaladinQuests} from "../../data/paladin/useGetPaladinQuests";
 import PaladinQuestsCard from "../../components/Cards/PaladinQuestsCard";
 import VeBALVoterTipsCard from "../../components/Cards/VeBALVoterTipsCard";
+import Confetti from 'react-dom-confetti';
 
 
 
@@ -106,7 +107,22 @@ function generateDistributions(totalVotes: number, numGauges: number): number[][
 }
 
 
+
 export default function VeBALVoter() {
+
+    const config = {
+        angle: 70,
+        spread: 202,
+        startVelocity: 40,
+        elementCount: 70,
+        dragFriction: 0.12,
+        duration: 3000,
+        stagger: 3,
+        width: "12px",
+        height: "18px",
+        perspective: "500px",
+        colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"]
+    };
 
     //Load user wallet stats
     const {isConnected, address} = useAccount();
@@ -123,6 +139,8 @@ export default function VeBALVoter() {
     const [alertOpen, setAlertOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [userVotingGauges, setUserVotingGauges] = useState<BalancerStakingGauges[]>([]);
+    const [showConfetti, setShowConfetti] = useState(false);
+    const confettiRef = useRef(null);
 
 
     useEffect(() => {
@@ -166,6 +184,7 @@ export default function VeBALVoter() {
 
     const handleDialogOpen = () => {
         setOpen(true);
+
     };
 
     const handleDialogClose = () => {
@@ -183,7 +202,14 @@ export default function VeBALVoter() {
         //First reset all allocations to zero, also the currently active ones
         resetVotes();
         calculateOptimalAllocations()
+
     }
+
+    const handleConfetti = () => {
+        setShowConfetti(true);
+        // Optionally, you can turn off the confetti after a few seconds
+        setTimeout(() => setShowConfetti(false), 500);
+    };
 
 
     const handlePercentageChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, allocElement: GaugeAllocation) => {
@@ -244,7 +270,7 @@ export default function VeBALVoter() {
 
     const calculateAverageValuePerVote = (gauges: BalancerStakingGauges[]) => {
         const totalHiddenHandRewards = gauges.reduce((sum, gauge) => sum + (gauge.totalRewards || 0), 0);
-        const totalPaladinRewards = gauges.reduce((sum, gauge) => sum + (gauge.paladinRewards?.valuePerVote || 0), 0);
+        const totalPaladinRewards = gauges.reduce((sum, gauge) => sum + (gauge.paladinRewards?.totalRewards || 0), 0);
         const totalVotes = gauges.reduce((sum, gauge) => sum + (gauge.paladinRewards ? gauge.voteCount : 0), 0);
         return (totalHiddenHandRewards + totalPaladinRewards) / totalVotes;
     };
@@ -362,6 +388,8 @@ export default function VeBALVoter() {
         });
 
         setAllocations(bestAllocations);
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 500);
     };
 
 
@@ -699,13 +727,14 @@ export default function VeBALVoter() {
                         >
                             Vote for Gauges
                         </Button>
-
                     </Box>
                             <Box mr={1}>
                                 <Button variant="contained" endIcon={<ScienceIcon />} onClick={() => handleOptimizoor()} disabled={!allocations.length}>
                                     Incentive Optimizoor
+                                    <Confetti active={showConfetti} config={config}/>
                                 </Button>
                             </Box>
+
                     <Box mr={1}>
                         <Button variant="outlined" onClick={() => resetVotes()} disabled={!allocations.length}>
                             Clear Selection
@@ -761,7 +790,7 @@ export default function VeBALVoter() {
                             width: '100%',
                             backgroundColor: (theme) => alpha(theme.palette.error.main, 0.8),
                     }}>
-                        {error}
+                        Transaction error: {error}
                     </Alert>
                 </Snackbar>
             }
