@@ -331,7 +331,7 @@ export default function VeBALVoter() {
                     for (let j = 0; j < distribution.length; j++) {
                         if (combination[j] && ( combination[j]?.valuePerVote || combination[j]?.paladinRewards?.valuePerVote) && combination[j]?.address) {
                             //calculate user dilution:
-                            let newVotes = userVeBAL * distribution[j] / 100;
+                            let newVotes = combination[j].voteCount + userVeBAL * distribution[j] / 100;
                             let effectiveReward = combination[j].totalRewards / newVotes
                             let paladinReward = 0
                             let leftVotes = 0;
