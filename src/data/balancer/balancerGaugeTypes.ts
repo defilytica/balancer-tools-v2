@@ -11,5 +11,6 @@ export interface GaugeAllocation {
     isNew: boolean,
     initialPercentage: number,
     paladinValuePerVote: number,
+    paladinRewardInUSD: number,
     paladinLeftVotes: number,
 }
