@@ -3,11 +3,11 @@ import {useContractRead} from 'wagmi'
 import veBoost from '../../constants/abis/veBoost.json'
 
 //Adjusted to 0x67F8DF125B796B05895a6dc8Ecf944b9556ecb0B veBoost to include delegations
-export function useGetUserVeBAL(address: string): number {
+export function useGetUserDelegatedVeBAL(address: string): number {
     const { data, isLoading } = useContractRead({
         address: '0x67F8DF125B796B05895a6dc8Ecf944b9556ecb0B',
         abi: veBoost,
-        functionName: 'delegable_balance',
+        functionName: 'adjusted_balance_of',
         args: [address?.toLowerCase()],
         chainId: 1
     })

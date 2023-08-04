@@ -37,6 +37,7 @@ const CoinCard = ({
       maxHeight: '150px',
       cursor: 'pointer',
       boxShadow: 3,
+      border: '1px solid grey'
     }}
     >
       <CardActionArea

@@ -29,6 +29,7 @@ import {WagmiConfig} from "wagmi";
 import {chains, wagmiConfig} from "../../wagmi/wagmiConfig";
 import {alpha} from "@mui/material";
 import GaugeMapper from "../../pages/GaugeMapper";
+import BribeSimulator from "../../pages/BribeSimulator";
 
 
 interface AppBarProps extends MuiAppBarProps {
@@ -259,6 +260,10 @@ function Dashboard() {
                                            element={<Authorizations/>}/>
                                     <Route path={'balancer/gaugeMap'}
                                            element={<GaugeMapper/>}/>
+                                    <Route path={networkPrefix(activeNetwork) + 'incentiveSimulator'}
+                                           element={<BribeSimulator/>}/>
+                                    <Route path={'balancer/incentiveSimulator'} element={<BribeSimulator/>}/>
+
                                     {/* Router v6: no query searches possible anymore. Provide all possible paths */}
                                 </Routes>
                             </MainContent>
