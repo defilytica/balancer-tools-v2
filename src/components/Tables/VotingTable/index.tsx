@@ -42,8 +42,10 @@ interface Data {
     totalVotes: number,
     userVotes: number,
     votingIncentives: number,
+    paladinRewards: number,
     totalRewards: number,
     userRewards: number,
+
 }
 
 function createData(
@@ -54,6 +56,7 @@ function createData(
     totalVotes: number,
     userVotes: number,
     votingIncentives: number,
+    paladinRewards: number,
     totalRewards: number,
     userRewards: number,
 ): Data {
@@ -65,6 +68,7 @@ function createData(
         totalVotes,
         userVotes,
         votingIncentives,
+        paladinRewards,
         totalRewards,
         userRewards,
     };
@@ -131,13 +135,6 @@ const headCells: readonly HeadCell[] = [
         isMobileVisible: false,
     },
     {
-        id: 'totalRewards',
-        numeric: true,
-        disablePadding: false,
-        label: 'Rewards',
-        isMobileVisible: true,
-    },
-    {
         id: 'totalVotes',
         numeric: true,
         disablePadding: false,
@@ -145,10 +142,24 @@ const headCells: readonly HeadCell[] = [
         isMobileVisible: false,
     },
     {
+        id: 'totalRewards',
+        numeric: true,
+        disablePadding: false,
+        label: 'HH Rewards',
+        isMobileVisible: true,
+    },
+    {
         id: 'votingIncentives',
         numeric: true,
         disablePadding: false,
-        label: '$/veBAL',
+        label: 'HH $/veBAL',
+        isMobileVisible: true,
+    },
+    {
+        id: 'paladinRewards',
+        numeric: true,
+        disablePadding: false,
+        label: 'Paladin Quest $/veBAL',
         isMobileVisible: true,
     },
     {
@@ -215,7 +226,7 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
     onAddAllocation: (address: string) => void;
 }) {
     const [order, setOrder] = React.useState<Order>('desc');
-    const [orderBy, setOrderBy] = React.useState<keyof Data>('totalRewards');
+    const [orderBy, setOrderBy] = React.useState<keyof Data>('votingIncentives');
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(25);
@@ -238,6 +249,7 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
                 el.voteCount ? el.voteCount : 0,
                 el.userVotingPower ? el.userVotingPower / 100 * userVeBal : 0,
                 el.valuePerVote ? el.valuePerVote : 0,
+                el.paladinRewards ? el.paladinRewards.valuePerVote : 0,
                 el.totalRewards ? el.totalRewards : 0,
                 (el.userVotingPower && el.valuePerVote) ? el.userVotingPower / 100 * el.valuePerVote * userVeBal : 0
             )
@@ -384,13 +396,16 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
                                                 </Box>
                                             </TableCell>
                                             <TableCell align="right">
-                                                {formatDollarAmount(Number(row.totalRewards ? row.totalRewards : 0),  3)}
-                                            </TableCell>
-                                            <TableCell align="right">
                                                 {formatNumber(Number(row.totalVotes ? row.totalVotes : 0),  3)}
                                             </TableCell>
                                             <TableCell align="right">
+                                                {formatDollarAmount(Number(row.totalRewards ? row.totalRewards : 0),  3)}
+                                            </TableCell>
+                                            <TableCell align="right">
                                                 {formatDollarAmount(Number(row.votingIncentives ? row.votingIncentives : 0),  3)}
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                {formatDollarAmount(Number(row.paladinRewards ? row.paladinRewards : 0),  3)}
                                             </TableCell>
                                             <TableCell align="right">
                                                 {row.userVotes || allocations.find(alloc => alloc.gaugeAddress === row.gaugeAddress) ? (

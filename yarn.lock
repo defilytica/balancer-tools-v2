@@ -8216,6 +8216,11 @@ dom-accessibility-api@^0.5.6, dom-accessibility-api@^0.5.9:
   resolved "https://registry.yarnpkg.com/dom-accessibility-api/-/dom-accessibility-api-0.5.16.tgz#5a7429e6066eb3664d911e33fb0e45de8eb08453"
   integrity sha512-X7BJ2yElsnOJ30pZF4uIIDfBEVgF4XEBxL9Bxhy6dnrm5hkzqmsWHGTiHqRiITNhMyFLyAiWndIJP7Z1NTteDg==
 
+dom-confetti@0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/dom-confetti/-/dom-confetti-0.2.2.tgz#bdf2e7652d37b5cffb532c0a3263d108dd8a2363"
+  integrity sha512-+UVH9Y85qmpTnbmFURwLWjqLIykyIrsNSRkPX/eFlBuOURz9RDX8JoZHnajZHyFuCV0w/K3+tZK0ztfoTw6ejg==
+
 dom-converter@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/dom-converter/-/dom-converter-0.2.0.tgz#6721a9daee2e293682955b6afe416771627bb768"
@@ -14942,6 +14947,13 @@ react-device-detect@^2.2.2:
   integrity sha512-buYY3qrCnQVlIFHrC5UcUoAj7iANs/+srdkwsnNjI7anr3Tt7UY6MqNxtMLlr0tMBied0O49UZVK8XKs3ZIiPw==
   dependencies:
     ua-parser-js "^1.0.33"
+
+react-dom-confetti@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/react-dom-confetti/-/react-dom-confetti-0.2.0.tgz#76df26762da532057d5b1fbe38a8096f9dc33d40"
+  integrity sha512-+XRTi+WlCrcRN2dTjdEopOaPFtS7hpaHRRQ0sHiVRGqpchKz4QVh3i+6eLEEpNHYpN2VgPmhjvJ/vnjmUYhlIQ==
+  dependencies:
+    dom-confetti "0.2.2"
 
 react-dom@^18.2.0:
   version "18.2.0"
