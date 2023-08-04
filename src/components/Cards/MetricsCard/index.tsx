@@ -33,7 +33,12 @@ const MetricsCard = ({
   const metricUnit = mainMetricUnit ? mainMetricUnit : '';
 
   return (
-      <Card sx={{maxWidth: '275px', minWidth: '200px', minHeight: '110px', boxShadow: 3}}>
+      <Card sx={{
+          maxWidth: '275px',
+          minWidth: '200px',
+          minHeight: '110px',
+          border: '1px solid grey',
+      }}>
         <CardContent sx={{p: '10px'}}>
           <Grid container justifyContent="space-between">
             <Grid item>

@@ -1,6 +1,19 @@
 import * as React from "react";
 import Box from '@mui/material/Box';
-import {FormControl, Grid, InputLabel, MenuItem, TextField, Typography, FormControlLabel, Checkbox, Autocomplete} from '@mui/material';
+import {
+  FormControl,
+  Grid,
+  TextField,
+  Typography,
+  FormControlLabel,
+  Autocomplete,
+  Card,
+  Table,
+  TableBody,
+  TableHead,
+  TableRow,
+    TableCell,
+} from '@mui/material';
 import {BalancerSDK, balEmissions} from "@balancer-labs/sdk";
 import {useActiveNetworkVersion} from "../../state/application/hooks";
 import MetricsCard from "../../components/Cards/MetricsCard";
@@ -14,7 +27,8 @@ import { useCoinGeckoSimpleTokenPrices } from "../../data/coingecko/useCoinGecko
 import CoinCard from "../../components/Cards/CoinCard";
 import CircularProgress from "@mui/material/CircularProgress";
 import PoolComposition from "../../components/PoolComposition";
-import {formatDollarAmount} from "../../utils/numbers";
+import {formatDollarAmount, formatNumber} from "../../utils/numbers";
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import {Handshake} from "@mui/icons-material";
 import useGetBalancerStakingGauges from "../../data/balancer/useGetBalancerStakingGauges";
 import { HiddenHandIncentives } from "../../data/hidden-hand/hiddenHandTypes";
@@ -22,6 +36,9 @@ import { calculateAPR, calculateBribeValue } from "./bribeHelpers";
 import useGetGaugeRelativeWeights from "../../data/balancer/useGetGaugeEmissions";
 import useDecorateL1Gauges from "../../data/balancer/useDecorateL1Gauges";
 import useDecorateL2Gauges from "../../data/balancer/useDeocrateL2Gauges";
+import PaladinQuestsCard from "../../components/Cards/PaladinQuestsCard";
+import PoolCurrencyLogo from "../../components/PoolCurrencyLogo";
+import Switch from "@mui/material/Switch";
 
 // TODO: put somewhere else
 //  Helper functions to parse data types to Llama model
@@ -73,7 +90,7 @@ export default function BribeSimulator() {
   const balAddress = "0xba100000625a3754423978a60c9317c58a424e3d";
   const totalVeBAL = useGetTotalVeBAL();
   const pools = useBalancerPools();
-  const hhIncentives = useGetHHVotingIncentives();
+  const hhIncentives = useGetHHVotingIncentives('1690416000');
   const gaugeData = useGetBalancerStakingGauges();
   const l1GaugeData = useDecorateL1Gauges(gaugeData);
   const decoratedGaugeData = useDecorateL2Gauges(l1GaugeData);
@@ -85,17 +102,10 @@ export default function BribeSimulator() {
   const [customPoolValue, setCustomPoolValue] = useState<number>(0); // New state to hold the custom poolValue
   const [hidePoolSelect, setHidePoolSelect] = useState<boolean>(false); // New state to hide the "Select a Pool" component
 
-  const coinData = useCoinGeckoSimpleTokenPrices([balAddress]);
+  const coinData = useCoinGeckoSimpleTokenPrices([balAddress], true);
   //Load gauge and Staking information
 
-  //Fetch Weekly Emissions
-  const sdk = new BalancerSDK({
-    network: Number(activeNetwork.chainId),
-    rpcUrl: activeNetwork.alchemyRPCUrl,
-  });
 
-  //Obtain weekly and yearly BAL emissions
-  const { data } = sdk;
   const now = Math.round(new Date().getTime() / 1000);
   const weeklyEmissions = balEmissions.weekly(now);
 
@@ -110,17 +120,9 @@ export default function BribeSimulator() {
   const [gaugeRelativeWeight, setGaugeRelativeWeight] = useState<number>(0);
   const [pricePerBPT, setPricePerBPT] = useState<number>(0);
 
-  // Helper function to format dollar amount with commas
-  const formatDollarAmount = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
-  };
-
   const getOptionLabel = (pool: Pool) => {
     // Display the pool name and TVL together in the dropdown
-    return `${pool.name} - TVL: ${formatDollarAmount(pool.tvlUSD)}`;
+    return `${pool.name} - TVL: ${formatDollarAmount(pool.tvlUSD, 2)}`;
   };
 
   // Handler for selecting a pool from the dropdown menu
@@ -147,6 +149,7 @@ export default function BribeSimulator() {
       if (selectedGauge) {
         setGaugeRelativeWeight(selectedGauge.gaugeRelativeWeight);
         setAllocatedVotes(parseFloat(selectedGauge.gaugeVotes.toFixed(2)));
+        const balPrice =
         setTargetAPR(selectedGauge.gaugeRelativeWeight * weeklyEmissions * 4.29 * 52 / (pricePerBPT * Number(selectedGauge.totalSupply) / 10e17))
       }
     }
@@ -197,6 +200,8 @@ export default function BribeSimulator() {
   ) => {
     const newCustomPoolValue = parseFloat(event.target.value);
     setCustomPoolValue(isNaN(newCustomPoolValue) ? 0 : newCustomPoolValue);
+    setTargetAPR(0);
+    setBribeValue(0)
   };
 
   useEffect(() => {
@@ -208,7 +213,8 @@ export default function BribeSimulator() {
       if (selectedGauge) {
         setGaugeRelativeWeight(selectedGauge.gaugeRelativeWeight);
         setAllocatedVotes(parseFloat(selectedGauge.gaugeVotes.toFixed(2)));
-        setTargetAPR(parseFloat(((selectedGauge.gaugeRelativeWeight * weeklyEmissions * 4.29 * 52) / pricePerBPT / (Number(selectedGauge.workingSupply) / 1e18) * 0.4).toFixed(2)));
+        const balPrice = coinData ? coinData[balAddress].usd : 0;
+        setTargetAPR(parseFloat(((selectedGauge.gaugeRelativeWeight * weeklyEmissions * balPrice * 52) / pricePerBPT / (Number(selectedGauge.workingSupply) / 1e18) * 0.4).toFixed(2)));
         console.log(selectedGauge.gaugeRelativeWeight)
       }
     }
@@ -259,147 +265,246 @@ export default function BribeSimulator() {
     }
   }, [gaugeData, hhIncentives.incentives, useNewPoolValue, customPoolValue, selectedPoolId, pools]);
 
-  return (
-    <Box
-      sx={{
-        flexGrow: 1,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Grid container spacing={2} sx={{ justifyContent: "center" }}>
-        <Grid item xs={11}>
-          <Grid
-            container
-            columns={{ xs: 4, sm: 8, md: 12 }}
-            sx={{
-              justifyContent: { md: "flex-start", xs: "center" },
-              alignContent: "center",
-            }}
-          >
-            {coinData && coinData[balAddress] && coinData[balAddress].usd ? (
-              <Box mr={1}>
-                <CoinCard
-                  tokenAddress={balAddress}
-                  tokenName="BAL"
-                  tokenPrice={coinData[balAddress].usd}
-                  tokenPriceChange={coinData[balAddress].usd_24h_change}
-                />
-              </Box>
-            ) : (
-              <CircularProgress />
-            )}
-            <Box mr={1}>
-              <MetricsCard
-                mainMetric={weeklyEmissions}
-                mainMetricInUSD={false}
-                mainMetricUnit={" BAL"}
-                metricName={"Weekly BAL"}
-                MetricIcon={AutoAwesomeIcon}
-              />
-            </Box>
-            <Box mr={1}>
-              <MetricsCard
-                mainMetric={totalVeBAL}
-                mainMetricInUSD={false}
-                mainMetricUnit={" BAL"}
-                metricName={"Total veBAL"}
-                MetricIcon={AutoAwesomeIcon}
-              />
-            </Box>
-            <Box ml={1}>
-              {hhIncentives ? (
-                <MetricsCard
-                  mainMetric={
-                    1 + (emissionPerVote - incentivePerVote) / emissionPerVote
-                  }
-                  metricName={"Emissions per $1"}
-                  mainMetricInUSD={true}
-                  metricDecimals={4}
-                  MetricIcon={Handshake}
-                />
-              ) : (
-                <CircularProgress />
-              )}
-            </Box>
+  const selectedPool = pools.find((pool) => pool.address === selectedPoolId);
+  const val = selectedPoolId.toLowerCase();
+  const selectedGauge = gaugeRelativeWeights.find(
+      (gauge) => gauge.pool.address.toLowerCase() === val
+  );
 
+  return (
+      <Box
+          sx={{
+            flexGrow: 1,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+      >
+        <Grid container spacing={2} sx={{ justifyContent: "center" }}>
+          {/* Voting Incentive Placement Simulator Title */}
+          <Grid item xs={11} md={9}>
+            <Typography variant={"h5"}>
+              Voting Incentive Placement Simulator
+            </Typography>
+          </Grid>
+
+          {/* HiddenHandCard */}
+          <Grid item xs={11} md={9}>
+            <Grid
+                container
+                columns={{ xs: 4, sm: 8, md: 12 }}
+                sx={{
+                  justifyContent: { md: "space-between", xs: "center" },
+                  alignContent: "center",
+                }}
+            >
             <Box mr={1}>
               <HiddenHandCard />
+
             </Box>
+            <Box>
+              <PaladinQuestsCard />
+            </Box>
+            </Grid>
           </Grid>
-        </Grid>
-        <Grid item xs={11}>
-          <Typography variant={"h5"}>
-            Voting Incentive Placement Simulator
-          </Typography>
-        </Grid>
-        <Grid item xs={11}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={useNewPoolValue}
-                onChange={handleUseNewPoolValueChange}
-              />
-            }
-            label="Use Theoretical Pool Value ($)"
-          />
-        </Grid>
-        {useNewPoolValue && (
-          <Grid item xs={11}>
-            <TextField
-              label="Theoretical Pool Value ($)"
-              type="number"
-              value={customPoolValue}
-              onChange={handlePoolValueChange}
-            />
+
+          {/* Ecosystem Configuration */}
+          <Grid item xs={11} md={9}>
+            <Typography variant={"h5"}>veBAL Tokenomics</Typography>
           </Grid>
-        )}
-        {!hidePoolSelect && (
-          <Grid item xs={11}>
-            <FormControl>
-              <Autocomplete
-                options={pools as Pool[]}
-                getOptionLabel={getOptionLabel} // Use the updated getOptionLabel function
-                value={
-                  pools.find((pool) => pool.address === selectedPoolId) || null
-                }
-                onChange={(event, newValue) => {
-                  handlePoolChange(event, newValue); // Pass the event and newValue to handlePoolChange
+
+          <Grid item xs={11} md={9}>
+            <Grid
+                container
+                columns={{ xs: 4, sm: 8, md: 12 }}
+                sx={{
+                  justifyContent: { md: "space-between", xs: "center" },
+                  alignContent: "center",
                 }}
-                sx={{ minWidth: "400px" }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Select a Pool" />
+            >
+              {coinData && coinData[balAddress] && coinData[balAddress].usd ? (
+                  <Box mr={1}>
+                    <CoinCard
+                        tokenAddress={balAddress}
+                        tokenName="BAL"
+                        tokenPrice={coinData[balAddress].usd}
+                        tokenPriceChange={coinData[balAddress].usd_24h_change}
+                    />
+                  </Box>
+              ) : (
+                  <CircularProgress />
+              )}
+              <Box mr={1}>
+                <MetricsCard
+                    mainMetric={weeklyEmissions}
+                    mainMetricInUSD={false}
+                    mainMetricUnit={" BAL"}
+                    metricName={"Weekly BAL"}
+                    MetricIcon={AutoAwesomeIcon}
+                />
+              </Box>
+              <Box mr={1}>
+                <MetricsCard
+                    mainMetric={totalVeBAL}
+                    mainMetricInUSD={false}
+                    mainMetricUnit={" BAL"}
+                    metricName={"Total veBAL"}
+                    MetricIcon={AutoAwesomeIcon}
+                />
+              </Box>
+              <Box ml={1}>
+                {hhIncentives ? (
+                    <MetricsCard
+                        mainMetric={
+                            1 + (emissionPerVote - incentivePerVote) / emissionPerVote
+                        }
+                        metricName={"HH Emissions per $1"}
+                        mainMetricInUSD={true}
+                        metricDecimals={4}
+                        MetricIcon={Handshake}
+                    />
+                ) : (
+                    <CircularProgress />
                 )}
-              />
-            </FormControl>
+              </Box>
+            </Grid>
           </Grid>
-        )}
-        <Grid item xs={11}>
-          <TextField
-            label="Target APR (%)"
-            type="number"
-            value={targetAPR}
-            onChange={handleTargetAPRChange}
-          />
-        </Grid>
-        <Grid item xs={11}>
-          <Typography>Found gauge with votes {allocatedVotes}</Typography>
-        </Grid>
-        <Grid item xs={11}>
-          <Typography>TODO: target votes</Typography>
-        </Grid>
-        <Grid item xs={11}>
-          <Grid item xs={11}>
-            <TextField
-              label="Bribe Value ($)"
-              type="number"
-              value={bribeValue}
-              onChange={handleBribeValueChange}
+
+          {/* Calculator-like layout */}
+          <Grid item xs={11} md={9}>
+            <Typography variant={'h5'}>Simulator</Typography>
+          </Grid>
+          <Grid item xs={11} md={9}>
+            <Typography variant={'h6'}>1. TVL Selection</Typography>
+          </Grid>
+          <Grid item xs={11} md={9}>
+            <FormControlLabel
+                control={
+                  <Switch
+                      checked={useNewPoolValue}
+                      onChange={handleUseNewPoolValueChange}
+                  />
+                }
+                label="Use Theoretical Pool Value ($)"
             />
           </Grid>
+          {!hidePoolSelect && (
+              <Grid item xs={11} md={9}>
+                {pools && pools.length > 1 ?
+                <FormControl sx={{marginBottom: '10px'}}>
+                  <Autocomplete
+                      options={pools as Pool[]}
+                      getOptionLabel={getOptionLabel}
+                      value={pools.find((pool) => pool.address === selectedPoolId) || null}
+                      onChange={(event, newValue) => {
+                        handlePoolChange(event, newValue);
+                      }}
+                      sx={{
+                        minWidth: "500px",
+                        maxWidth: "500px"
+                      }}
+                      renderInput={(params) => <TextField {...params} label="Select a Pool" />}
+                  />
+                </FormControl> :
+                    <Box>
+                      <CircularProgress />
+                      <Typography>Loading pools...</Typography>
+                    </Box>}
+                { !hidePoolSelect && allocatedVotes && selectedPool && selectedGauge ?
+                    <Card
+                        sx={{
+
+                          minWidth: '100px',
+                          maxWidth: '900px',
+                          border: '1px solid grey',
+                        }}
+                    >
+                      <Box m={1}>
+                        <Typography variant={'h6'}>Active Gauge Found</Typography>
+                      </Box>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Pool Composition</TableCell>
+                            <TableCell>TVL</TableCell>
+                            <TableCell>Current Votes</TableCell>
+                            <TableCell>Min BAL APR</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          <TableRow>
+                            { selectedPool ?
+                                <TableCell>
+                                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <Box mr={1}>
+                                      <PoolCurrencyLogo tokens={selectedPool.tokens} />
+                                    </Box>
+                                    <Box>
+                                      <PoolComposition poolData={selectedPool} />
+                                    </Box>
+                                  </Box>
+                                </TableCell>
+                                : <TableCell>-</TableCell>
+                            }
+                            <TableCell>{formatDollarAmount(selectedPool.tvlUSD)}</TableCell>
+                            <TableCell>{formatNumber(allocatedVotes)}</TableCell>
+                            <TableCell>{formatNumber(parseFloat(((selectedGauge.gaugeRelativeWeight * weeklyEmissions * (coinData ? coinData[balAddress].usd : 0) * 52) / pricePerBPT / (Number(selectedGauge.workingSupply) / 1e18) * 0.4).toFixed(2)))}</TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </Card>
+
+                    : null }
+              </Grid>
+          )}
+          {useNewPoolValue && (
+              <Grid item xs={11} md={9}>
+                <TextField
+                    label="Theoretical Pool Value ($)"
+                    type="number"
+                    value={customPoolValue}
+                    onChange={handlePoolValueChange}
+                />
+              </Grid>
+          )}
+          <Grid item xs={11} md={9}>
+            <Typography variant={'h6'}>2. APR vs Bribe Value Simulation</Typography>
+          </Grid>
+          <Grid item xs={11} md={9}>
+            <Grid
+                container
+                columns={{ xs: 4, sm: 8, md: 12 }}
+                sx={{
+                  justifyContent: { md: "space-between", xs: "center" },
+                  alignContent: "center",
+                }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box mr={1}>
+                  <TextField
+                      label="Target APR (%)"
+                      type="number"
+                      value={targetAPR}
+                      onChange={handleTargetAPRChange}
+                  />
+                </Box>
+                <Box m={1}>
+                  <CompareArrowsIcon />
+                </Box>
+                <Box m={1}>
+                  <TextField
+                      label="Bribe Value ($)"
+                      type="number"
+                      value={bribeValue}
+                      onChange={handleBribeValueChange}
+                  />
+                </Box>
+              </Box>
+
+            </Grid>
+          </Grid>
         </Grid>
-      </Grid>
-    </Box>
+      </Box>
   );
+
 }
