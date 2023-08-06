@@ -13,7 +13,7 @@ import {
     DialogTitle,
     DialogContent,
     DialogContentText,
-    DialogActions, alpha, CardContent,
+    DialogActions, alpha, CardContent, Backdrop,
 } from '@mui/material';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
@@ -34,7 +34,7 @@ import * as React from "react";
 import {useEffect, useRef, useState} from "react";
 import {useGetHHVotingIncentives} from "../../data/hidden-hand/useGetHHVotingIncentives";
 import {decorateGaugesWithIncentives, decorateGaugesWithPaladinQuests} from "../../data/hidden-hand/helpers";
-import {BalancerStakingGauges, PoolData} from "../../data/balancer/balancerTypes";
+import {BalancerStakingGauges} from "../../data/balancer/balancerTypes";
 import VotingTable from '../../components/Tables/VotingTable';
 import PoolCurrencyLogo from "../../components/PoolCurrencyLogo";
 import GaugeComposition from "../../components/GaugeComposition";
@@ -42,7 +42,7 @@ import TextField from "@mui/material/TextField";
 import {GaugeAllocation} from '../../data/balancer/balancerGaugeTypes'
 import {ethers} from "ethers";
 import VeBalVoteMany from '../../constants/abis/veBALVoteMany.json'
-import {formatDollarAmount} from "../../utils/numbers";
+import {formatDollarAmount, formatNumber, formatPercentageAmount} from "../../utils/numbers";
 import TableCell from "@mui/material/TableCell";
 import HiddenHandCard from "../../components/Cards/HiddenHandCard";
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
@@ -58,8 +58,6 @@ import {useGetPaladinQuests} from "../../data/paladin/useGetPaladinQuests";
 import PaladinQuestsCard from "../../components/Cards/PaladinQuestsCard";
 import VeBALVoterTipsCard from "../../components/Cards/VeBALVoterTipsCard";
 import Confetti from 'react-dom-confetti';
-
-
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props,
@@ -106,8 +104,6 @@ function generateDistributions(totalVotes: number, numGauges: number): number[][
     return distributions;
 }
 
-
-
 export default function VeBALVoter() {
 
     const config = {
@@ -140,7 +136,7 @@ export default function VeBALVoter() {
     const [error, setError] = useState<string | null>(null);
     const [userVotingGauges, setUserVotingGauges] = useState<BalancerStakingGauges[]>([]);
     const [showConfetti, setShowConfetti] = useState(false);
-    const confettiRef = useRef(null);
+    const [loadOptimize, setLoadOptimize] = useState(false);
 
 
     useEffect(() => {
@@ -187,6 +183,11 @@ export default function VeBALVoter() {
 
     };
 
+    const handleBackDropClose = () => {
+        //Option to reset backdrop
+        setLoadOptimize(false)
+    };
+
     const handleDialogClose = () => {
         setOpen(false);
     };
@@ -201,7 +202,9 @@ export default function VeBALVoter() {
     const handleOptimizoor = () => {
         //First reset all allocations to zero, also the currently active ones
         resetVotes();
-        calculateOptimalAllocations()
+        setLoadOptimize(true)
+        setTimeout(() => calculateOptimalAllocations(), 500);
+
 
     }
 
@@ -246,15 +249,11 @@ export default function VeBALVoter() {
             if (paladinQuest && matchingHiddenHandData) {
                 allocElement.percentage = inputPercentage
                 //Calculate if the current percentage does fill the quest and use only that set for potential rewards
-                const leftVotes =  Number(paladinQuest.objectiveVotes) - matchingHiddenHandData.voteCount
-                const allocVotes = userVeBAL * inputPercentage
-
-                if (leftVotes > 0 && (leftVotes - allocVotes) > 0) {
+                const leftVotes =  Number(paladinQuest.objectiveVotes) / 1e18 - matchingHiddenHandData.voteCount - userVeBAL * inputPercentage / 100
+                if (leftVotes > 0) {
                     allocElement.paladinRewardInUSD = Number(paladinQuest.rewardPerVote)  * userVeBAL * inputPercentage / 100 ;
                 }
-
-
-
+                allocElement.paladinLeftVotes = leftVotes;
             }
 
             setAllocations([...allocations]);
@@ -282,6 +281,8 @@ export default function VeBALVoter() {
     const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);
     const unlockDate = date.toLocaleDateString();
 
+    console.log("allocs", allocations)
+
     // Update userVotingGauges when the address changes
     useEffect(() => {
         const updatedUserVotingGauges = decoratedVotingGauges.filter(
@@ -307,11 +308,9 @@ export default function VeBALVoter() {
         averageValuePerVote = calculateAverageValuePerVote(fullyDecoratedGauges)
     }
 
-
     const calculateOptimalAllocations = () => {
         const maxGauges = 10;
-        //The max amount of allocations is 8 - length of existing gauges
-        const maxAllocations = 6;
+        const maxAllocations = 8;
 
         let gauges = fullyDecoratedGauges.filter(g => g.valuePerVote !== null && g.valuePerVote !== undefined);
         gauges.sort((a, b) => b.valuePerVote - a.valuePerVote);
@@ -319,7 +318,14 @@ export default function VeBALVoter() {
         let existingAllocations = allocations.filter(a => !a.isNew);
 
         let bestTotalReward = 0;
-        let bestAllocations: GaugeAllocation[] = [];
+        let bestAllocations: GaugeAllocation[] = existingAllocations.map(ea => ({
+            ...ea,
+            percentage: 0,
+            rewardInUSD: 0,
+            userValuePerVote: 0,
+            paladinRewardInUSD: 0,
+            paladinValuePerVote: 0,
+        }));
 
         for (let i = 1; i <= maxAllocations; i++) {
             let combinations = getCombinations(gauges, i);
@@ -334,23 +340,20 @@ export default function VeBALVoter() {
                             let newVotes = combination[j].voteCount + userVeBAL * distribution[j] / 100;
                             let effectiveReward = combination[j].totalRewards / newVotes
                             let paladinReward = 0
-                            let leftVotes = 0;
-                            if (combination[j].paladinRewards && !combination[j].paladinRewards?.isQuestComplete) {
-                                leftVotes = combination[j].paladinRewards?.leftVotes ?? 0;
-                                if (newVotes < leftVotes) {
+                            let paladinLeftVotes = 0;
+                            paladinLeftVotes = combination[j].paladinRewards?.leftVotes ?? 0;
+                                if (newVotes < paladinLeftVotes) {
                                     paladinReward = combination[j].paladinRewards?.valuePerVote ?? 0;
-
                                 }
-                            }
 
-                            let reward = distribution[j] * userVeBAL * effectiveReward/ 100;
-                            let paladinQuestReward = distribution[j] * paladinReward * userVeBAL
+                            let reward = distribution[j] * effectiveReward * userVeBAL / 100;
+                            let paladinQuestReward = distribution[j] * paladinReward * userVeBAL / 100
                             totalReward += reward;
                             totalReward += paladinQuestReward;
 
                             // Check against existingAllocations instead of allocations
-                            let isNew = !existingAllocations.some(a => a.gaugeAddress === combination[j].address);
-                            let initialPercentage = isNew ? 0 : existingAllocations.find(a => a.gaugeAddress === combination[j].address)!.percentage;
+                            let isNew = !existingAllocations.some(a => a.gaugeAddress.toLowerCase() === combination[j].address.toLowerCase());
+                            let initialPercentage = isNew ? 0 : existingAllocations.find(a => a.gaugeAddress.toLowerCase() === combination[j].address.toLowerCase())!.percentage;
 
                             allocations.push({
                                 gaugeAddress: combination[j].address,
@@ -361,33 +364,58 @@ export default function VeBALVoter() {
                                 initialPercentage,
                                 paladinValuePerVote: paladinReward,
                                 paladinRewardInUSD: paladinQuestReward,
-                                paladinLeftVotes: leftVotes,
+                                paladinLeftVotes: paladinLeftVotes,
                             });
                         }
                     }
                     if (totalReward > bestTotalReward) {
                         bestTotalReward = totalReward;
-                        bestAllocations = allocations;
+                        let tempBestAllocations: GaugeAllocation[] = [...bestAllocations];
+                        let totalPercentage = 0; // This will hold the sum of percentages
+
+                        let addressToAllocation = new Map<string, GaugeAllocation>();
+                        allocations.forEach(a => {
+                            addressToAllocation.set(a.gaugeAddress.toLowerCase(), a);
+                        });
+
+                        // Iterate over tempBestAllocations
+                        for (let k = 0; k < tempBestAllocations.length; k++) {
+                            const tempAllocation = tempBestAllocations[k];
+                            if (addressToAllocation.has(tempAllocation.gaugeAddress.toLowerCase())) {
+                                const foundAllocation = addressToAllocation.get(tempAllocation.gaugeAddress.toLowerCase())!;
+                                totalPercentage += foundAllocation.percentage;
+                                tempBestAllocations[k] = foundAllocation;
+                            }
+                        }
+
+                        let remainingPercentage = 100 - totalPercentage;
+
+                        // Append new allocations to the end of tempBestAllocations
+                        allocations.forEach(allocation => {
+                            if (!existingAllocations.some(ea => ea.gaugeAddress.toLowerCase() === allocation.gaugeAddress.toLowerCase()) &&
+                                !tempBestAllocations.some(ea => ea.gaugeAddress.toLowerCase() === allocation.gaugeAddress.toLowerCase()) &&
+                                allocation.percentage <= remainingPercentage &&
+                                tempBestAllocations.length < maxAllocations ) {
+
+                                remainingPercentage -= allocation.percentage;
+                                totalPercentage += allocation.percentage; // update total percentage
+                                tempBestAllocations.push(allocation);
+                            }
+                        });
+
+                        if (totalPercentage <= 100) {  // Ensure we only update bestAllocations if the total percentage is valid
+                            console.log("totalPercentage", totalPercentage)
+                            bestAllocations = tempBestAllocations;
+                        }
                     }
+
+
                 }
             }
         }
 
-        // Append existing allocations to the best allocations if not present already
-        existingAllocations.forEach(existingAllocation => {
-            if (!bestAllocations.some(a => a.gaugeAddress === existingAllocation.gaugeAddress)) {
-                bestAllocations.push({
-                    ...existingAllocation,
-                    percentage: 0,
-                    rewardInUSD: 0,
-                    userValuePerVote: 0,
-                    paladinRewardInUSD: 0,
-                    paladinValuePerVote: 0,
-                });
-            }
-        });
-
         setAllocations(bestAllocations);
+        setLoadOptimize(false);
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 500);
     };
@@ -413,6 +441,7 @@ export default function VeBALVoter() {
         if (userVotingGauges.length > 0 && allocations.length === 0 && fullyDecoratedGauges.length > 0) {
             const newAllocations = userVotingGauges.map((vote) => {
                 const matchingGauge = fullyDecoratedGauges.find((gauge) => gauge.address === vote.address);
+                const leftVotes = matchingGauge ? (matchingGauge.paladinRewards ? matchingGauge.paladinRewards.leftVotes : 0) : 0
                 const votePower = vote.userVotingPower ? vote.userVotingPower / 100 : 0;
                 const rewardInUSD = matchingGauge ? userVeBAL  * votePower * matchingGauge.valuePerVote : 0;
                 return {
@@ -424,7 +453,7 @@ export default function VeBALVoter() {
                     initialPercentage: 0,
                     paladinValuePerVote: 0,
                     paladinRewardInUSD: 0,
-                    paladinLeftVotes: 0,
+                    paladinLeftVotes: leftVotes,
                 };
             });
             setAllocations([...newAllocations]);
@@ -639,6 +668,7 @@ export default function VeBALVoter() {
                                             <TableCell>HH Effective $/veBAL</TableCell>
                                             <TableCell>HH Rewards</TableCell>
                                             <TableCell>Paladin Rewards</TableCell>
+                                            <TableCell>Open Paladin Quest Votes</TableCell>
                                             <TableCell>Status</TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -677,7 +707,10 @@ export default function VeBALVoter() {
                                                                 type="number"
                                                                 label="Weight"
                                                                 size="small"
-                                                                sx={{maxWidth: '90px', textAlign: 'right'}}
+                                                                sx={{
+                                                                    minWidth: '70px',
+                                                                    maxWidth: '90px',
+                                                                    textAlign: 'right'}}
                                                                 value={alloc.percentage}
                                                                 onChange={(e) => handlePercentageChange(e, alloc)}
                                                                 inputProps={{
@@ -697,6 +730,9 @@ export default function VeBALVoter() {
                                                             <Typography>{formatDollarAmount(alloc.paladinRewardInUSD, 2)}</Typography>
                                                         </TableCell>
                                                         <TableCell>
+                                                            <Typography>{formatNumber(alloc.paladinLeftVotes, 0)}</Typography>
+                                                        </TableCell>
+                                                        <TableCell>
                                                             <Typography>{alloc.isNew? 'New' : 'Current'}</Typography>
                                                         </TableCell>
                                                     </TableRow>
@@ -704,6 +740,34 @@ export default function VeBALVoter() {
                                             }
                                             return null;
                                         })}
+                                        <TableRow>
+                                            <TableCell> </TableCell>
+                                            <TableCell> </TableCell>
+                                            <TableCell>
+                                                <Typography fontWeight={'bold'}>
+                                                    Totals
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography fontWeight={'bold'}>
+                                                    {formatPercentageAmount(totalPercentage)}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell> </TableCell>
+                                            <TableCell>
+                                                <Typography fontWeight={'bold'}>
+                                                    {formatDollarAmount(allocations.reduce((sum, allocation) => sum + allocation.rewardInUSD, 0), 2)}
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography fontWeight={'bold'}>
+                                                    {formatDollarAmount(allocations.reduce((sum, allocation) => sum + allocation.paladinRewardInUSD, 0), 2)}
+                                                </Typography>
+                                                </TableCell>
+                                            <TableCell> </TableCell>
+                                            <TableCell> </TableCell>
+                                        </TableRow>
+
                                     </TableBody>
                                 </Table>
                             </Card>
@@ -765,10 +829,12 @@ export default function VeBALVoter() {
                 </Grid>
             </Grid>
             <Dialog open={open} onClose={handleDialogClose}>
-                <DialogTitle>Experimental Transaction</DialogTitle>
+                <DialogTitle>Confirm Transaction</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Executing this transaction is experimental and at your discretion. Proceed with caution.
+                        By executing this transaction, you acknowledge that you are acting at your own discretion.
+                        All decisions made using this tool are your sole responsibility,
+                        and you assume all risks associated with such actions.
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
@@ -794,6 +860,21 @@ export default function VeBALVoter() {
                     </Alert>
                 </Snackbar>
             }
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={loadOptimize}
+                onClick={handleBackDropClose}
+            >
+                <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                    justifyContent="center"
+                >
+                    <CircularProgress color="inherit" />
+                    <Typography>Computing best allocation set...</Typography>
+                </Box>
+            </Backdrop>
         </Box>
     );
 }

@@ -43,6 +43,7 @@ interface Data {
     userVotes: number,
     votingIncentives: number,
     paladinRewards: number,
+    paladinLeftVotes: number,
     totalRewards: number,
     userRewards: number,
 
@@ -57,6 +58,7 @@ function createData(
     userVotes: number,
     votingIncentives: number,
     paladinRewards: number,
+    paladinLeftVotes: number,
     totalRewards: number,
     userRewards: number,
 ): Data {
@@ -69,6 +71,7 @@ function createData(
         userVotes,
         votingIncentives,
         paladinRewards,
+        paladinLeftVotes,
         totalRewards,
         userRewards,
     };
@@ -138,28 +141,35 @@ const headCells: readonly HeadCell[] = [
         id: 'totalVotes',
         numeric: true,
         disablePadding: false,
-        label: 'Votes',
+        label: 'Total Votes',
         isMobileVisible: false,
     },
     {
         id: 'totalRewards',
         numeric: true,
         disablePadding: false,
-        label: 'HH Rewards',
+        label: 'HH: Rewards',
         isMobileVisible: true,
     },
     {
         id: 'votingIncentives',
         numeric: true,
         disablePadding: false,
-        label: 'HH $/veBAL',
+        label: 'HH: $/veBAL',
         isMobileVisible: true,
     },
     {
         id: 'paladinRewards',
         numeric: true,
         disablePadding: false,
-        label: 'Paladin Quest $/veBAL',
+        label: 'Paladin: $/veBAL',
+        isMobileVisible: true,
+    },
+    {
+        id: 'paladinLeftVotes',
+        numeric: true,
+        disablePadding: false,
+        label: 'Paladin: Open Quest Votes',
         isMobileVisible: true,
     },
     {
@@ -250,6 +260,7 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
                 el.userVotingPower ? el.userVotingPower / 100 * userVeBal : 0,
                 el.valuePerVote ? el.valuePerVote : 0,
                 el.paladinRewards ? el.paladinRewards.valuePerVote : 0,
+                el.paladinRewards ? el.paladinRewards.leftVotes : 0,
                 el.totalRewards ? el.totalRewards : 0,
                 (el.userVotingPower && el.valuePerVote) ? el.userVotingPower / 100 * el.valuePerVote * userVeBal : 0
             )
@@ -406,6 +417,9 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
                                             </TableCell>
                                             <TableCell align="right">
                                                 {formatDollarAmount(Number(row.paladinRewards ? row.paladinRewards : 0),  3)}
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                {formatNumber(Number(row.paladinLeftVotes ? row.paladinLeftVotes : 0),  0)}
                                             </TableCell>
                                             <TableCell align="right">
                                                 {row.userVotes || allocations.find(alloc => alloc.gaugeAddress === row.gaugeAddress) ? (
