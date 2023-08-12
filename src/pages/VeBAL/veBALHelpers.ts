@@ -48,10 +48,12 @@ export function calculateBoostFromGauge(workingBalance: number, workingSupply: n
      // This can only be an approximation without pulling in the actual veBAL balance of all users to determine
      // if those with max boost would be moved below the max boost threshhold. 
      let workingBalanceAdjusted = Math.min(0.4 * userBalanceAdjusted + 0.6 * (totalSupply / 10e17 + additionalBalance) * newVeBALShareAdjusted, (userBalance / 10e17 + additionalBalance));
-     let workingSupplyAdjusted = (workingSupply - workingBalance - (totalSupply - userBalance) * 0.4 * newVeBALRatio + (totalSupply - userBalance) * 0.4) / 10e17 + workingBalanceAdjusted; 
+     // Consideration below was meant for the fact that boost will go up for a user if veBAL is increased, however the minimum APR
+     // will go down. Therefore the "boost" is misinformative as it applies to the new minimum, the difference will be less than anticipated.
+     // let workingSupplyAdjusted = (workingSupply - workingBalance - (totalSupply - userBalance) * 0.4 * newVeBALRatio + (totalSupply - userBalance) * 0.4) / 10e17 + workingBalanceAdjusted; 
 
      if (Number(workingBalanceAdjusted)) {
-         boost = Number((workingBalanceAdjusted / workingSupplyAdjusted) / (0.4 * userBalanceAdjusted / (0.4 * userBalanceAdjusted + workingSupplyAdjusted - workingBalanceAdjusted)));
+         boost = Number((workingBalanceAdjusted / (userBalanceAdjusted * 0.4)))
      }
 
       return boost;
@@ -78,14 +80,9 @@ export function calculateBoostFromGauge(workingBalance: number, workingSupply: n
   let workingBalanceAdjusted = Math.min(0.4 * userBalanceAdjusted + 0.6 * (totalSupply / 10e17 + additionalBalance) * 1, (userBalance / 10e17 + additionalBalance));
   let workingSupplyAdjusted = (workingSupply - workingBalance - (totalSupply - userBalance) * 0.4 * newVeBALRatio + (totalSupply - userBalance) * 0.4) / 10e17 + workingBalanceAdjusted; 
      if (Number(workingBalanceAdjusted)) {
-        max_boost = Number((workingBalanceAdjusted / workingSupplyAdjusted) / (0.4 * userBalanceAdjusted / (0.4 * userBalanceAdjusted + workingSupplyAdjusted - workingBalanceAdjusted)));
+        max_boost = Number(2.5 * (0.4 * userBalanceAdjusted + workingSupplyAdjusted - workingBalance) / (userBalanceAdjusted + workingSupplyAdjusted - workingBalance))
 
     }
-     // Includes dilutive considerations
-     // Number((1 - (1 - ((userBalance / 10e17 + additionalBalance) / (totalSupply / 10e17 + additionalBalance))) * 0.4) / ((0.4 * userBalance / 10e17 + additionalBalance) / (0.4 * (userBalance / 10e17 + additionalBalance) + workingSupplyAdjusted - workingBalanceAdjusted))))
-     // max_boost = Number((1 - (1 - ((userBalance / 10e17 + additionalBalance) / (totalSupply / 10e17 + additionalBalance))) * 0.4) / ((0.4 * userBalance / 10e17 + additionalBalance) / (0.4 * (userBalance / 10e17 + additionalBalance) + workingSupplyAdjusted / 10e17 - workingBalanceAdjusted)))
-     // Would require various if statements and is not realistic to implement without pulling in every holders veBAL balance and pool share
-     // in each individual pool.
 
      if (max_boost > 2.5) {
          max_boost = 2.5
