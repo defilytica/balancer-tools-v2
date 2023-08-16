@@ -22,6 +22,7 @@ import { useGetTotalVeBAL } from "../../data/balancer/useGetTotalVeBAL";
 import {useActiveNetworkVersion} from "../../state/application/hooks";
 import SelfImprovementIcon from "@mui/icons-material/SelfImprovement";
 import * as React from "react";
+import useGetBalancerV3StakingGauges from "../../data/balancer-api-v3/useGetBalancerV3StakingGauges";
 
 
 export default function VeBAL() {
@@ -33,7 +34,7 @@ export default function VeBAL() {
   const userVeBAL = useGetUserDelegatedVeBAL(address ? address : '');
   const totalVeBAL = useGetTotalVeBAL();
   const pools = useBalancerPools();
-  const gaugeData = useGetBalancerStakingGauges();
+  const gaugeData = useGetBalancerV3StakingGauges();
   const l1GaugeData = useDecorateL1Gauges(gaugeData);
   const decoratedGaugeData = useDecorateL2Gauges(l1GaugeData);
   const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);
@@ -103,8 +104,8 @@ export default function VeBAL() {
         userVeBAL,
         totalVeBAL
     );
-    const trimmedData = updatedGauges.filter((gauge) => gauge.userBalance === 0 && Number(gauge.network) === Number(activeNetworkVersion.chainId));
-    const portfolioData = updatedGauges.filter((gauge) => gauge.userBalance !== 0 && Number(gauge.network) === Number(activeNetworkVersion.chainId));
+    const trimmedData = updatedGauges.filter((gauge) => gauge.userBalance === 0 && gauge.network === activeNetworkVersion.v3NetworkID);
+    const portfolioData = updatedGauges.filter((gauge) => gauge.userBalance !== 0 && gauge.network === activeNetworkVersion.v3NetworkID);
     setTrimmedGaugeData(trimmedData);
     setPortfolioData(portfolioData);
   };

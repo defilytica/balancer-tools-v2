@@ -7,7 +7,7 @@ import {Multicall} from 'ethereum-multicall';
 import {EthereumNetworkInfo} from "../../constants/networks";
 import {useAccount} from 'wagmi';
 
-const useDecorateL1Gauges = (stakingGaugeData: BalancerStakingGauges[]): BalancerStakingGauges[] => {
+const useDecorateL1Gauges = (stakingGaugeData: BalancerStakingGauges[] | undefined): BalancerStakingGauges[] => {
 
     const [decoratedGauges, setDecoratedGauges] = useState<BalancerStakingGauges[]>()
     const [isLoading, setIsLoading] = useState(true)
@@ -29,7 +29,7 @@ const useDecorateL1Gauges = (stakingGaugeData: BalancerStakingGauges[]): Balance
                 tryAggregate: true
             });
             //Obtain mainnet gauge working and total supplies
-            const mainnetGauges = gaugeData.filter(gauge => gauge.network.toString() === EthereumNetworkInfo.chainId);
+            const mainnetGauges = gaugeData.filter(gauge => gauge.network.toString() === EthereumNetworkInfo.v3NetworkID);
             if (mainnetGauges.length > 0) {
                 const contractCallContext = mainnetGauges.map((gauge) => ({
                     reference: gauge.address,
@@ -46,7 +46,7 @@ const useDecorateL1Gauges = (stakingGaugeData: BalancerStakingGauges[]): Balance
             }
 
             //Obtain the l2 recipient addresses for all other chains
-            const l2Gauges = gaugeData.filter(gauge => gauge.network.toString() !== EthereumNetworkInfo.chainId);
+            const l2Gauges = gaugeData.filter(gauge => gauge.network.toString() !== EthereumNetworkInfo.v3NetworkID);
             if (l2Gauges.length > 2) {
                 const contractCallContextRoots = l2Gauges.map((gauge) => ({
                     reference: gauge.address,
@@ -63,7 +63,7 @@ const useDecorateL1Gauges = (stakingGaugeData: BalancerStakingGauges[]): Balance
                 const resultsArray = await Promise.all(multicalls);
 
                     //map mainnet gauge working and total supplies
-                    const gauges = gaugeData.filter(gauge => gauge.network.toString() === EthereumNetworkInfo.chainId);
+                    const gauges = gaugeData.filter(gauge => gauge.network.toString() === EthereumNetworkInfo.v3NetworkID);
 
                     gauges.forEach((gauge, i) => {
                         if (resultsArray[0].results[gauges[i].address]) {
@@ -90,7 +90,7 @@ const useDecorateL1Gauges = (stakingGaugeData: BalancerStakingGauges[]): Balance
                     });
 
                     //map l2 gauge recipients
-                    const l2Gauges = gaugeData.filter(gauge => gauge.network.toString() !== EthereumNetworkInfo.chainId);
+                    const l2Gauges = gaugeData.filter(gauge => gauge.network.toString() !== EthereumNetworkInfo.v3NetworkID);
                     l2Gauges.forEach((gauge, i) => {
                         if (resultsArray[1].results[l2Gauges[i].address]) {
                             const context = resultsArray[1].results[l2Gauges[i].address];
@@ -113,10 +113,9 @@ const useDecorateL1Gauges = (stakingGaugeData: BalancerStakingGauges[]): Balance
         return updatedGaugeData;
     }
 
-
     //Fetch and populate gauge supply numbers
     useEffect(() => {
-        if (stakingGaugeData && stakingGaugeData.length > 0) {
+        if (stakingGaugeData && stakingGaugeData.length > 1) {
             setIsLoading(false);
             fetchVotingGaugesWorkingSupply(stakingGaugeData)
                 .then((decoratedData) => {
@@ -129,7 +128,7 @@ const useDecorateL1Gauges = (stakingGaugeData: BalancerStakingGauges[]): Balance
                 });
             setIsLoading(false);
         }
-    }, [isLoading, stakingGaugeData, address, isConnected]);
+    }, [isLoading, JSON.stringify(stakingGaugeData), address, isConnected]);
 
     if (decoratedGauges !== undefined) {
         return decoratedGauges;

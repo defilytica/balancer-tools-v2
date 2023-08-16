@@ -8,16 +8,21 @@ import {
     PolygonNetworkInfo,
     PolygonZkEVMNetworkInfo
 } from "../../constants/networks";
-import {ContractCallResults, ContractCallReturnContext, Multicall} from 'ethereum-multicall';
+import {ContractCallResults, Multicall} from 'ethereum-multicall';
 import {useAccount} from 'wagmi';
-import { calculateBoostFromGauge, calculateMaxBoost, calculateMinVeBAL } from "../../pages/VeBAL/veBALHelpers";
-import { useGetTotalVeBAL } from "./useGetTotalVeBAL";
 
-const NETWORK_PROVIDERS = {
-    "10": 'https://optimism.publicnode.com',
-    "100": 'https://rpc.gnosischain.com',
-    [PolygonNetworkInfo.chainId]: 'https://polygon-bor.publicnode.com',
-    [ArbitrumNetworkInfo.chainId]: 'https://rpc.ankr.com/arbitrum',
+interface NetworkProviders {
+    OPTIMISM: string;
+    GNOSIS: string;
+    POLYGON: string;
+    ARBITRUM: string;
+}
+
+const NETWORK_PROVIDERS: NetworkProviders = {
+    OPTIMISM: 'https://optimism.publicnode.com',
+    GNOSIS: 'https://rpc.gnosischain.com',
+    POLYGON: 'https://polygon-bor.publicnode.com',
+    ARBITRUM: 'https://rpc.ankr.com/arbitrum',
 };
 
 interface MulticallItem {
@@ -37,9 +42,10 @@ const useDecorateL2Gauges = (stakingGaugeData: BalancerStakingGauges[]): Balance
 
         if (gaugeData && gaugeData.length > 0) {
             for (let chainId in NETWORK_PROVIDERS) {
-                if (chainId !== EthereumNetworkInfo.chainId) {
+                const providerUrl = NETWORK_PROVIDERS[chainId as keyof NetworkProviders];
+                if (chainId !== EthereumNetworkInfo.v3NetworkID) {
                     const multicall = new Multicall({
-                        ethersProvider: new ethers.providers.JsonRpcProvider(NETWORK_PROVIDERS[chainId]),
+                        ethersProvider: new ethers.providers.JsonRpcProvider(providerUrl),
                         tryAggregate: true
                     });
 
@@ -64,7 +70,7 @@ const useDecorateL2Gauges = (stakingGaugeData: BalancerStakingGauges[]): Balance
             try {
                 const resultsArray = await Promise.all(multicalls.map(({ promise }) => promise));
 
-                const mainnetGauges = gaugeData.filter(gauge => gauge.network.toString() === EthereumNetworkInfo.chainId);
+                const mainnetGauges = gaugeData.filter(gauge => gauge.network.toString() === EthereumNetworkInfo.v3NetworkID);
                 mainnetGauges.forEach((gauge) => {
                     updatedGaugeData.push(gauge)
                 })
@@ -121,7 +127,7 @@ const useDecorateL2Gauges = (stakingGaugeData: BalancerStakingGauges[]): Balance
                 });
             setIsLoading(false);
         }
-    }, [isLoading, stakingGaugeData, address]);
+    }, [isLoading, JSON.stringify(stakingGaugeData), address]);
 
     if (decoratedGauges !== undefined) {
         return decoratedGauges;

@@ -58,6 +58,7 @@ import {useGetPaladinQuests} from "../../data/paladin/useGetPaladinQuests";
 import PaladinQuestsCard from "../../components/Cards/PaladinQuestsCard";
 import VeBALVoterTipsCard from "../../components/Cards/VeBALVoterTipsCard";
 import Confetti from 'react-dom-confetti';
+import useGetBalancerV3StakingGauges from "../../data/balancer-api-v3/useGetBalancerV3StakingGauges";
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props,
@@ -149,18 +150,24 @@ export default function VeBALVoter() {
         setUserVotingGauges([])
     }, [address]);
 
-    //TODO: outsource
     interface NetworkLogoMap {
-        [networkNumber: number]: string;
+        [networkNumber: string]: string;
     }
 
     const networkLogoMap: NetworkLogoMap = {
-        1: EtherLogo,
-        10: OpLogo,
-        137: PolygonLogo,
-        100: GnosisLogo,
-        1101: zkevmLogo,
-        42161: ArbitrumLogo
+        MAINNET: EtherLogo,
+        OPTIMISM: OpLogo,
+        POLYGON: PolygonLogo,
+        GNOSIS: GnosisLogo,
+        ARBITRUM: ArbitrumLogo
+    };
+
+    const networkStringMap :NetworkLogoMap = {
+        MAINNET: "Ethereum",
+        OPTIMISM: "Optimism",
+        POLYGON: "Polygon",
+        GNOSIS: "Gnosis",
+        ARBITRUM: "Arbitrum"
     };
 
     const handleAddAllocation = (address: string) => {
@@ -276,7 +283,7 @@ export default function VeBALVoter() {
 
 
     //Load gauge and Staking information
-    const gaugeData = useGetBalancerStakingGauges();
+    const gaugeData = useGetBalancerV3StakingGauges();
     const decoratedVotingGauges = useDecorateGaugesWithVotes(gaugeData)
     const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);
     const unlockDate = date.toLocaleDateString();
@@ -458,7 +465,7 @@ export default function VeBALVoter() {
             });
             setAllocations([...newAllocations]);
         }
-    }, [userVotingGauges, allocations, userVeBAL, address, fullyDecoratedGauges]);
+    }, [JSON.stringify(userVotingGauges), allocations, userVeBAL, address, fullyDecoratedGauges]);
 
 
     //Total percentage validation hook -> controls vote button disable function
@@ -550,7 +557,8 @@ export default function VeBALVoter() {
             </CardContent>
             </Card>
         </Box> :
-        <Box key={address? address.toLowerCase() : 'veBAL'} sx={{flexGrow: 2}}>
+             fullyDecoratedGauges && fullyDecoratedGauges.length > 0 ?
+                 <Box key={address? address.toLowerCase() : 'veBAL'} sx={{flexGrow: 2}}>
             <Grid
                 container
                 spacing={2}
@@ -686,7 +694,7 @@ export default function VeBALVoter() {
                                                                     height: 20,
                                                                     width: 20
                                                                 }}
-                                                                src={networkLogoMap[Number(relevantGauge.network)]}
+                                                                src={networkLogoMap[relevantGauge.network]}
                                                             />
                                                         </TableCell>
                                                         <TableCell>
@@ -875,6 +883,14 @@ export default function VeBALVoter() {
                     <Typography>Computing best allocation set...</Typography>
                 </Box>
             </Backdrop>
-        </Box>
+        </Box> :  <Box
+                     sx={{
+                         flexGrow: 2,
+                         display: 'flex',
+                         justifyContent: 'center',
+                         alignItems: 'center',
+                         minHeight: '100vh'
+                     }}
+                 ><CircularProgress /> </Box>
     );
 }

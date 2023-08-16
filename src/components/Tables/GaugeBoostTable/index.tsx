@@ -283,16 +283,23 @@ export default function GaugeBoostTable({gaugeDatas, userVeBALAdjusted}: {
     };
 
     interface NetworkLogoMap {
-        [networkNumber: number]: string;
+        [networkNumber: string]: string;
     }
 
     const networkLogoMap: NetworkLogoMap = {
-        1: EtherLogo,
-        10: OpLogo,
-        137: PolygonLogo,
-        100: GnosisLogo,
-        1101: zkevmLogo,
-        42161: ArbitrumLogo
+        MAINNET: EtherLogo,
+        OPTIMISM: OpLogo,
+        POLYGON: PolygonLogo,
+        GNOSIS: GnosisLogo,
+        ARBITRUM: ArbitrumLogo
+    };
+
+    const networkStringMap :NetworkLogoMap = {
+        MAINNET: "Ethereum",
+        OPTIMISM: "Optimism",
+        POLYGON: "Polygon",
+        GNOSIS: "Gnosis",
+        ARBITRUM: "Arbitrum"
     };
 
 
@@ -351,11 +358,7 @@ export default function GaugeBoostTable({gaugeDatas, userVeBALAdjusted}: {
                                               height: 20,
                                               width: 20,
                                             }}
-                                            src={
-                                              networkLogoMap[
-                                                Number(row.network)
-                                              ]
-                                            }
+                                            src={networkLogoMap[row.network]}
                                           />
                                         </TableCell>
                                         <TableCell>

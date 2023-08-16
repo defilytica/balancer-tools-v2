@@ -1280,6 +1280,7 @@ export interface GqlBalancePoolAprSubItem {
 export type GqlChain =
   | "ARBITRUM"
   | "AVALANCHE"
+  | "BASE"
   | "FANTOM"
   | "GNOSIS"
   | "MAINNET"
@@ -1325,81 +1326,6 @@ export interface GqlLatestSyncedBlocks {
   poolSyncBlock: Scalars["BigInt"];
   userStakeSyncBlock: Scalars["BigInt"];
   userWalletSyncBlock: Scalars["BigInt"];
-}
-
-export interface GqlLge {
-  __typename: "GqlLge";
-  address: Scalars["String"];
-  adminAddress: Scalars["String"];
-  adminIsMultisig: Scalars["Boolean"];
-  bannerImageUrl: Scalars["String"];
-  collateralAddress: Scalars["String"];
-  collateralAmount: Scalars["String"];
-  collateralDecimals: Scalars["Int"];
-  collateralEndWeight: Scalars["Int"];
-  collateralStartWeight: Scalars["Int"];
-  description: Scalars["String"];
-  discordUrl: Scalars["String"];
-  endTimestamp: Scalars["Int"];
-  id: Scalars["ID"];
-  mediumUrl: Scalars["String"];
-  name: Scalars["String"];
-  startTimestamp: Scalars["Int"];
-  swapFee: Scalars["String"];
-  telegramUrl: Scalars["String"];
-  tokenAddress: Scalars["String"];
-  tokenAmount: Scalars["String"];
-  tokenDecimals: Scalars["Int"];
-  tokenEndWeight: Scalars["Int"];
-  tokenIconUrl: Scalars["String"];
-  tokenStartWeight: Scalars["Int"];
-  tokenSymbol: Scalars["String"];
-  twitterUrl: Scalars["String"];
-  websiteUrl: Scalars["String"];
-}
-
-export interface GqlLgeCreateInput {
-  address: Scalars["String"];
-  bannerImageUrl: Scalars["String"];
-  collateralAddress: Scalars["String"];
-  collateralAmount: Scalars["String"];
-  collateralEndWeight: Scalars["Int"];
-  collateralStartWeight: Scalars["Int"];
-  description: Scalars["String"];
-  discordUrl: Scalars["String"];
-  endTimestamp: Scalars["Int"];
-  id: Scalars["ID"];
-  mediumUrl: Scalars["String"];
-  name: Scalars["String"];
-  startTimestamp: Scalars["Int"];
-  swapFee: Scalars["String"];
-  telegramUrl: Scalars["String"];
-  tokenAddress: Scalars["String"];
-  tokenAmount: Scalars["String"];
-  tokenEndWeight: Scalars["Int"];
-  tokenIconUrl: Scalars["String"];
-  tokenStartWeight: Scalars["Int"];
-  twitterUrl: Scalars["String"];
-  websiteUrl: Scalars["String"];
-}
-
-export interface GqlLgePriceData {
-  __typename: "GqlLgePriceData";
-  price: Scalars["Float"];
-  timestamp: Scalars["Int"];
-  type: Scalars["String"];
-}
-
-export interface GqlLgeUpdateInput {
-  description: Scalars["String"];
-  discordUrl: Scalars["String"];
-  id: Scalars["ID"];
-  mediumUrl: Scalars["String"];
-  name: Scalars["String"];
-  telegramUrl: Scalars["String"];
-  tokenIconUrl: Scalars["String"];
-  twitterUrl: Scalars["String"];
-  websiteUrl: Scalars["String"];
 }
 
 export interface GqlPoolApr {
@@ -2448,6 +2374,33 @@ export interface GqlUserSwapVolumeFilter {
   tokenOutIn?: InputMaybe<Array<Scalars["String"]>>;
 }
 
+export interface GqlVotingGauge {
+  __typename: "GqlVotingGauge";
+  addedTimestamp?: Maybe<Scalars["Int"]>;
+  address: Scalars["Bytes"];
+  isKilled: Scalars["Boolean"];
+  relativeWeightCap?: Maybe<Scalars["String"]>;
+}
+
+export interface GqlVotingGaugeToken {
+  __typename: "GqlVotingGaugeToken";
+  address: Scalars["String"];
+  logoURI: Scalars["String"];
+  symbol: Scalars["String"];
+  weight?: Maybe<Scalars["String"]>;
+}
+
+export interface GqlVotingPool {
+  __typename: "GqlVotingPool";
+  address: Scalars["Bytes"];
+  chain: GqlChain;
+  gauge: GqlVotingGauge;
+  id: Scalars["ID"];
+  symbol: Scalars["String"];
+  tokens: Array<GqlVotingGaugeToken>;
+  type: GqlPoolMinimalType;
+}
+
 export interface GradualWeightUpdate {
   __typename: "GradualWeightUpdate";
   endTimestamp: Scalars["BigInt"];
@@ -3368,14 +3321,14 @@ export type ManagementOperation_OrderBy =
 
 export interface Mutation {
   __typename: "Mutation";
+  balancerMutationTest: Scalars["String"];
   beetsPoolLoadReliquarySnapshotsForAllFarms: Scalars["String"];
   beetsSyncFbeetsRatio: Scalars["String"];
   cacheAverageBlockTime: Scalars["String"];
-  lgeCreate: GqlLge;
-  lgeSyncFromSanity: Scalars["String"];
   poolBlackListAddPool: Scalars["String"];
   poolBlackListRemovePool: Scalars["String"];
   poolDeletePool: Scalars["String"];
+  poolInitOnChainDataForAllPools: Scalars["String"];
   poolInitializeSnapshotsForPool: Scalars["String"];
   poolLoadOnChainDataForAllPools: Scalars["String"];
   poolLoadOnChainDataForPoolsWithActiveUpdates: Scalars["String"];
@@ -3420,10 +3373,6 @@ export interface Mutation {
   userSyncChangedWalletBalancesForAllPools: Scalars["String"];
   veBalSyncAllUserBalances: Scalars["String"];
   veBalSyncTotalSupply: Scalars["String"];
-}
-
-export interface MutationLgeCreateArgs {
-  lge: GqlLgeCreateInput;
 }
 
 export interface MutationPoolBlackListAddPoolArgs {
@@ -5751,6 +5700,7 @@ export interface Query {
   ampUpdate?: Maybe<AmpUpdate>;
   ampUpdates: Array<AmpUpdate>;
   balancer?: Maybe<Balancer>;
+  balancerQueryTest: Scalars["String"];
   balancerSnapshot?: Maybe<BalancerSnapshot>;
   balancerSnapshots: Array<BalancerSnapshot>;
   balancers: Array<Balancer>;
@@ -5782,9 +5732,6 @@ export interface Query {
   latestPrice?: Maybe<LatestPrice>;
   latestPrices: Array<LatestPrice>;
   latestSyncedBlocks: GqlLatestSyncedBlocks;
-  lge: GqlLge;
-  lgeGetChartData: Array<Maybe<GqlLgePriceData>>;
-  lges: Array<GqlLge>;
   liquidityGauge?: Maybe<LiquidityGauge>;
   liquidityGauges: Array<LiquidityGauge>;
   lockSnapshot?: Maybe<LockSnapshot>;
@@ -5870,6 +5817,7 @@ export interface Query {
   users: Array<User>;
   veBalGetTotalSupply: Scalars["AmountHumanReadable"];
   veBalGetUserBalance: Scalars["AmountHumanReadable"];
+  veBalGetVotingList: Array<GqlVotingPool>;
   votingEscrow?: Maybe<VotingEscrow>;
   votingEscrowLock?: Maybe<VotingEscrowLock>;
   votingEscrowLocks: Array<VotingEscrowLock>;
@@ -6091,14 +6039,6 @@ export interface QueryLatestPricesArgs {
   skip?: InputMaybe<Scalars["Int"]>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<LatestPrice_Filter>;
-}
-
-export interface QueryLgeArgs {
-  id: Scalars["ID"];
-}
-
-export interface QueryLgeGetChartDataArgs {
-  id: Scalars["ID"];
 }
 
 export interface QueryLiquidityGaugeArgs {
@@ -9376,6 +9316,36 @@ export type _SubgraphErrorPolicy_ =
   /** If the subgraph has indexing errors, data will be omitted. The default. */
   | "deny";
 
+export type VeBalGetVotingGaugesQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type VeBalGetVotingGaugesQuery = {
+  __typename: "Query";
+  veBalGetVotingList: Array<{
+    __typename: "GqlVotingPool";
+    id: string;
+    address: string;
+    chain: GqlChain;
+    type: GqlPoolMinimalType;
+    symbol: string;
+    gauge: {
+      __typename: "GqlVotingGauge";
+      address: string;
+      isKilled: boolean;
+      relativeWeightCap?: string | null;
+      addedTimestamp?: number | null;
+    };
+    tokens: Array<{
+      __typename: "GqlVotingGaugeToken";
+      address: string;
+      logoURI: string;
+      symbol: string;
+      weight?: string | null;
+    }>;
+  }>;
+};
+
 export type GetUserVotesQueryVariables = Exact<{
   userId: Scalars["ID"];
 }>;
@@ -10798,6 +10768,79 @@ export const BalancerSnapshotFragmentDoc = gql`
     totalSwapFee
   }
 `;
+export const VeBalGetVotingGaugesDocument = gql`
+  query VeBalGetVotingGauges {
+    veBalGetVotingList {
+      id
+      address
+      chain
+      type
+      symbol
+      gauge {
+        address
+        isKilled
+        relativeWeightCap
+        addedTimestamp
+      }
+      tokens {
+        address
+        logoURI
+        symbol
+        weight
+      }
+    }
+  }
+`;
+
+/**
+ * __useVeBalGetVotingGaugesQuery__
+ *
+ * To run a query within a React component, call `useVeBalGetVotingGaugesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useVeBalGetVotingGaugesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useVeBalGetVotingGaugesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useVeBalGetVotingGaugesQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    VeBalGetVotingGaugesQuery,
+    VeBalGetVotingGaugesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    VeBalGetVotingGaugesQuery,
+    VeBalGetVotingGaugesQueryVariables
+  >(VeBalGetVotingGaugesDocument, options);
+}
+export function useVeBalGetVotingGaugesLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    VeBalGetVotingGaugesQuery,
+    VeBalGetVotingGaugesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    VeBalGetVotingGaugesQuery,
+    VeBalGetVotingGaugesQueryVariables
+  >(VeBalGetVotingGaugesDocument, options);
+}
+export type VeBalGetVotingGaugesQueryHookResult = ReturnType<
+  typeof useVeBalGetVotingGaugesQuery
+>;
+export type VeBalGetVotingGaugesLazyQueryHookResult = ReturnType<
+  typeof useVeBalGetVotingGaugesLazyQuery
+>;
+export type VeBalGetVotingGaugesQueryResult = Apollo.QueryResult<
+  VeBalGetVotingGaugesQuery,
+  VeBalGetVotingGaugesQueryVariables
+>;
 export const GetUserVotesDocument = gql`
   query GetUserVotes($userId: ID!) {
     user(id: $userId) {

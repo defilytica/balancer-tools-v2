@@ -76,7 +76,7 @@ const useDecorateGaugesWithVotes = (stakingGaugeData: BalancerStakingGauges[]): 
                 });
             setIsLoading(false);
         }
-    }, [isLoading, stakingGaugeData, address]);
+    }, [isLoading, JSON.stringify(stakingGaugeData), address]);
 
     if (decoratedGauges !== undefined) {
         return decoratedGauges;

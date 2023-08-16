@@ -187,6 +187,29 @@ export const BalancerSnapshot = gql`
     totalSwapFee
   }
 `;
+export const VeBalGetVotingGauges = gql`
+  query VeBalGetVotingGauges {
+    veBalGetVotingList {
+      id
+      address
+      chain
+      type
+      symbol
+      gauge {
+        address
+        isKilled
+        relativeWeightCap
+        addedTimestamp
+      }
+      tokens {
+        address
+        logoURI
+        symbol
+        weight
+      }
+    }
+  }
+`;
 export const GetUserVotes = gql`
   query GetUserVotes($userId: ID!) {
     user(id: $userId) {

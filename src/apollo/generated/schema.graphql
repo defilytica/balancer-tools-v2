@@ -1345,6 +1345,7 @@ scalar GqlBigNumber
 enum GqlChain {
   ARBITRUM
   AVALANCHE
+  BASE
   FANTOM
   GNOSIS
   MAINNET
@@ -1390,79 +1391,6 @@ type GqlLatestSyncedBlocks {
   poolSyncBlock: BigInt!
   userStakeSyncBlock: BigInt!
   userWalletSyncBlock: BigInt!
-}
-
-type GqlLge {
-  address: String!
-  adminAddress: String!
-  adminIsMultisig: Boolean!
-  bannerImageUrl: String!
-  collateralAddress: String!
-  collateralAmount: String!
-  collateralDecimals: Int!
-  collateralEndWeight: Int!
-  collateralStartWeight: Int!
-  description: String!
-  discordUrl: String!
-  endTimestamp: Int!
-  id: ID!
-  mediumUrl: String!
-  name: String!
-  startTimestamp: Int!
-  swapFee: String!
-  telegramUrl: String!
-  tokenAddress: String!
-  tokenAmount: String!
-  tokenDecimals: Int!
-  tokenEndWeight: Int!
-  tokenIconUrl: String!
-  tokenStartWeight: Int!
-  tokenSymbol: String!
-  twitterUrl: String!
-  websiteUrl: String!
-}
-
-input GqlLgeCreateInput {
-  address: String!
-  bannerImageUrl: String!
-  collateralAddress: String!
-  collateralAmount: String!
-  collateralEndWeight: Int!
-  collateralStartWeight: Int!
-  description: String!
-  discordUrl: String!
-  endTimestamp: Int!
-  id: ID!
-  mediumUrl: String!
-  name: String!
-  startTimestamp: Int!
-  swapFee: String!
-  telegramUrl: String!
-  tokenAddress: String!
-  tokenAmount: String!
-  tokenEndWeight: Int!
-  tokenIconUrl: String!
-  tokenStartWeight: Int!
-  twitterUrl: String!
-  websiteUrl: String!
-}
-
-type GqlLgePriceData {
-  price: Float!
-  timestamp: Int!
-  type: String!
-}
-
-input GqlLgeUpdateInput {
-  description: String!
-  discordUrl: String!
-  id: ID!
-  mediumUrl: String!
-  name: String!
-  telegramUrl: String!
-  tokenIconUrl: String!
-  twitterUrl: String!
-  websiteUrl: String!
 }
 
 type GqlPoolApr {
@@ -2466,6 +2394,30 @@ input GqlUserSwapVolumeFilter {
   tokenOutIn: [String!]
 }
 
+type GqlVotingGauge {
+  addedTimestamp: Int
+  address: Bytes!
+  isKilled: Boolean!
+  relativeWeightCap: String
+}
+
+type GqlVotingGaugeToken {
+  address: String!
+  logoURI: String!
+  symbol: String!
+  weight: String
+}
+
+type GqlVotingPool {
+  address: Bytes!
+  chain: GqlChain!
+  gauge: GqlVotingGauge!
+  id: ID!
+  symbol: String!
+  tokens: [GqlVotingGaugeToken!]!
+  type: GqlPoolMinimalType!
+}
+
 type GradualWeightUpdate {
   endTimestamp: BigInt!
   endWeights: [BigInt!]!
@@ -3464,14 +3416,14 @@ enum ManagementOperation_orderBy {
 }
 
 type Mutation {
+  balancerMutationTest: String!
   beetsPoolLoadReliquarySnapshotsForAllFarms: String!
   beetsSyncFbeetsRatio: String!
   cacheAverageBlockTime: String!
-  lgeCreate(lge: GqlLgeCreateInput!): GqlLge!
-  lgeSyncFromSanity: String!
   poolBlackListAddPool(poolId: String!): String!
   poolBlackListRemovePool(poolId: String!): String!
   poolDeletePool(poolId: String!): String!
+  poolInitOnChainDataForAllPools: String!
   poolInitializeSnapshotsForPool(poolId: String!): String!
   poolLoadOnChainDataForAllPools: String!
   poolLoadOnChainDataForPoolsWithActiveUpdates: String!
@@ -5863,6 +5815,7 @@ type Query {
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): Balancer
+  balancerQueryTest: String!
   balancerSnapshot(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -6198,9 +6151,6 @@ type Query {
     where: LatestPrice_filter
   ): [LatestPrice!]!
   latestSyncedBlocks: GqlLatestSyncedBlocks!
-  lge(id: ID!): GqlLge!
-  lgeGetChartData(id: ID!): [GqlLgePriceData]!
-  lges: [GqlLge!]!
   liquidityGauge(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
@@ -6971,6 +6921,7 @@ type Query {
   ): [User!]!
   veBalGetTotalSupply: AmountHumanReadable!
   veBalGetUserBalance: AmountHumanReadable!
+  veBalGetVotingList: [GqlVotingPool!]!
   votingEscrow(
     """
     The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.

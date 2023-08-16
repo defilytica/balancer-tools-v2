@@ -4,9 +4,10 @@ import useDecorateL2Gauges from "../../data/balancer/useDeocrateL2Gauges";
 import GovGaugeTable from "../../components/Tables/GovGaugeTable";
 import {Box} from "@mui/system";
 import {CircularProgress, Grid, Typography} from "@mui/material";
+import useGetBalancerV3StakingGauges from "../../data/balancer-api-v3/useGetBalancerV3StakingGauges";
 
 export default function GaugeMapper(){
-    const gaugeData = useGetBalancerStakingGauges();
+    const gaugeData = useGetBalancerV3StakingGauges();
     const l1GaugeData = useDecorateL1Gauges(gaugeData);
     const decoratedGaugeData = useDecorateL2Gauges(l1GaugeData);
 
