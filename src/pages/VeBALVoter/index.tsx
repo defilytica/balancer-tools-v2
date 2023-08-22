@@ -741,6 +741,10 @@ export default function VeBALVoter() {
                                                             <Typography>{formatNumber(alloc.paladinLeftVotes, 0)}</Typography>
                                                         </TableCell>
                                                         <TableCell>
+                                                            {relevantGauge.isKilled ?
+                                                                <Typography variant={"caption"} color={'red'}>Killed</Typography> : null
+                                                            }
+
                                                             <Typography>{alloc.isNew? 'New' : 'Current'}</Typography>
                                                         </TableCell>
                                                     </TableRow>

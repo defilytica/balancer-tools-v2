@@ -11,7 +11,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import {Avatar, Button, IconButton, InputBase} from '@mui/material';
+import {Avatar, Button, IconButton, InputBase, Typography} from '@mui/material';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import {visuallyHidden} from '@mui/utils';
@@ -127,7 +127,7 @@ const headCells: readonly HeadCell[] = [
         id: 'network',
         numeric: false,
         disablePadding: false,
-        label: 'Network',
+        label: ' ',
         isMobileVisible: true,
     },
     {
@@ -169,7 +169,7 @@ const headCells: readonly HeadCell[] = [
         id: 'paladinLeftVotes',
         numeric: true,
         disablePadding: false,
-        label: 'Paladin: Open Quest Votes',
+        label: 'Paladin: Open Votes',
         isMobileVisible: true,
     },
     {
@@ -245,7 +245,7 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
     const seen = new Set();
 
     const filteredPoolDatas = gaugeDatas.filter((x) => {
-        return !!x && !x.isKilled && !seen.has(x.address) && seen.add(x.pool.address);
+        return !!x && !seen.has(x.address) && seen.add(x.pool.address);
     });
 
     const originalRows = filteredPoolDatas
@@ -330,15 +330,8 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
         OPTIMISM: OpLogo,
         POLYGON: PolygonLogo,
         GNOSIS: GnosisLogo,
-        ARBITRUM: ArbitrumLogo
-    };
-
-    const networkStringMap :NetworkLogoMap = {
-        MAINNET: "Ethereum",
-        OPTIMISM: "Optimism",
-        POLYGON: "Polygon",
-        GNOSIS: "Gnosis",
-        ARBITRUM: "Arbitrum"
+        ARBITRUM: ArbitrumLogo,
+        ZKEVM: zkevmLogo
     };
 
 
@@ -411,6 +404,11 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
                                                     <Box>
                                                         <GaugeComposition poolData={row.poolData} />
                                                     </Box>
+                                                    {row.isKilled ?
+                                                        <Box ml={1}>
+                                                        <Typography variant={'caption'} color={"red"}>KILLED</Typography>
+                                                    </Box> : null}
+
                                                 </Box>
                                             </TableCell>
                                             <TableCell align="right">

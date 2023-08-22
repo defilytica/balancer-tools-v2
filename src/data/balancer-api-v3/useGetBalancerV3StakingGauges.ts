@@ -21,8 +21,9 @@ export default function useGetBalancerV3StakingGauges() {
     const adaptToBalancerStakingGauges = (data: any): BalancerStakingGauges[] => {
         const rawData = data.veBalGetVotingList;
 
+        // Temp fix for killed gauge voting
         const noDupes = rawData.filter((e: any) => {
-            return !e.gauge.isKilled;
+            return (e.gauge.isKilled || !e.gauge.isKilled);
         });
 
         const poolIds = new Map();
