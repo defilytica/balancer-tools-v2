@@ -1,5 +1,6 @@
 import {BalancerStakingGauges} from "./balancerTypes";
 import vyperMainnetGauge from "../../constants/abis/vyperMainnetGauge.json";
+import gaugeController from "../../constants/abis/gaugeController.json";
 import {ethers} from "ethers";
 import rootGaugeL2 from "../../constants/abis/rootGaugeL2.json";
 import {useEffect, useState} from "react";
@@ -43,6 +44,20 @@ const useDecorateL1Gauges = (stakingGaugeData: BalancerStakingGauges[] | undefin
                     ],
                 }));
                 multicalls.push(multicall.call(contractCallContext));
+            }
+
+            const gaugeWeights = gaugeData;
+            if (gaugeWeights.length > 0) {
+                const contractCallContextWeights = gaugeWeights.map((gauge) => ({
+                    reference: gauge.address,
+                    contractAddress: "0xC128468b7Ce63eA702C1f104D55A2566b13D3ABD",
+                    abi: gaugeController,
+                    calls: [
+                        {reference: "gaugeWeight", methodName: 'get_gauge_weight', methodParameters: [gauge.address]},
+                        {reference: "totalWeight", methodName: 'get_total_weight', methodParameters: []},
+                    ],
+                }));
+                multicalls.push(multicall.call(contractCallContextWeights));
             }
 
             //Obtain the l2 recipient addresses for all other chains
@@ -89,11 +104,33 @@ const useDecorateL1Gauges = (stakingGaugeData: BalancerStakingGauges[] | undefin
                         }
                     });
 
+                    const gaugeWeights = gaugeData.filter(gauge => (gauge.network.toString() === EthereumNetworkInfo.v3NetworkID || gauge.network.toString() !== EthereumNetworkInfo.v3NetworkID))
+                    console.log(gaugeWeights);
+
+                    gaugeWeights.forEach((gauge, i) => {
+                        if (resultsArray[1].results[gaugeWeights[i].address]) {
+                            const context = resultsArray[1].results[gaugeWeights[i].address];
+                            const gaugeWeightCall = context.callsReturnContext.find(call => call.reference === "gaugeWeight");
+                            const gaugeTotalWeightCall = context.callsReturnContext.find(call => call.reference === "totalWeight");
+
+                            const gaugeWeightHex = gaugeWeightCall && gaugeWeightCall.returnValues[0] ? gaugeWeightCall.returnValues[0].hex : '0';
+                            const gaugeTotalWeightHex = gaugeTotalWeightCall && gaugeTotalWeightCall.returnValues[0] ? gaugeTotalWeightCall.returnValues[0].hex : '0';
+
+
+                            const updatedGauge = {
+                                ...gaugeWeights[i],
+                                gaugeRelativeWeight: gaugeWeightHex ? Number(BigInt(gaugeWeightHex)) / Number(BigInt(gaugeTotalWeightHex)) * 100 : 0,
+                            };
+                            updatedGaugeData.push(updatedGauge);
+                        }
+                    });
+
                     //map l2 gauge recipients
                     const l2Gauges = gaugeData.filter(gauge => gauge.network.toString() !== EthereumNetworkInfo.v3NetworkID);
+                    console.log(l2Gauges);
                     l2Gauges.forEach((gauge, i) => {
-                        if (resultsArray[1].results[l2Gauges[i].address]) {
-                            const context = resultsArray[1].results[l2Gauges[i].address];
+                        if (resultsArray[2].results[l2Gauges[i].address]) {
+                            const context = resultsArray[2].results[l2Gauges[i].address];
                             const recipientCall = context.callsReturnContext.find(call => call.reference === "recipient");
                             const recipientAddress = recipientCall && recipientCall.returnValues[0] ? recipientCall.returnValues[0] : '';
 

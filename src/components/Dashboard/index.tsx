@@ -30,7 +30,7 @@ import {chains, wagmiConfig} from "../../wagmi/wagmiConfig";
 import {alpha} from "@mui/material";
 import GaugeMapper from "../../pages/GaugeMapper";
 import BribeSimulator from "../../pages/BribeSimulator";
-
+import GovernanceMap from '../../pages/GovernanceMap';
 
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
@@ -260,6 +260,8 @@ function Dashboard() {
                                            element={<Authorizations/>}/>
                                     <Route path={'balancer/gaugeMap'}
                                            element={<GaugeMapper/>}/>
+                                    <Route path={'balancer/governanceMap'}
+                                           element={<GovernanceMap/>}/>       
                                     <Route path={networkPrefix(activeNetwork) + 'incentiveSimulator'}
                                            element={<BribeSimulator/>}/>
                                     <Route path={'balancer/incentiveSimulator'} element={<BribeSimulator/>}/>

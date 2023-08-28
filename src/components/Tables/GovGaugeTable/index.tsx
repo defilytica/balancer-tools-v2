@@ -45,6 +45,7 @@ interface Data {
     poolId: string,
     poolType: string,
     symbol: string,
+    gaugeRelativeWeight: number,
 }
 
 function createData(
@@ -58,6 +59,7 @@ function createData(
     poolId: string,
     poolType: string,
     symbol: string,
+    gaugeRelativeWeight: number,
 ): Data {
     return {
         poolComposition,
@@ -70,6 +72,7 @@ function createData(
         poolId,
         poolType,
         symbol,
+        gaugeRelativeWeight,
     };
 }
 
@@ -162,6 +165,13 @@ const headCells: readonly HeadCell[] = [
         isMobileVisible: false,
     },
     {
+        id: 'gaugeRelativeWeight',
+        numeric: false,
+        disablePadding: false,
+        label: 'Weight',
+        isMobileVisible: false,
+    },
+    {
         id: 'isKilled',
         numeric: false,
         disablePadding: false,
@@ -237,7 +247,7 @@ export default function GovGaugeTable({gaugeDatas}: {
     });
 
     const originalRows = filteredPoolDatas.map(el =>
-        createData(el.address, el.network, el.isKilled, el.pool, el.pool.address, el.address, el.min_VeBAL, el.pool.id, el.pool.poolType, el.pool.symbol)
+        createData(el.address, el.network, el.isKilled, el.pool, el.pool.address, el.address, el.min_VeBAL, el.pool.id, el.pool.poolType, el.pool.symbol, el.gaugeRelativeWeight)
     )
     const [rows, setRows] = useState<Data[]>(originalRows);
     const [searched, setSearched] = useState<string>("");
@@ -390,6 +400,9 @@ export default function GovGaugeTable({gaugeDatas}: {
                                             </TableCell>
                                             <TableCell>
                                                 {row.poolId}
+                                            </TableCell>
+                                            <TableCell>
+                                                {row.gaugeRelativeWeight.toFixed(2)}
                                             </TableCell>
                                             <TableCell>
                                                 {row.isKilled ? 'Yes' : 'No'}

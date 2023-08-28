@@ -128,6 +128,12 @@ const MenuDrawer = ({
                             </ListItemIcon>
                             <ListItemText primary={'Gauge Mapper'} />
                         </ListItemButton>
+                        <ListItemButton key={'Governance Map'} component={NavLink} to={'balancer/governanceMap'}>
+                            <ListItemIcon>
+                                <MapIcon />
+                            </ListItemIcon>
+                            <ListItemText primary={'Governance Map'} />
+                        </ListItemButton>
                     </List>
                 </Collapse>
             </List>
