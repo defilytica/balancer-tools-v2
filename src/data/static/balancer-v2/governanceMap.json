@@ -1,0 +1,57 @@
+{
+  "contracts": [
+    {
+      "id": "0x123456789abcdef",
+      "title": "Balancer v2 vault",
+      "description": "The Balancer v2 vault holds all tokens of the protocol",
+      "readMethods": [
+        {
+          "methodName": "getTotalTokenValueLocked",
+          "methodDescription": "Get total token value locked",
+          "methodVariables": [
+            {
+              "name": "userAddress",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "getTokenBalance",
+          "methodDescription": "Get token balance for an address",
+          "methodVariables": [
+            {
+              "name": "userAddress",
+              "type": "address"
+            },
+            {
+              "name": "tokenAddress",
+              "type": "address"
+            }
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "depositTokens",
+          "methodDescription": "Deposit tokens",
+          "methodVariables": [
+            {
+              "name": "amount",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "withdrawTokens",
+          "methodDescription": "Withdraw tokens",
+          "methodVariables": [
+            {
+              "name": "amount",
+              "type": "uint256"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

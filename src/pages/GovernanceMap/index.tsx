@@ -1,10 +1,12 @@
 import useGetBalAddresses from "../../data/balancer/useGetBalAddresses";
 import { Box } from "@mui/system";
-import { CircularProgress, Grid, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
+import {BalancerSmartContractData} from "../../data/static/balancerStaticTypes";
+import contractData from "../../data/static/balancer-v2/governanceMap.json";
+import ContractOverviewTable from "../../components/Tables/ContractOverviewTable";
 
 export default function GovernanceMap() {
-    const balAddresses = useGetBalAddresses();
-    console.log(balAddresses);
+    const smartContractData: BalancerSmartContractData = contractData;
 
     return (
         <Box
@@ -16,26 +18,15 @@ export default function GovernanceMap() {
                 minHeight: '100vh'
             }}
         >
-            {1 > 0 ? (
                 <Grid mt={2} container sx={{ justifyContent: "center" }}>
                     <Grid item xs={11}>
                         <Typography variant={'h5'}>Governance Map</Typography>
                     </Grid>
                     <Grid item mt={2} xs={11}>
-                        <ul>
-                            {Object.entries(balAddresses).map(([key, value]) => (
-                                <li key={key}>
-                                    <Typography>
-                                        {key}: {value}
-                                    </Typography>
-                                </li>
-                            ))}
-                        </ul>
+                           <ContractOverviewTable contracts={smartContractData.contracts} />
                     </Grid>
                 </Grid>
-            ) : (
-                <CircularProgress />
-            )}
+
         </Box>
     );
 }
