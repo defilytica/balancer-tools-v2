@@ -1,9 +1,9 @@
 {
   "contracts": [
     {
-      "id": "0x123456789abcdef",
-      "title": "Balancer v2 vault",
-      "description": "The Balancer v2 vault holds all tokens of the protocol",
+      "id": "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+      "title": "Balancer V2 Vault",
+      "description": "The Balancer v2 vault holds all tokens of the protocol and is the core component of Balancer V2",
       "readMethods": [
         {
           "methodName": "getTotalTokenValueLocked",

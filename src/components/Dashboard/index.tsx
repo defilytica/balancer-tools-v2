@@ -31,6 +31,7 @@ import {alpha} from "@mui/material";
 import GaugeMapper from "../../pages/GaugeMapper";
 import BribeSimulator from "../../pages/BribeSimulator";
 import GovernanceMap from '../../pages/GovernanceMap';
+import ContractDetailedView from "../../pages/ContractDetailedView";
 
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
@@ -212,7 +213,7 @@ function Dashboard() {
                                             Tools
                                         </Typography>
                                         <Typography variant="caption"
-                                                    sx={{color: (mode === 'dark') ? 'white' : 'black',}}>Prototype</Typography>
+                                                    sx={{color: (mode === 'dark') ? 'white' : 'black',}}>Beta</Typography>
                                         <Box position="absolute" right="10px">
                                             <Box display="flex" alignItems="center" alignContent="center"
                                                  justifyContent='flex-end'>
@@ -261,10 +262,13 @@ function Dashboard() {
                                     <Route path={'balancer/gaugeMap'}
                                            element={<GaugeMapper/>}/>
                                     <Route path={'balancer/governanceMap'}
-                                           element={<GovernanceMap/>}/>       
+                                           element={<GovernanceMap/>}/>
                                     <Route path={networkPrefix(activeNetwork) + 'incentiveSimulator'}
                                            element={<BribeSimulator/>}/>
-                                    <Route path={'balancer/incentiveSimulator'} element={<BribeSimulator/>}/>
+                                    <Route path={'balancer/incentiveSimulator'} element={<ContractDetailedView />}/>
+                                    <Route path={networkPrefix(activeNetwork) + 'balancer/balancerContracts/:id'}
+                                           element={<ContractDetailedView/>}/>
+                                    <Route path={'balancer/balancerContracts/:id'} element={<ContractDetailedView />}/>
 
                                     {/* Router v6: no query searches possible anymore. Provide all possible paths */}
                                 </Routes>

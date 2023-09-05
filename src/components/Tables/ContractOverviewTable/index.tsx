@@ -10,6 +10,11 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Typography } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
+import { useNavigate } from 'react-router-dom';
+import {NetworkInfo} from "../../../constants/networks";
+import { networkPrefix } from '../../../utils/networkPrefix';
+import {useActiveNetworkVersion} from "../../../state/application/hooks";
+
 
 interface Contract {
     id: string;
@@ -26,6 +31,10 @@ const headCells: readonly { id: keyof Contract; label: string }[] = [
     { id: 'id', label: 'Contract ID' },
     { id: 'title', label: 'Title' },
 ];
+
+const getLink = (activeNetwork: NetworkInfo, id: string) => {
+    return networkPrefix(activeNetwork) + 'balancer/balancerContracts/' + id;
+}
 
 function EnhancedTableHead(props: EnhancedTableProps) {
     const { order, orderBy, onRequestSort } = props;
@@ -68,6 +77,8 @@ interface ContractTableProps {
 export default function ContractOverviewTable({ contracts }: ContractTableProps) {
     const [order, setOrder] = React.useState<'asc' | 'desc'>('asc');
     const [orderBy, setOrderBy] = React.useState<keyof Contract>('id');
+    let navigate = useNavigate();
+    const [activeNetwork] = useActiveNetworkVersion();
 
     const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Contract) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -87,7 +98,14 @@ export default function ContractOverviewTable({ contracts }: ContractTableProps)
                         />
                         <TableBody>
                             {contracts.map((contract) => (
-                                <TableRow hover role="number" tabIndex={-1} key={contract.id}>
+                                <TableRow
+                                    hover
+                                    role="number"
+                                    tabIndex={-1}
+                                    key={contract.id}
+                                    onClick={() => { navigate(`${getLink(activeNetwork, contract.id)}/`); }}
+                                    sx={{ cursor: 'pointer' }}
+                                >
                                     <TableCell align="left">
                                         <Typography>{contract.id}</Typography>
                                     </TableCell>
