@@ -52,6 +52,59 @@
           ]
         }
       ]
+    },
+    {
+      "id": "0xbababababababababababa",
+      "title": "Example entry contract",
+      "description": "Zen Dragon is a beast",
+      "readMethods": [
+        {
+          "methodName": "getZenDragonTokens",
+          "methodDescription": "Get total token value locked",
+          "methodVariables": [
+            {
+              "name": "userAddress",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "getZenDragon",
+          "methodDescription": "Get the dragon",
+          "methodVariables": [
+            {
+              "name": "userAddress",
+              "type": "address"
+            },
+            {
+              "name": "tokenAddress",
+              "type": "address"
+            }
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "createZenGauge",
+          "methodDescription": "Create a dragon gauge to spit fire",
+          "methodVariables": [
+            {
+              "name": "amount",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "withdrawTokens",
+          "methodDescription": "Withdraw tokens",
+          "methodVariables": [
+            {
+              "name": "amount",
+              "type": "uint256"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
