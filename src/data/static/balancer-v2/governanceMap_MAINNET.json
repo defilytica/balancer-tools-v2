@@ -3,7 +3,7 @@
     {
       "id": "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
       "title": "Balancer V2 Vault",
-      "description": "The Balancer v2 vault holds all tokens of the protocol and is the core component of Balancer V2",
+      "description": "The `Vault` is Balancer V2's core contract. A single instance of it exists for each network, and it is the entity used to interact with Pools by Liquidity Providers who join and exit them, traders who swap, and asset managers who withdraw and deposit tokens.",
       "readMethods": [
         {
           "methodName": "getTotalTokenValueLocked",
@@ -54,30 +54,100 @@
       ]
     },
     {
-      "id": "0xbababababababababababa",
-      "title": "Example entry contract",
-      "description": "Zen Dragon is a beast",
+      "id": "0x6048A8c631Fb7e77EcA533Cf9C29784e482391e7",
+      "title": "AuthorizerWithAdaptorValidation",
+      "description": "The AuthorizerWithAdaptorValidation is an upgrade that fixes an issue in the AuthorizerAdaptor and allows usage of the AuthorizerAdaptorEntrypoint for contract interactions. The primary Authorizer is the one that keeps track of permissions. This is the placeholder for a TimelockAuthorizer, which has yet to developed.",
       "readMethods": [
         {
-          "methodName": "getZenDragonTokens",
-          "methodDescription": "Get total token value locked",
+          "methodName": "canPerform ",
+          "methodDescription": "Checks if an address is able to perform an action.",
           "methodVariables": [
             {
-              "name": "userAddress",
+              "name": "actionId",
+              "type": "bytes32"
+            },
+            {
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "name": "where",
+              "type": "address"
+            }
+          ]
+        }
+      ],
+      "writeMethods": [
+
+      ]
+    },
+    {
+      "id": "0xA331D84eC860Bf466b4CdCcFb4aC09a1B43F3aE6",
+      "title": "Authorizer",
+      "description": "The Authorizer manages, grants, and revokes, permissions to allow interactions with the infrastructure contracts of Balancer. The Authorizer keeps track of what contracts (primarily multisigs) are allowed to perform actions if they have the role with the same, single action identifier.",
+      "readMethods": [
+        {
+          "methodName": "canPerform ",
+          "methodDescription": "Checks if an address is able to perform an action.",
+          "methodVariables": [
+            {
+              "name": "actionId",
+              "type": "bytes32"
+            },
+            {
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "name": "<input>",
               "type": "address"
             }
           ]
         },
         {
-          "methodName": "getZenDragon",
-          "methodDescription": "Get the dragon",
+          "methodName": "getRoleAdmin",
+          "methodDescription": "Checks the contract which corresponds to a role.",
           "methodVariables": [
             {
-              "name": "userAddress",
-              "type": "address"
+              "name": "role",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "methodName": "getRoleMember",
+          "methodDescription": "Checks the role and position number it was granted to return an address.",
+          "methodVariables": [
+            {
+              "name": "role",
+              "type": "bytes32"
             },
             {
-              "name": "tokenAddress",
+              "name": "index",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "getRoleMemberCount",
+          "methodDescription": "Checks the amount of contracts have a specific role.",
+          "methodVariables": [
+            {
+              "name": "role",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "methodName": "hasRole",
+          "methodDescription": "Checks is and address has specific role, returns true or false.",
+          "methodVariables": [
+            {
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "name": "account",
               "type": "address"
             }
           ]
@@ -85,9 +155,603 @@
       ],
       "writeMethods": [
         {
-          "methodName": "createZenGauge",
-          "methodDescription": "Create a dragon gauge to spit fire",
+          "methodName": "grantRole",
+          "methodDescription": "Grants a single role to a single address",
           "methodVariables": [
+            {
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "name": "account",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "grantRoles",
+          "methodDescription": "Grants multiple roles to a single address",
+          "methodVariables": [
+            {
+              "name": "roles",
+              "type": "bytes32[]"
+            },
+            {
+              "name": "account",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "grantRolesToMany",
+          "methodDescription": "Grants multiple roles to a multiple addresses",
+          "methodVariables": [
+            {
+              "name": "roles",
+              "type": "bytes32[]"
+            },
+            {
+              "name": "accounts",
+              "type": "address[]"
+            }
+          ]
+        },
+        {
+          "methodName": "renounceRole",
+          "methodDescription": "Revokes a single role from a single address, caller is the address itself.",
+          "methodVariables": [
+            {
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "name": "account",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "revokeRole",
+          "methodDescription": "Revokes a single role from a single address",
+          "methodVariables": [
+            {
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "name": "account",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "revokeRoles",
+          "methodDescription": "Revokes multiple roles from a single address",
+          "methodVariables": [
+            {
+              "name": "roles",
+              "type": "bytes32[]"
+            },
+            {
+              "name": "account",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "revokeRolesToMany",
+          "methodDescription": "Revokes multiple roles from multiple addresses",
+          "methodVariables": [
+            {
+              "name": "roles",
+              "type": "bytes32[]"
+            },
+            {
+              "name": "accounts",
+              "type": "address[]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0x8F42aDBbA1B16EaAE3BB5754915E0D06059aDd75",
+      "title": "AuthorizerAdaptor",
+      "description": "This contract is intended to act as an adaptor between systems which expect a single admin address and the Balancer Authorizer such that the Authorizer may grant/revoke admin powers to unlimited addresses. The permissions the Authorizer can grant are granular such they may be global or specific to a particular contract. When calculating the actionId to call a function on a target contract, it must be calculated as if it were to be called on this adaptor. This can be done by passing the function selector to the `getActionId` function.",
+      "readMethods": [
+        {
+          "methodName": "getActionId ",
+          "methodDescription": "Passes a action id to return the authorizer bytes32",
+          "methodVariables": [
+            {
+              "name": "selector",
+              "type": "bytes4"
+            }
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "performAction",
+          "methodDescription": "Performs an action in the system",
+          "methodVariables": [
+            {
+              "name": "performAction",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "target",
+              "type": "address"
+            },
+            {
+              "name": "data",
+              "type": "bytes"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0xf5dECDB1f3d1ee384908Fbe16D2F0348AE43a9eA",
+      "title": "AuthorizerAdaptorEntrypoint",
+      "description": "This contract exists as a fix for a critical bug in the `AuthorizerAdaptor` that could lead to escalation of privileges. The Entrypoint contract addresses this by working in combination with `TimelockAuthorizer` so that all Adaptor calls that are not made via the Entrypoint fail, while those that do happen through the Entrypoint check for permissions correctly. ",
+      "readMethods": [
+        {
+          "methodName": "canPerform",
+          "methodDescription": "Checks if an address is able to perform an action.",
+          "methodVariables": [
+            {
+              "name": "actionId",
+              "type": "bytes32"
+            },
+            {
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "name": "<input>",
+              "type": "address"
+            }
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "performAction",
+          "methodDescription": "Performs an action in the system",
+          "methodVariables": [
+            {
+              "name": "performAction",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "target",
+              "type": "address"
+            },
+            {
+              "name": "data",
+              "type": "bytes"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0x97207B095e4D5C9a6e4cfbfcd2C3358E03B90c4A",
+      "title": "ProtocolFeePercentagesProvider",
+      "description": "The Protocol Fee Percentage Provider has two critical write functions. The purpose is to add new protocol fee types to the Balancer system, and to adjust protocol fees on each type. There are four current types of protocol fees, swap, flash loan, yield, and asset under management.",
+      "readMethods": [
+        {
+          "methodName": "getFeeTypeMaximumPercentage",
+          "methodDescription": "Gets the maximum allowable percentage allowed for a specific protocol fee type.",
+          "methodVariables": [
+            {
+              "name": "feeType",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "getFeeTypeName",
+          "methodDescription": "Returns the name for a correspond protocol fee type.",
+          "methodVariables": [
+            {
+              "name": "feeType",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "getFeeTypePercentage",
+          "methodDescription": "Returns the current percentage for a correspond protocol fee type.",
+          "methodVariables": [
+            {
+              "name": "feeType",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "isValidFeeType",
+          "methodDescription": "Returns true or false for if a fee type exists.",
+          "methodVariables": [
+            {
+              "name": "feeType",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "isValidFeeTypePercentage",
+          "methodDescription": "Returns true or false for if a specific protcol fee type can be a specific value.",
+          "methodVariables": [
+            {
+              "name": "feeType",
+              "type": "uint256"
+            },
+            {
+              "name": "value",
+              "type": "uint256"
+            }
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "registerFeeType",
+          "methodDescription": "Registers a new protcol fee type in the system",
+          "methodVariables": [
+            {
+              "name": "feeType",
+              "type": "uint256"
+            },
+            {
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "name": "maximumValue",
+              "type": "uint256"
+            },
+            {
+              "name": "initialValue",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "setFeeTypePercentage",
+          "methodDescription": "Set a specific protcol fee type percentage in the system",
+          "methodVariables": [
+            {
+              "name": "feeType",
+              "type": "uint256"
+            },
+            {
+              "name": "newValue",
+              "type": "uint256"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": " 0xce88686553686DA562CE7Cea497CE749DA109f9F",
+      "title": "ProtocolFeeCollector",
+      "description": "The Protocol Fee Collector is an auxiliary contract to the Vault, deployed by it during construction. It offloads some of the tasks the Vault performs to reduce its overall bytecode size. The current values for all protocol fee percentages are stored here, and any tokens charged as protocol fees are sent to this contract, where they may be withdrawn by authorized entities. All authorization tasks are delegated to the Vault's own Authorizer.",
+      "readMethods": [
+        {
+          "methodName": "getCollectedFeeAmounts",
+          "methodDescription": "Returns and array of amounts collected for each token specificed.",
+          "methodVariables": [
+            {
+              "name": "tokens",
+              "type": "address[]"
+            }
+          ]
+        },
+        {
+          "methodName": "getFlashLoanPercentage",
+          "methodDescription": "Returns protocol fee on flash loans.",
+          "methodVariables": [
+          ]
+        },
+        {
+          "methodName": "getSwapFeePercentage",
+          "methodDescription": "Returns protocol fee on swaps.",
+          "methodVariables": [
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "setFlashLoanFeePercentage",
+          "methodDescription": "Sets flash loan protocol fee percentage. It is reccomended not to use this.",
+          "methodVariables": [
+            {
+              "name": "newFlashLoanFeePercentage",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "setSwapFeePercentage",
+          "methodDescription": "Sets swap protocol fee percentage. It is reccomended not to use this.",
+          "methodVariables": [
+            {
+              "name": "newSwapFeePercentage",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "withdrawCollectedFees",
+          "methodDescription": "Withdraws specific amounts of specific tokens and sends to them to a recipient.",
+          "methodVariables": [
+            {
+              "name": "tokens",
+              "type": "address[]"
+            },
+            {
+              "name": "amounts",
+              "type": "uint256[]"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": " 0x5ef4c5352882b10893b70DbcaA0C000965bd23c5",
+      "title": "ProtocolFeeWithdrawer",
+      "description": "The Protocol Fees Withdrawer is a safety layer around the Protocol Fees Collector which allows withdrawals of specific tokens to be blocked. This is useful for the case in which tokens which shouldn't be distributed are unexpectedly paid into the Protocol Fees Collector.",
+      "readMethods": [
+        {
+          "methodName": "getDenyListedToken",
+          "methodDescription": "Returns a denylisted token address based on position in the denylists index.",
+          "methodVariables": [
+            {
+              "name": "index",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "getDenyListTokenLength",
+          "methodDescription": "Returns the length of the denylist. ",
+          "methodVariables": [
+          ]
+        },
+        {
+          "methodName": "isWithdrawableToken",
+          "methodDescription": "Returns true or false if a token is denylisted.",
+          "methodVariables": [
+            {
+              "name": "token",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "isWithdrawableTokens",
+          "methodDescription": "Returns true or false if a single token in an array of tokens is denylisted.",
+          "methodVariables": [
+            {
+              "name": "token",
+              "type": "address[]"
+            }
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "allowlistToken",
+          "methodDescription": "Marks the provided token as eligible for withdrawal from the Protocol Fee Collector",
+          "methodVariables": [
+            {
+              "name": "token",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "denylistToken",
+          "methodDescription": "Marks the provided token as ineligible for withdrawal from the Protocol Fee Collector",
+          "methodVariables": [
+            {
+              "name": "token",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "withdrawCollectedFees",
+          "methodDescription": "Withdraws fees from the Protocol Fee Collector.",
+          "methodVariables": [
+            {
+              "name": "tokens",
+              "type": "address[]"
+            },
+            {
+              "name": "amounts",
+              "type": "uint256[]"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": " 0x94Dd9C6152a2A0BBcB52d3297b723A6F01D5F9f7",
+      "title": "Mimic SmartVault",
+      "description": "This smart vault from Mimic automates the withdrawing of protocol fees through the protocol fee withdrawer, from the protocol fee collector. Then sells non-BAL tokens for USDC and sends them to the protcol fee multisig.",
+      "readMethods": [
+
+      ],
+      "writeMethods": [
+
+      ]
+    },
+    {
+      "id": " 0x7c68c42De679ffB0f16216154C996C354cF1161B",
+      "title": "Protocol Fee Multisig",
+      "description": "The protocol fee multisigs core purpose is to take protocol fees and distribute them to the treasury, veBAL holders, and core pool incentives.",
+      "readMethods": [
+
+      ],
+      "writeMethods": [
+
+      ]
+    },
+    {
+      "id": " 0x8AD2512819A7eae1dd398973EFfaE48dafBe8255",
+      "title": "veBalFeeInjector",
+      "description": "Chainlink automation compatible smart contract to handle streaming of fees to veBAL. Each 2 weeks fees are processed, there is USD and BAL that needs to be dripped into the veBAL fee distributor over 2 weekly injections. This smart contract handles paying in these fees.  It is build such that it receives new funds every 2 weeks after both runs (rendering it empty. New funds should be sent in when Half is true.  Then half will be paid the first run and the rest wll be paid the second run. There are a number of management functions to allow the owner to sweep tokens and/or change how things work.",
+      "readMethods": [
+        {
+        "methodName": "FeeDistributor",
+        "methodDescription": "Returns the FeeDistributor address",
+        "methodVariables": [
+       ]
+      },
+      {
+      "methodName": "getTokens",
+      "methodDescription": "Returns tokens veBAL holders receive",
+      "methodVariables": [
+      ]}],
+
+      "writeMethods": [
+        {
+          "methodName": "acceptOwnership",
+          "methodDescription": "Write by new owner to accept change of ownership",
+          "methodVariables": [
+          ]
+        },
+        {
+          "methodName": "pause",
+          "methodDescription": "Pauses the injection of fees until unpaused.",
+          "methodVariables": [
+          ]
+        },
+          {
+            "methodName": "performUpkepp",
+            "methodDescription": "Performs an upkeep based on the data passed.",
+            "methodVariables": [
+        {
+          "name": "data",
+          "type": "bytes"
+        }
+        ]},
+        {
+          "methodName": "setKeeperRegistry",
+          "methodDescription": "Sets the keeper registry address",
+          "methodVariables": [
+        {
+          "name": "_keeperRegistry",
+          "type": "address"
+        }
+      ]},
+      {
+        "methodName": "setMinAmount",
+        "methodDescription": "Set the global minimum amount that all tokens must have in order for upkeep to runNOTE: this is in whole numbers, it is not adjusted for decimals        ",
+        "methodVariables": [
+        {
+          "name": "minAmount",
+          "type": "uint256"
+        }
+      ]},
+      {
+        "methodName": "setTokens",
+        "methodDescription": "Sets the list of fee tokens to operate on",
+        "methodVariables": [
+        {
+          "name": "setTokens",
+          "type": "address[]"
+        }
+      ]}]
+     },
+     {
+      "id": " 0xD3cf852898b21fc233251427c2DC93d3d604F3BB",
+      "title": "FeeDistributor",
+      "description": "Distributes any tokens transferred to the contract (e.g. Protocol fees and any BAL emissions) among veBAL holders proportionally based on a snapshot of the week at which the tokens are sent to the FeeDistributor contract. Supports distributing arbitrarily many different tokens. In order to start distributing a new token to veBAL holders simply transfer the tokens to the `FeeDistributor` contract and then call `checkpointToken`.",
+      "readMethods": [
+        {
+          "methodName": "getTokensDistributedInWeek",
+          "methodDescription": "Returns amount of tokens distributed in a specific week, based on a timestamp.",
+          "methodVariables": [
+            {
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "name": "timestamp",
+              "type": "uint256"
+            }
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "checkpoint",
+          "methodDescription": "Caches the total supply of veBAL at the beginning of each week. This function will be called automatically before claiming tokens to ensure the contract is properly updated.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "checkpointToken",
+          "methodDescription": "Assigns any newly-received tokens held by the FeeDistributor to weekly distributions.",
+          "methodVariables": [
+            {
+              "name": "token",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "checkpointTokens",
+          "methodDescription": "Assigns any newly-received tokens held by the FeeDistributor to weekly distributions.",
+          "methodVariables": [
+            {
+              "name": "tokens",
+              "type": "address[]"
+            }
+          ]
+        },
+        {
+          "methodName": "claimToken",
+          "methodDescription": "Claims all pending distributions of the provided token for a user.",
+          "methodVariables": [
+            {
+              "name": "token",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "claimTokens",
+          "methodDescription": "AClaims a number of tokens on behalf of a user.",
+          "methodVariables": [
+            {
+              "name": "tokens",
+              "type": "address[]"
+            }
+          ]
+        },
+        {
+          "methodName": "depositToken",
+          "methodDescription": "Deposits tokens to be distributed in the current week.",
+          "methodVariables": [
+            {
+              "name": "token",
+              "type": "address"
+            },
             {
               "name": "amount",
               "type": "uint256"
@@ -95,12 +759,44 @@
           ]
         },
         {
-          "methodName": "withdrawTokens",
-          "methodDescription": "Withdraw tokens",
+          "methodName": "depositTokens",
+          "methodDescription": "Deposits tokens to be distributed in the current week. veBalFeeInjector uses this.",
           "methodVariables": [
             {
-              "name": "amount",
-              "type": "uint256"
+              "name": "tokens",
+              "type": "address[]"
+            },
+            {
+              "name": "amounts",
+              "type": "uint256[]"
+            }
+          ]
+        },
+        {
+          "methodName": "setOnlyCallerCheck",
+          "methodDescription": "Enables / disables verification mechanism for caller.",
+          "methodVariables": [
+            {
+              "name": "enabled",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "methodName": "setOnlyCallerCheckWithSignature",
+          "methodDescription": "Sets the only caller verification based on a specific signature.",
+          "methodVariables": [
+            {
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "name": "enabled",
+              "type": "bool"
+            },
+            {
+              "name": "signature",
+              "type": "bytes"
             }
           ]
         }
