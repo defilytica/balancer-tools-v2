@@ -79,7 +79,6 @@ export default function ContractDetailedView() {
                                     <Typography fontWeight={"bold"} variant="subtitle1">{method.methodName}</Typography>
                                     <Divider/>
                                     <Typography variant="body2">{method.methodDescription}</Typography>
-                                    {method.methodVariables.map((variable, varIndex) => (
                                         <Box sx={{ mt: 1 }}>
 
                                             {method.methodVariables.map((variable, varIndex) => (
@@ -111,7 +110,6 @@ export default function ContractDetailedView() {
                                                 </Box>
                                             ))}
                                         </Box>
-                                    ))}
                                 </Box>
                             </Card>
                         ))}
@@ -131,7 +129,6 @@ export default function ContractDetailedView() {
                                     <Typography fontWeight={"bold"} variant="subtitle1">{method.methodName}</Typography>
                                     <Divider/>
                                     <Typography variant="body2">{method.methodDescription}</Typography>
-                                    {method.methodVariables.map((variable, varIndex) => (
                                         <Box sx={{ mt: 1 }}>
 
                                             {method.methodVariables.map((variable, varIndex) => (
@@ -163,7 +160,6 @@ export default function ContractDetailedView() {
                                                 </Box>
                                             ))}
                                         </Box>
-                                    ))}
                                 </Box>
                             </Card>
                         ))}
