@@ -801,6 +801,928 @@
           ]
         }
       ]
+    },
+    {
+      "id": "0xC128a9954e6c874eA3d62ce62B468bA073093F25",
+      "title": "veBAL",
+      "description": "veBAL is the foundation of Balancer's tokenomics and governance structure. It is compromised of a 80BAL/20WETH Liquidity pool tokens, locked for a period from 1-52 weeks. Longer locks results in higher stake.",
+      "readMethods": [
+        {
+          "methodName": "token",
+          "methodDescription": "Returns the underlying token used for locking. In this case 80/20 BAL/WETH",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "locked__end",
+          "methodDescription": "Returns a timestamp in uint256 for when a user's lock period will end.",
+          "methodVariables": [
+            {
+              "name": "_addr",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "balanceOf",
+          "methodDescription": "Returns a user's balance at current time, two similar functions be used for specific a timestamp or block.",
+          "methodVariables": [
+            {
+              "name": "addr",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "balanceOf",
+          "methodDescription": "Returns a user's balance at current time, two similar functions be used for specific a timestamp or block.",
+          "methodVariables": [
+            {
+              "name": "addr",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "totalSupply",
+          "methodDescription": "Returns a token circulating supply of veBAL at current time, two similar functions be used for specific a timestamp or block.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "locked",
+          "methodDescription": "Returns a tuple of a users current locked balance and the end of their lock.",
+          "methodVariables": [
+            {
+              "name": "arg0",
+              "type": "address"
+            }
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "commit_smart_wallet_checker",
+          "methodDescription": "Tells the veBAL system which contract will be used for the Smart Wallet Checking function.",
+          "methodVariables": [
+            {
+              "name": "addr",
+              "type": "address"
+            },
+            {
+              "methodName": "apply_smart_wallet_checker",
+              "methodDescription": "Updates the smart wallet checker from the previous contract to the newly committed address.",
+              "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "checkpoint",
+          "methodDescription": "Checkpoints the system for to update voting balances across the users.",
+          "methodVariables": [
+            {
+              "name": "addr",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "create_lock",
+          "methodDescription": "Creates a new lock, converting 80BAL/20WETH to veBAL based on time.",
+          "methodVariables": [
+            {
+              "name": "_value",
+              "type": "uint256"
+            },
+            {
+              "name": "_unlock_time",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "increase_amount",
+          "methodDescription": "Increases the amount of tokens in your lock, requires a user to have more unlocked 80BAL/20WETH tokens to add.",
+          "methodVariables": [
+            {
+              "name": "_value",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "increase_unlock_time",
+          "methodDescription": "Increases the lock time of currently locked tokens, to increase a user's veBAL balance.",
+          "methodVariables": [
+            {
+              "name": "_unlock_time",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "withdraw",
+          "methodDescription": "Withdraws 80BAL/20WETH tokens from the vote escrow locking contract, only used when a lock duration ends.",
+          "methodVariables": [
+      
+          ]
+        } 
+      ]
+    }]
+    },
+    {
+      "id": "0x7869296Efd0a76872fEE62A058C8fBca5c1c826C",
+      "title": "SmartWalletChecker",
+      "description": "The Smart Wallet Checker acts as an allowlist mechanism to permit smart contracts to patricipate in the veBAL system. Typically only EOAs are permitted.",
+      "readMethods": [
+        {
+          "methodName": "check",
+          "methodDescription": "Checks if an address is allowlisted.",
+          "methodVariables": [
+            {
+              "name": "contractAddress",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "getAllowlistedAddress",
+          "methodDescription": "Shows the allowlisted address based on the position in the Smart Wallet Checker's index.",
+          "methodVariables": [
+            {
+              "name": "index",
+              "type": "uint256"
+            }
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "allowlistAddress",
+          "methodDescription": "Adds a smart wallet to the allowlist, giving it permission to lock veBAL.",
+          "methodVariables": [
+            {
+              "name": "contractAddress",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "denylistAddress",
+          "methodDescription": "Adds a smart wallet to the denylist, revoking it's permission to lock veBAL.",
+          "methodVariables": [
+            {
+              "name": "contractAddress",
+              "type": "address"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0x83E443EF4f9963C77bd860f94500075556668cb8",
+      "title": "VotingEscrowRemapper",
+      "description": " This contract allows veBAL holders on Ethereum to assign their balance to designated addresses on each L2. This is intended for smart contracts that are not deployed to the same address on all networks. EOA's are expected to either use the same address, or manage delegation on L2 networks themselves. For each network (chainId), we maintain a mapping between local (Ethereum) and remote (L2) addresses. This contract remaps balance queries on remote network addresses to their corresponding local addresses. Users able to call this contract can set their own mappings, or delegate this function to another account if they cannot.",
+      "readMethods": [
+        {
+          "methodName": "getLocalUser",
+          "methodDescription": "Returns the address on mainnet that is connceted to an address on a specific L2. Addresses can be different for contract wallets.",
+          "methodVariables": [
+            {
+              "name": "remoteUser",
+              "type": "address"
+            },
+            {
+              "name": "chainId",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "getLockeEnd",
+          "methodDescription": "Returns the end of an addresses' locking period.",
+          "methodVariables": [
+            {
+              "name": "user",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "getRemoteUser",
+          "methodDescription": "Returns the address on a given L2 that is connceted to an address on a Ethereum Mainnet. Addresses can be different for contract wallets.",
+          "methodVariables": [
+            {
+              "name": "localUser",
+              "type": "address"
+            },
+            {
+              "name": "chainId",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "getVotingEscorew",
+          "methodDescription": "Returns the address of the voting escrow token used in the system, veBAL",
+          "methodVariables": [
+      
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "clearNetworkRemapping",
+          "methodDescription": "Clears a local user's mapping for a particular network.",
+          "methodVariables": [
+            {
+              "name": "clearNetworkRemapping",
+              "type": "payable(ether)"
+            },
+            {
+              "name": "localUser",
+              "type": "address"
+            },
+            {
+              "name": "chainId",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "setNetworkRemapping",
+          "methodDescription": "Sets up a mapping from `localUser`'s veBAL balance to `remoteUser` for chain `chainId`.",
+          "methodVariables": [
+            {
+              "name": "setNetworkRemapping",
+              "type": "payable(ether)"
+            },
+            {
+              "name": "localUser",
+              "type": "address"
+            },
+            {
+              "name": "remoteUser",
+              "type": "address"
+            },
+            {
+              "name": "chainId",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "setNetworkRemappingManager",
+          "methodDescription": "Sets an address to manage the mapping for a given local user on their behalf.",
+          "methodVariables": [
+            {
+              "name": "localUser",
+              "type": "address"
+            },
+            {
+              "name": "delegate",
+              "type": "address"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0x96484f2aBF5e58b15176dbF1A799627B53F13B6d",
+      "title": "OmniVotingEscrowAdaptor",
+      "description": " This contract acts as an adaptor contract between `VotingEscrowRemapper` and `OmniVotingEscrow`. Provides the remapper a stable interface to forward requests to the omni voting escrow, while allowing to configure optional parameters and even swap the target omni voting escrow contract.",
+      "readMethods": [
+        {
+          "methodName": "estimateSendUserBalancer",
+          "methodDescription": "Normally used to estimate the fee to send a user balance across networks using native or LayerZero fees.",
+          "methodVariables": [
+            {
+              "name": "_dstChainId",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "getAdaptorParams",
+          "methodDescription": "Returns `_adapterParams` parameter used in `estimateSendUserBalance` and `sendUserBalance`.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "getUseZero",
+          "methodDescription": "Returns `_useZro` parameter used in `estimateSendUserBalance`.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "getZeroPaymentAddress",
+          "methodDescription": "Returns `_zroPaymentAddress` parameter used in `sendUserBalance`.",
+          "methodVariables": [
+      
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "sendUserBalance",
+          "methodDescription": "Forwards `sendUserBalance` call to omni voting escrow.",
+          "methodVariables": [
+            {
+              "name": "sendUserBalance",
+              "type": "payable(ether)"
+            },
+            {
+              "name": "_user",
+              "type": "address"
+            },
+            {
+              "name": "_dstchainId",
+              "type": "uint16"
+            },
+            {
+              "name": "_refundAddress",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "setAdapterParams",
+          "methodDescription": "Sets `_adapterParams` parameter for `estimateSendUserBalance` and `sendUserBalance` when forwarding calls.",
+          "methodVariables": [
+            {
+              "name": "adapterParams",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "setOmniVotingEscrow",
+          "methodDescription": "Sets omni voting escrow address. - This step is required before creating any remapping in the `VotingEscrowRemapper`. Omni voting escrow is not set in the constructor to avoid circular dependencies. Emits `OmniVotingEscrowUpdated` event.",
+          "methodVariables": [
+            {
+              "name": "OmniVotingEscrow",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "setUseZero",
+          "methodDescription": "Sets `_useZro` parameter for `estimateSendUserBalance` when forwarding calls.",
+          "methodVariables": [
+            {
+              "name": "useZro",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "methodName": "setZeroPaymentAddress",
+          "methodDescription": "Sets `_zroPaymentAddress` parameter for `sendUserBalance` when forwarding calls.",
+          "methodVariables": [
+            {
+              "name": "paymentAddress",
+              "type": "address"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0xE241C6e48CA045C7f631600a0f1403b2bFea05ad",
+      "title": "OmniVotingEscrow",
+      "description": " The OmniVotingEscrow contract is the hub for cross chain voting balances to be communicated in the veBAL system. For EOAs this works as a direct bridge, for contract wallets, the remapper and adaptor contracts are needed to properly communciate balances.",
+      "readMethods": [
+        {
+          "methodName": "estimateSendTotalBalancer",
+          "methodDescription": "Estimates the fee to send the total voting balance across networks using native or LayerZero fees.",
+          "methodVariables": [
+            {
+              "name": "_dstChainId",
+              "type": "uint256"
+            },
+            {
+              "name": "useZro",
+              "type": "bool"
+            },
+            {
+              "name": "adapterParams",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "lzEndpoint",
+          "methodDescription": "Returns the layer zero end point where the mainnet information is being sent to.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "minDstGasLookup",
+          "methodDescription": "Returns the minimum gas on a destination chain.",
+          "methodVariables": [
+            {
+              "name": "<input>",
+              "type": "uint16"
+            },
+            {
+              "name": "<input>",
+              "type": "uint16"
+            }
+          ]
+        },
+        {
+          "methodName": "owner",
+          "methodDescription": "Returns the owner address of the contract.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "trustedRemoteLookup",
+          "methodDescription": "Returns bytes of a trusted remote, related to the address and chain Id.",
+          "methodVariables": [
+            {
+              "name": "<input>",
+              "type": "uint16"
+            }
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "forceResumeReceive",
+          "methodDescription": "Forces the source chain Id and address to receive the streamed information. Used in the case of a pause of the receiving address.",
+          "methodVariables": [
+            {
+              "name": "_srcChainId",
+              "type": "uint16"
+            },
+            {
+              "name": "_srcAddress",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "lzReceive",
+          "methodDescription": "The LayerZero Endpoint sends a payload for a source address on source chain to send information to be receieved.",
+          "methodVariables": [
+            {
+              "name": "_srcChainId",
+              "type": "uint16"
+            },
+            {
+              "name": "_srcAddress",
+              "type": "bytes"
+            },
+            {
+              "name": "_nonce",
+              "type": "uint64"
+            },
+            {
+              "name": "_payload",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "nonblockingLzReceive",
+          "methodDescription": "Sends a payload for a source address on source chain to send information to be receieved. This acts as error catching, because failed messages block the channel. This is used for retrying failed interactions.",
+          "methodVariables": [
+            {
+              "name": "_srcChainId",
+              "type": "uint16"
+            },
+            {
+              "name": "_srcAddress",
+              "type": "bytes"
+            },
+            {
+              "name": "_nonce",
+              "type": "uint64"
+            },
+            {
+              "name": "_payload",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "renounceOwnership",
+          "methodDescription": "Connect wallet renounces ownership, in the case it is an owner.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "retryMessage",
+          "methodDescription": "Retries sending a message per the inputs. Assumes a failed message occurred.",
+          "methodVariables": [
+            {
+              "name": "retryMessage",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "_srcChainId",
+              "type": "uint16"
+            },
+            {
+              "name": "_srcAddress",
+              "type": "bytes"
+            },
+            {
+              "name": "_nonce",
+              "type": "uint64"
+            },
+            {
+              "name": "_payload",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "sendTotalSupply",
+          "methodDescription": "Sends total supply of voting escrow contract between networks to destination chain based on provided parameters.",
+          "methodVariables": [
+            {
+              "name": "sendTotalSupply",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "_dstChild",
+              "type": "uint16"
+            },
+            {
+              "name": "_refundAddress",
+              "type": "address"
+            },
+            {
+              "name": "_zroPaymentAddress",
+              "type": "address"
+            },
+            {
+              "name": "_adapterParams",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "sendUserBalance",
+          "methodDescription": "Sends user balance of voting escrow contract between networks to destination chain based on provided parameters.",
+          "methodVariables": [
+            {
+              "name": "sendUserBalance",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "_localUser",
+              "type": "address"
+            },
+            {
+              "name": "_dstChild",
+              "type": "uint16"
+            },
+            {
+              "name": "_refundAddress",
+              "type": "address"
+            },
+            {
+              "name": "_zroPaymentAddress",
+              "type": "address"
+            },
+            {
+              "name": "_adapterParams",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "setConfig",
+          "methodDescription": "Sets configuration for respective chain Id",
+          "methodVariables": [
+            {
+              "name": "version",
+              "type": "uint16"
+            },
+            {
+              "name": "_chainId",
+              "type": "uint16"
+            },
+            {
+              "name": "_configType",
+              "type": "uint256"
+            },
+            {
+              "name": "_config",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "setMinDstGas",
+          "methodDescription": "Sets the minimum gas to be used on a destination chain for bridging data.",
+          "methodVariables": [
+            {
+              "name": "_dstChainId",
+              "type": "uint16"
+            },
+            {
+              "name": "_packetType",
+              "type": "uint16"
+            },
+            {
+              "name": "_minGas",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "setPrecrime",
+          "methodDescription": "Sets precime, typically the 0x000 address",
+          "methodVariables": [
+            {
+              "name": "precrime",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "setReceiveVersion",
+          "methodDescription": "Sets the receive version for the sending and receiving contracts to validate between each other.",
+          "methodVariables": [
+            {
+              "name": "version",
+              "type": "uint16"
+            }
+          ]
+        },
+        {
+          "methodName": "setSendVersion",
+          "methodDescription": "Sets the send version for the sending and receiving contracts to validate between each other.",
+          "methodVariables": [
+            {
+              "name": "version",
+              "type": "uint16"
+            }
+          ]
+        },
+        {
+          "methodName": "setTrustedRemote",
+          "methodDescription": "Sets the the trusted remote, the remote is instrumental in each chain for handling each networks functionality.",
+          "methodVariables": [
+            {
+              "name": "_remoteChainId",
+              "type": "uint16"
+            },
+            {
+              "name": "_path",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "setTrustedRemoteAddress",
+          "methodDescription": "Sets the the trusted remote address, the remote address handles each networks functionality, based on the trusted remote.",
+          "methodVariables": [
+            {
+              "name": "_remoteChainId",
+              "type": "uint16"
+            },
+            {
+              "name": "_remoteAddress",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "transferOwnership",
+          "methodDescription": "Transfers ownership of the Omni Voting Escrow contract from the current to a new user.",
+          "methodVariables": [
+            {
+              "name": "newOwner",
+              "type": "address"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0xE241C6e48CA045C7f631600a0f1403b2bFea05ad",
+      "title": "VotingEscrowDelegationProxy",
+      "description": " The VotingEscrowDelegationProxy handles the delegation of veBAL between addresses. This permits the system to move to a new delegation mechanism if needed.",
+      "readMethods": [
+        {
+          "methodName": "adjustedBalanceOf",
+          "methodDescription": "Gets a users adjusted balance of veBAL including delegations,",
+          "methodVariables": [
+            {
+              "name": "user",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "adjusted_balance_of",
+          "methodDescription": "Gets a users adjusted balance of veBAL including delegations,",
+          "methodVariables": [
+            {
+              "name": "user",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "getDelegationImplementation",
+          "methodDescription": "Returns the current delegation implementation contract.",
+          "methodVariables": [
+
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "killDelegation",
+          "methodDescription": "Kills the current delegation implementation. For emergency use, and updating the system if need be.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "setDelegation",
+          "methodDescription": "Sets a new delegation implementation address",
+          "methodVariables": [
+            {
+              "name": "delegation",
+              "type": "address"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0x67F8DF125B796B05895a6dc8Ecf944b9556ecb0B",
+      "title": "veBoost - Boost Delegation v2",
+      "description": "The veBoost contract handles the boosting of user rewards when staking their liquidity positions in gauges to receive emissions. This contract also handles the delegations of boost between contracts.",
+      "readMethods": [
+        {
+          "methodName": "balanceOf",
+          "methodDescription": "Gets a users balance of veBAL",
+          "methodVariables": [
+            {
+              "name": "user",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "adjusted_balance_of",
+          "methodDescription": "Gets a users adjusted balance of veBAL including delegations",
+          "methodVariables": [
+            {
+              "name": "user",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "totalSupply",
+          "methodDescription": "Returns the current total supply of veBAL",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "delegated_balance",
+          "methodDescription": "Returns the amount of veBAL a user has delegated to others.",
+          "methodVariables": [
+            {
+              "name": "user",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "recevied_balance",
+          "methodDescription": "Returns the amount of veBAL a user has delegated to them from others.",
+          "methodVariables": [
+            {
+              "name": "user",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "delegable_balance",
+          "methodDescription": "Returns the amount of veBAL a user can delegate to others.",
+          "methodVariables": [
+            {
+              "name": "user",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "migrated",
+          "methodDescription": "Returns true or false if a delegation code has been migrated from v1 to this contract, v2.",
+          "methodVariables": [
+            {
+              "name": "arg0",
+              "type": "uint256"
+            }
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "boost",
+          "methodDescription": "Delegates veBAL from the writing address to a designated address.",
+          "methodVariables": [
+            {
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "name": "_amount",
+              "type": "uint256"
+            },
+            {
+              "name": "_endtime",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "boost",
+          "methodDescription": "Delegates veBAL from the writing address to a designated address.",
+          "methodVariables": [
+            {
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "name": "_amount",
+              "type": "uint256"
+            },
+            {
+              "name": "_endtime",
+              "type": "uint256"
+            },
+            {
+              "name": "_from",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "migrate",
+          "methodDescription": "Migrates a delegation from v1 veBoost to this contract, v2. ",
+          "methodVariables": [
+            {
+              "name": "_token_id",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "migrate_many",
+          "methodDescription": "Migrates multiple delegation from v1 veBoost to this contract, v2. ",
+          "methodVariables": [
+            {
+              "name": "_token_id",
+              "type": "uint256[]"
+            }
+          ]
+        },
+        {
+          "methodName": "checkpoint_user",
+          "methodDescription": "Checkpoints a user to ensure their veBAL delegation is properly counted in the system.",
+          "methodVariables": [
+            {
+              "name": "_user",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "approve",
+          "methodDescription": "Approves another contract address to spend, or utilize the write addresses veBAL.",
+          "methodVariables": [
+            {
+              "name": "_spender",
+              "type": "address"
+            },
+            {
+              "name": "_value",
+              "type": "uint256"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
