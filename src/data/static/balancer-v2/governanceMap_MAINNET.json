@@ -877,20 +877,15 @@
     {
       "id": "0xC128a9954e6c874eA3d62ce62B468bA073093F25",
       "title": "veBAL",
-      "description": "veBAL is the foundation of Balancer's tokenomics and governance structure. It is compromised of a 80BAL/20WETH Liquidity pool tokens, locked for a period from 1-52 weeks. Longer locks results in higher stake.",
+      "description": "veBAL is the foundation of Balancer's tokenomics and governance structure. It is compromised of an 80BAL/20WETH Liquidity pool tokens, locked for a period from 1-52 weeks. Longer locks result in higher stakes.",
       "readMethods": [
         {
           "methodName": "token",
-          "methodDescription": "Returns the underlying token used for locking. In this case 80/20 BAL/WETH",
-          "methodVariables": [
-            {
-              "name": "None",
-              "type": "None"
-            }
-          ]
+          "methodDescription": "Returns the underlying token used for locking. In this case, 80/20 BAL/WETH",
+          "methodVariables": []
         },
         {
-          "methodName": "locked  end",
+          "methodName": "locked_end",
           "methodDescription": "Returns a timestamp in uint256 for when a user's lock period will end.",
           "methodVariables": [
             {
@@ -901,17 +896,7 @@
         },
         {
           "methodName": "balanceOf",
-          "methodDescription": "Returns a user's balance at current time, two similar functions be used for specific a timestamp or block.",
-          "methodVariables": [
-            {
-              "name": "addr",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "methodName": "balanceOf",
-          "methodDescription": "Returns a user's balance at current time, two similar functions be used for specific a timestamp or block.",
+          "methodDescription": "Returns a user's balance at the current time. Two similar functions can be used for specifying a timestamp or block.",
           "methodVariables": [
             {
               "name": "addr",
@@ -921,17 +906,12 @@
         },
         {
           "methodName": "totalSupply",
-          "methodDescription": "Returns a token circulating supply of veBAL at current time, two similar functions be used for specific a timestamp or block.",
-          "methodVariables": [
-            {
-              "name": "None",
-              "type": "None"
-            }
-          ]
+          "methodDescription": "Returns a token circulating supply of veBAL at the current time. Two similar functions can be used for specifying a timestamp or block.",
+          "methodVariables": []
         },
         {
           "methodName": "locked",
-          "methodDescription": "Returns a tuple of a users current locked balance and the end of their lock.",
+          "methodDescription": "Returns a tuple of a user's current locked balance and the end of their lock.",
           "methodVariables": [
             {
               "name": "arg",
@@ -942,26 +922,8 @@
       ],
       "writeMethods": [
         {
-          "methodName": "commit smart wallet checker",
+          "methodName": "commit_smart_wallet_checker",
           "methodDescription": "Tells the veBAL system which contract will be used for the Smart Wallet Checking function.",
-          "methodVariables": [
-            {
-              "name": "addr",
-              "type": "address"
-            },
-            {
-              "methodName": "apply smart wallet checker",
-              "methodDescription": "Updates the smart wallet checker from the previous contract to the newly committed address.",
-              "methodVariables": [
-                {
-                  "name": "None",
-                  "type": "None"
-                }
-          ]
-        },
-        {
-          "methodName": "checkpoint",
-          "methodDescription": "Checkpoints the system for to update voting balances across the users.",
           "methodVariables": [
             {
               "name": "addr",
@@ -970,7 +932,27 @@
           ]
         },
         {
-          "methodName": "create lock",
+          "methodName": "apply_smart_wallet_checker",
+          "methodDescription": "Updates the smart wallet checker from the previous contract to the newly committed address.",
+          "methodVariables": [
+            {
+              "name": "None",
+              "type": "None"
+            }
+          ]
+        },
+        {
+          "methodName": "checkpoint",
+          "methodDescription": "Checkpoints the system to update voting balances across the users.",
+          "methodVariables": [
+            {
+              "name": "addr",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "create_lock",
           "methodDescription": "Creates a new lock, converting 80BAL/20WETH to veBAL based on time.",
           "methodVariables": [
             {
@@ -978,13 +960,13 @@
               "type": "uint256"
             },
             {
-              "name": "unlock time",
+              "name": "unlock_time",
               "type": "uint256"
             }
           ]
         },
         {
-          "methodName": "increaseamount",
+          "methodName": "increaseAmount",
           "methodDescription": "Increases the amount of tokens in your lock, requires a user to have more unlocked 80BAL/20WETH tokens to add.",
           "methodVariables": [
             {
@@ -994,11 +976,11 @@
           ]
         },
         {
-          "methodName": "increase unlock time",
-          "methodDescription": "Increases the lock time of currently locked tokens, to increase a user's veBAL balance.",
+          "methodName": "increase_unlock_time",
+          "methodDescription": "Increases the lock time of currently locked tokens to increase a user's veBAL balance.",
           "methodVariables": [
             {
-              "name": "unlock time",
+              "name": "unlock_time",
               "type": "uint256"
             }
           ]
@@ -1012,9 +994,8 @@
               "type": "None"
             }
           ]
-        } 
+        }
       ]
-    }]
     },
     {
       "id": "0x7869296Efd0a76872fEE62A058C8fBca5c1c826C",
