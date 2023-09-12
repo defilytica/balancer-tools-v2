@@ -78,7 +78,16 @@
         }
       ],
       "writeMethods": [
-
+        {
+          "methodName": "None",
+          "methodDescription": "None",
+          "methodVariables":[
+            {
+              "name": "None",
+              "type": "None"
+            }
+          ]
+        }
       ]
     },
     {
@@ -99,7 +108,7 @@
               "type": "address"
             },
             {
-              "name": "<input>",
+              "name": "input",
               "type": "address"
             }
           ]
@@ -260,7 +269,7 @@
       "description": "This contract is intended to act as an adaptor between systems which expect a single admin address and the Balancer Authorizer such that the Authorizer may grant/revoke admin powers to unlimited addresses. The permissions the Authorizer can grant are granular such they may be global or specific to a particular contract. When calculating the actionId to call a function on a target contract, it must be calculated as if it were to be called on this adaptor. This can be done by passing the function selector to the `getActionId` function.",
       "readMethods": [
         {
-          "methodName": "getActionId ",
+          "methodName": "getActionId",
           "methodDescription": "Passes a action id to return the authorizer bytes32",
           "methodVariables": [
             {
@@ -277,7 +286,7 @@
           "methodVariables": [
             {
               "name": "performAction",
-              "type": "payableAmount(ether)"
+              "type": "payableAmount"
             },
             {
               "name": "target",
@@ -309,7 +318,7 @@
               "type": "address"
             },
             {
-              "name": "<input>",
+              "name": "input",
               "type": "address"
             }
           ]
@@ -322,7 +331,7 @@
           "methodVariables": [
             {
               "name": "performAction",
-              "type": "payableAmount(ether)"
+              "type": "payableAmount"
             },
             {
               "name": "target",
@@ -454,12 +463,20 @@
           "methodName": "getFlashLoanPercentage",
           "methodDescription": "Returns protocol fee on flash loans.",
           "methodVariables": [
+            {
+              "name": "None",
+              "type": "None"
+            }
           ]
         },
         {
           "methodName": "getSwapFeePercentage",
           "methodDescription": "Returns protocol fee on swaps.",
           "methodVariables": [
+            {
+              "name": "None",
+              "type": "None"
+            }
           ]
         }
       ],
@@ -523,6 +540,10 @@
           "methodName": "getDenyListTokenLength",
           "methodDescription": "Returns the length of the denylist. ",
           "methodVariables": [
+            {
+              "name": "None",
+              "type": "None"
+            }
           ]
         },
         {
@@ -592,10 +613,28 @@
       "title": "Mimic SmartVault",
       "description": "This smart vault from Mimic automates the withdrawing of protocol fees through the protocol fee withdrawer, from the protocol fee collector. Then sells non-BAL tokens for USDC and sends them to the protcol fee multisig.",
       "readMethods": [
-
+        {
+          "methodName": "None",
+          "methodDescription": "None",
+          "methodVariables":[
+            {
+              "name": "None",
+              "type": "None"
+            }
+          ]
+        }
       ],
       "writeMethods": [
-
+        {
+          "methodName": "None",
+          "methodDescription": "None",
+          "methodVariables":[
+            {
+              "name": "None",
+              "type": "None"
+            }
+          ]
+        }
       ]
     },
     {
@@ -603,10 +642,28 @@
       "title": "Protocol Fee Multisig",
       "description": "The protocol fee multisigs core purpose is to take protocol fees and distribute them to the treasury, veBAL holders, and core pool incentives.",
       "readMethods": [
-
+        {
+          "methodName": "None",
+          "methodDescription": "None",
+          "methodVariables":[
+            {
+              "name": "None",
+              "type": "None"
+            }
+          ]
+        }
       ],
       "writeMethods": [
-
+        {
+          "methodName": "None",
+          "methodDescription": "None",
+          "methodVariables":[
+            {
+              "name": "None",
+              "type": "None"
+            }
+          ]
+        }
       ]
     },
     {
@@ -617,26 +674,38 @@
         {
         "methodName": "FeeDistributor",
         "methodDescription": "Returns the FeeDistributor address",
-        "methodVariables": [
+        "methodVariables": [        {
+          "name": "None",
+          "type": "None"
+        }
        ]
       },
       {
       "methodName": "getTokens",
       "methodDescription": "Returns tokens veBAL holders receive",
-      "methodVariables": [
+      "methodVariables": [        {
+        "name": "None",
+        "type": "None"
+      }
       ]}],
 
       "writeMethods": [
         {
           "methodName": "acceptOwnership",
           "methodDescription": "Write by new owner to accept change of ownership",
-          "methodVariables": [
+          "methodVariables": [        {
+            "name": "None",
+            "type": "None"
+          }
           ]
         },
         {
           "methodName": "pause",
           "methodDescription": "Pauses the injection of fees until unpaused.",
-          "methodVariables": [
+          "methodVariables": [        {
+            "name": "None",
+            "type": "None"
+          }
           ]
         },
           {
@@ -653,7 +722,7 @@
           "methodDescription": "Sets the keeper registry address",
           "methodVariables": [
         {
-          "name": "_keeperRegistry",
+          "name": "keeperRegistry",
           "type": "address"
         }
       ]},
@@ -701,7 +770,10 @@
           "methodName": "checkpoint",
           "methodDescription": "Caches the total supply of veBAL at the beginning of each week. This function will be called automatically before claiming tokens to ensure the contract is properly updated.",
           "methodVariables": [
-
+            {
+              "name": "None",
+              "type": "None"
+            }
           ]
         },
         {
@@ -811,15 +883,18 @@
           "methodName": "token",
           "methodDescription": "Returns the underlying token used for locking. In this case 80/20 BAL/WETH",
           "methodVariables": [
-
+            {
+              "name": "None",
+              "type": "None"
+            }
           ]
         },
         {
-          "methodName": "locked__end",
+          "methodName": "locked  end",
           "methodDescription": "Returns a timestamp in uint256 for when a user's lock period will end.",
           "methodVariables": [
             {
-              "name": "_addr",
+              "name": "addr",
               "type": "address"
             }
           ]
@@ -848,7 +923,10 @@
           "methodName": "totalSupply",
           "methodDescription": "Returns a token circulating supply of veBAL at current time, two similar functions be used for specific a timestamp or block.",
           "methodVariables": [
-
+            {
+              "name": "None",
+              "type": "None"
+            }
           ]
         },
         {
@@ -856,7 +934,7 @@
           "methodDescription": "Returns a tuple of a users current locked balance and the end of their lock.",
           "methodVariables": [
             {
-              "name": "arg0",
+              "name": "arg",
               "type": "address"
             }
           ]
@@ -864,7 +942,7 @@
       ],
       "writeMethods": [
         {
-          "methodName": "commit_smart_wallet_checker",
+          "methodName": "commit smart wallet checker",
           "methodDescription": "Tells the veBAL system which contract will be used for the Smart Wallet Checking function.",
           "methodVariables": [
             {
@@ -872,10 +950,13 @@
               "type": "address"
             },
             {
-              "methodName": "apply_smart_wallet_checker",
+              "methodName": "apply smart wallet checker",
               "methodDescription": "Updates the smart wallet checker from the previous contract to the newly committed address.",
               "methodVariables": [
-
+                {
+                  "name": "None",
+                  "type": "None"
+                }
           ]
         },
         {
@@ -889,35 +970,35 @@
           ]
         },
         {
-          "methodName": "create_lock",
+          "methodName": "create lock",
           "methodDescription": "Creates a new lock, converting 80BAL/20WETH to veBAL based on time.",
           "methodVariables": [
             {
-              "name": "_value",
+              "name": "value",
               "type": "uint256"
             },
             {
-              "name": "_unlock_time",
+              "name": "unlock time",
               "type": "uint256"
             }
           ]
         },
         {
-          "methodName": "increase_amount",
+          "methodName": "increaseamount",
           "methodDescription": "Increases the amount of tokens in your lock, requires a user to have more unlocked 80BAL/20WETH tokens to add.",
           "methodVariables": [
             {
-              "name": "_value",
+              "name": "value",
               "type": "uint256"
             }
           ]
         },
         {
-          "methodName": "increase_unlock_time",
+          "methodName": "increase unlock time",
           "methodDescription": "Increases the lock time of currently locked tokens, to increase a user's veBAL balance.",
           "methodVariables": [
             {
-              "name": "_unlock_time",
+              "name": "unlock time",
               "type": "uint256"
             }
           ]
@@ -926,7 +1007,10 @@
           "methodName": "withdraw",
           "methodDescription": "Withdraws 80BAL/20WETH tokens from the vote escrow locking contract, only used when a lock duration ends.",
           "methodVariables": [
-      
+            {
+              "name": "None",
+              "type": "None"
+            }
           ]
         } 
       ]
@@ -1028,7 +1112,10 @@
           "methodName": "getVotingEscorew",
           "methodDescription": "Returns the address of the voting escrow token used in the system, veBAL",
           "methodVariables": [
-      
+            {
+              "name": "None",
+              "type": "None"
+            }
           ]
         }
       ],
@@ -1039,7 +1126,7 @@
           "methodVariables": [
             {
               "name": "clearNetworkRemapping",
-              "type": "payable(ether)"
+              "type": "payable"
             },
             {
               "name": "localUser",
@@ -1057,7 +1144,7 @@
           "methodVariables": [
             {
               "name": "setNetworkRemapping",
-              "type": "payable(ether)"
+              "type": "payable"
             },
             {
               "name": "localUser",
@@ -1099,30 +1186,39 @@
           "methodDescription": "Normally used to estimate the fee to send a user balance across networks using native or LayerZero fees.",
           "methodVariables": [
             {
-              "name": "_dstChainId",
+              "name": "dstChainId",
               "type": "uint256"
             }
           ]
         },
         {
           "methodName": "getAdaptorParams",
-          "methodDescription": "Returns `_adapterParams` parameter used in `estimateSendUserBalance` and `sendUserBalance`.",
+          "methodDescription": "Returns `adapterParams` parameter used in `estimateSendUserBalance` and `sendUserBalance`.",
           "methodVariables": [
-
+            {
+              "name": "None",
+              "type": "None"
+            }
           ]
         },
         {
           "methodName": "getUseZero",
-          "methodDescription": "Returns `_useZro` parameter used in `estimateSendUserBalance`.",
+          "methodDescription": "Returns ` useZro` parameter used in `estimateSendUserBalance`.",
           "methodVariables": [
-
+            {
+              "name": "None",
+              "type": "None"
+            }
           ]
         },
         {
           "methodName": "getZeroPaymentAddress",
-          "methodDescription": "Returns `_zroPaymentAddress` parameter used in `sendUserBalance`.",
+          "methodDescription": "Returns `zroPaymentAddress` parameter used in `sendUserBalance`.",
           "methodVariables": [
-      
+            {
+              "name": "None",
+              "type": "None"
+            }
           ]
         }
       ],
@@ -1133,25 +1229,25 @@
           "methodVariables": [
             {
               "name": "sendUserBalance",
-              "type": "payable(ether)"
+              "type": "payable"
             },
             {
-              "name": "_user",
+              "name": "user",
               "type": "address"
             },
             {
-              "name": "_dstchainId",
+              "name": "dstChainId",
               "type": "uint16"
             },
             {
-              "name": "_refundAddress",
+              "name": "refundAddress",
               "type": "address"
             }
           ]
         },
         {
           "methodName": "setAdapterParams",
-          "methodDescription": "Sets `_adapterParams` parameter for `estimateSendUserBalance` and `sendUserBalance` when forwarding calls.",
+          "methodDescription": "Sets `adapterParams` parameter for `estimateSendUserBalance` and `sendUserBalance` when forwarding calls.",
           "methodVariables": [
             {
               "name": "adapterParams",
@@ -1171,7 +1267,7 @@
         },
         {
           "methodName": "setUseZero",
-          "methodDescription": "Sets `_useZro` parameter for `estimateSendUserBalance` when forwarding calls.",
+          "methodDescription": "Sets ` useZro` parameter for `estimateSendUserBalance` when forwarding calls.",
           "methodVariables": [
             {
               "name": "useZro",
@@ -1181,7 +1277,7 @@
         },
         {
           "methodName": "setZeroPaymentAddress",
-          "methodDescription": "Sets `_zroPaymentAddress` parameter for `sendUserBalance` when forwarding calls.",
+          "methodDescription": "Sets `zroPaymentAddress` parameter for `sendUserBalance` when forwarding calls.",
           "methodVariables": [
             {
               "name": "paymentAddress",
@@ -1201,7 +1297,7 @@
           "methodDescription": "Estimates the fee to send the total voting balance across networks using native or LayerZero fees.",
           "methodVariables": [
             {
-              "name": "_dstChainId",
+              "name": "dstChainId",
               "type": "uint256"
             },
             {
@@ -1218,7 +1314,10 @@
           "methodName": "lzEndpoint",
           "methodDescription": "Returns the layer zero end point where the mainnet information is being sent to.",
           "methodVariables": [
-
+            {
+              "name": "None",
+              "type": "None"
+            }
           ]
         },
         {
@@ -1226,11 +1325,11 @@
           "methodDescription": "Returns the minimum gas on a destination chain.",
           "methodVariables": [
             {
-              "name": "<input>",
+              "name": "input",
               "type": "uint16"
             },
             {
-              "name": "<input>",
+              "name": "input",
               "type": "uint16"
             }
           ]
@@ -1239,7 +1338,10 @@
           "methodName": "owner",
           "methodDescription": "Returns the owner address of the contract.",
           "methodVariables": [
-
+            {
+              "name": "None",
+              "type": "None"
+            }
           ]
         },
         {
@@ -1247,7 +1349,7 @@
           "methodDescription": "Returns bytes of a trusted remote, related to the address and chain Id.",
           "methodVariables": [
             {
-              "name": "<input>",
+              "name": "input",
               "type": "uint16"
             }
           ]
@@ -1259,11 +1361,11 @@
           "methodDescription": "Forces the source chain Id and address to receive the streamed information. Used in the case of a pause of the receiving address.",
           "methodVariables": [
             {
-              "name": "_srcChainId",
+              "name": "srcChainId",
               "type": "uint16"
             },
             {
-              "name": "_srcAddress",
+              "name": "srcAddress",
               "type": "bytes"
             }
           ]
@@ -1273,19 +1375,19 @@
           "methodDescription": "The LayerZero Endpoint sends a payload for a source address on source chain to send information to be receieved.",
           "methodVariables": [
             {
-              "name": "_srcChainId",
+              "name": "srcChainId",
               "type": "uint16"
             },
             {
-              "name": "_srcAddress",
+              "name": "srcAddress",
               "type": "bytes"
             },
             {
-              "name": "_nonce",
+              "name": "nonce",
               "type": "uint64"
             },
             {
-              "name": "_payload",
+              "name": "payload",
               "type": "bytes"
             }
           ]
@@ -1295,19 +1397,19 @@
           "methodDescription": "Sends a payload for a source address on source chain to send information to be receieved. This acts as error catching, because failed messages block the channel. This is used for retrying failed interactions.",
           "methodVariables": [
             {
-              "name": "_srcChainId",
+              "name": "srcChainId",
               "type": "uint16"
             },
             {
-              "name": "_srcAddress",
+              "name": "srcAddress",
               "type": "bytes"
             },
             {
-              "name": "_nonce",
+              "name": "nonce",
               "type": "uint64"
             },
             {
-              "name": "_payload",
+              "name": "payload",
               "type": "bytes"
             }
           ]
@@ -1316,7 +1418,10 @@
           "methodName": "renounceOwnership",
           "methodDescription": "Connect wallet renounces ownership, in the case it is an owner.",
           "methodVariables": [
-
+            {
+              "name": "None",
+              "type": "None"
+            }
           ]
         },
         {
@@ -1325,22 +1430,22 @@
           "methodVariables": [
             {
               "name": "retryMessage",
-              "type": "payableAmount(ether)"
+              "type": "payableAmount"
             },
             {
-              "name": "_srcChainId",
+              "name": "srcChainId",
               "type": "uint16"
             },
             {
-              "name": "_srcAddress",
+              "name": "srcAddress",
               "type": "bytes"
             },
             {
-              "name": "_nonce",
+              "name": "nonce",
               "type": "uint64"
             },
             {
-              "name": "_payload",
+              "name": "payload",
               "type": "bytes"
             }
           ]
@@ -1351,22 +1456,22 @@
           "methodVariables": [
             {
               "name": "sendTotalSupply",
-              "type": "payableAmount(ether)"
+              "type": "payableAmount"
             },
             {
-              "name": "_dstChild",
+              "name": "dstChild",
               "type": "uint16"
             },
             {
-              "name": "_refundAddress",
+              "name": "refundAddress",
               "type": "address"
             },
             {
-              "name": "_zroPaymentAddress",
+              "name": "zroPaymentAddress",
               "type": "address"
             },
             {
-              "name": "_adapterParams",
+              "name": "adapterParams",
               "type": "bytes"
             }
           ]
@@ -1377,26 +1482,26 @@
           "methodVariables": [
             {
               "name": "sendUserBalance",
-              "type": "payableAmount(ether)"
+              "type": "payableAmount"
             },
             {
-              "name": "_localUser",
+              "name": "localUser",
               "type": "address"
             },
             {
-              "name": "_dstChild",
+              "name": "dstChild",
               "type": "uint16"
             },
             {
-              "name": "_refundAddress",
+              "name": "refundAddress",
               "type": "address"
             },
             {
-              "name": "_zroPaymentAddress",
+              "name": "zroPaymentAddress",
               "type": "address"
             },
             {
-              "name": "_adapterParams",
+              "name": "adapterParams",
               "type": "bytes"
             }
           ]
@@ -1410,15 +1515,15 @@
               "type": "uint16"
             },
             {
-              "name": "_chainId",
+              "name": "chainId",
               "type": "uint16"
             },
             {
-              "name": "_configType",
+              "name": "configType",
               "type": "uint256"
             },
             {
-              "name": "_config",
+              "name": "config",
               "type": "bytes"
             }
           ]
@@ -1428,15 +1533,15 @@
           "methodDescription": "Sets the minimum gas to be used on a destination chain for bridging data.",
           "methodVariables": [
             {
-              "name": "_dstChainId",
+              "name": "dstChainId",
               "type": "uint16"
             },
             {
-              "name": "_packetType",
+              "name": "packetType",
               "type": "uint16"
             },
             {
-              "name": "_minGas",
+              "name": "minGas",
               "type": "uint256"
             }
           ]
@@ -1476,11 +1581,11 @@
           "methodDescription": "Sets the the trusted remote, the remote is instrumental in each chain for handling each networks functionality.",
           "methodVariables": [
             {
-              "name": "_remoteChainId",
+              "name": "remoteChainId",
               "type": "uint16"
             },
             {
-              "name": "_path",
+              "name": "path",
               "type": "bytes"
             }
           ]
@@ -1490,11 +1595,11 @@
           "methodDescription": "Sets the the trusted remote address, the remote address handles each networks functionality, based on the trusted remote.",
           "methodVariables": [
             {
-              "name": "_remoteChainId",
+              "name": "remoteChainId",
               "type": "uint16"
             },
             {
-              "name": "_remoteAddress",
+              "name": "remoteAddress",
               "type": "bytes"
             }
           ]
@@ -1527,7 +1632,7 @@
           ]
         },
         {
-          "methodName": "adjusted_balance_of",
+          "methodName": "adjusted balance of",
           "methodDescription": "Gets a users adjusted balance of veBAL including delegations,",
           "methodVariables": [
             {
@@ -1540,7 +1645,10 @@
           "methodName": "getDelegationImplementation",
           "methodDescription": "Returns the current delegation implementation contract.",
           "methodVariables": [
-
+            {
+              "name": "None",
+              "type": "None"
+            }
           ]
         }
       ],
@@ -1549,7 +1657,10 @@
           "methodName": "killDelegation",
           "methodDescription": "Kills the current delegation implementation. For emergency use, and updating the system if need be.",
           "methodVariables": [
-
+            {
+              "name": "None",
+              "type": "None"
+            }
           ]
         },
         {
@@ -1580,7 +1691,7 @@
           ]
         },
         {
-          "methodName": "adjusted_balance_of",
+          "methodName": "adjusted balance of",
           "methodDescription": "Gets a users adjusted balance of veBAL including delegations",
           "methodVariables": [
             {
@@ -1597,7 +1708,7 @@
           ]
         },
         {
-          "methodName": "delegated_balance",
+          "methodName": "delegated balance",
           "methodDescription": "Returns the amount of veBAL a user has delegated to others.",
           "methodVariables": [
             {
@@ -1607,7 +1718,7 @@
           ]
         },
         {
-          "methodName": "recevied_balance",
+          "methodName": "recevied balance",
           "methodDescription": "Returns the amount of veBAL a user has delegated to them from others.",
           "methodVariables": [
             {
@@ -1617,7 +1728,7 @@
           ]
         },
         {
-          "methodName": "delegable_balance",
+          "methodName": "delegable balance",
           "methodDescription": "Returns the amount of veBAL a user can delegate to others.",
           "methodVariables": [
             {
@@ -1631,7 +1742,7 @@
           "methodDescription": "Returns true or false if a delegation code has been migrated from v1 to this contract, v2.",
           "methodVariables": [
             {
-              "name": "arg0",
+              "name": "arg",
               "type": "uint256"
             }
           ]
@@ -1643,15 +1754,15 @@
           "methodDescription": "Delegates veBAL from the writing address to a designated address.",
           "methodVariables": [
             {
-              "name": "_to",
+              "name": "to",
               "type": "address"
             },
             {
-              "name": "_amount",
+              "name": "amount",
               "type": "uint256"
             },
             {
-              "name": "_endtime",
+              "name": "endtime",
               "type": "uint256"
             }
           ]
@@ -1661,19 +1772,19 @@
           "methodDescription": "Delegates veBAL from the writing address to a designated address.",
           "methodVariables": [
             {
-              "name": "_to",
+              "name": "to",
               "type": "address"
             },
             {
-              "name": "_amount",
+              "name": "amount",
               "type": "uint256"
             },
             {
-              "name": "_endtime",
+              "name": "endtime",
               "type": "uint256"
             },
             {
-              "name": "_from",
+              "name": "from",
               "type": "address"
             }
           ]
@@ -1683,27 +1794,27 @@
           "methodDescription": "Migrates a delegation from v1 veBoost to this contract, v2. ",
           "methodVariables": [
             {
-              "name": "_token_id",
+              "name": "token id",
               "type": "uint256"
             }
           ]
         },
         {
-          "methodName": "migrate_many",
+          "methodName": "migrate many",
           "methodDescription": "Migrates multiple delegation from v1 veBoost to this contract, v2. ",
           "methodVariables": [
             {
-              "name": "_token_id",
+              "name": "token id",
               "type": "uint256[]"
             }
           ]
         },
         {
-          "methodName": "checkpoint_user",
+          "methodName": "checkpointuser",
           "methodDescription": "Checkpoints a user to ensure their veBAL delegation is properly counted in the system.",
           "methodVariables": [
             {
-              "name": "_user",
+              "name": "user",
               "type": "address"
             }
           ]
@@ -1713,11 +1824,11 @@
           "methodDescription": "Approves another contract address to spend, or utilize the write addresses veBAL.",
           "methodVariables": [
             {
-              "name": "_spender",
+              "name": "spender",
               "type": "address"
             },
             {
-              "name": "_value",
+              "name": "value",
               "type": "uint256"
             }
           ]
