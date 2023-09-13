@@ -79,12 +79,12 @@
       ],
       "writeMethods": [
         {
-          "methodName": "None",
-          "methodDescription": "None",
+          "methodName": "",
+          "methodDescription": "",
           "methodVariables":[
             {
-              "name": "None",
-              "type": "None"
+              "name": "",
+              "type": ""
             }
           ]
         }
@@ -464,8 +464,8 @@
           "methodDescription": "Returns protocol fee on flash loans.",
           "methodVariables": [
             {
-              "name": "None",
-              "type": "None"
+              "name": "",
+              "type": ""
             }
           ]
         },
@@ -474,8 +474,8 @@
           "methodDescription": "Returns protocol fee on swaps.",
           "methodVariables": [
             {
-              "name": "None",
-              "type": "None"
+              "name": "",
+              "type": ""
             }
           ]
         }
@@ -541,8 +541,8 @@
           "methodDescription": "Returns the length of the denylist. ",
           "methodVariables": [
             {
-              "name": "None",
-              "type": "None"
+              "name": "",
+              "type": ""
             }
           ]
         },
@@ -614,24 +614,24 @@
       "description": "This smart vault from Mimic automates the withdrawing of protocol fees through the protocol fee withdrawer, from the protocol fee collector. Then sells non-BAL tokens for USDC and sends them to the protcol fee multisig.",
       "readMethods": [
         {
-          "methodName": "None",
-          "methodDescription": "None",
+          "methodName": "",
+          "methodDescription": "",
           "methodVariables":[
             {
-              "name": "None",
-              "type": "None"
+              "name": "",
+              "type": ""
             }
           ]
         }
       ],
       "writeMethods": [
         {
-          "methodName": "None",
-          "methodDescription": "None",
+          "methodName": "",
+          "methodDescription": "",
           "methodVariables":[
             {
-              "name": "None",
-              "type": "None"
+              "name": "",
+              "type": ""
             }
           ]
         }
@@ -643,24 +643,24 @@
       "description": "The protocol fee multisigs core purpose is to take protocol fees and distribute them to the treasury, veBAL holders, and core pool incentives.",
       "readMethods": [
         {
-          "methodName": "None",
-          "methodDescription": "None",
+          "methodName": "",
+          "methodDescription": "",
           "methodVariables":[
             {
-              "name": "None",
-              "type": "None"
+              "name": "",
+              "type": ""
             }
           ]
         }
       ],
       "writeMethods": [
         {
-          "methodName": "None",
-          "methodDescription": "None",
+          "methodName": "",
+          "methodDescription": "",
           "methodVariables":[
             {
-              "name": "None",
-              "type": "None"
+              "name": "",
+              "type": ""
             }
           ]
         }
@@ -675,8 +675,8 @@
         "methodName": "FeeDistributor",
         "methodDescription": "Returns the FeeDistributor address",
         "methodVariables": [        {
-          "name": "None",
-          "type": "None"
+          "name": "",
+          "type": ""
         }
        ]
       },
@@ -684,8 +684,8 @@
       "methodName": "getTokens",
       "methodDescription": "Returns tokens veBAL holders receive",
       "methodVariables": [        {
-        "name": "None",
-        "type": "None"
+        "name": "",
+        "type": ""
       }
       ]}],
 
@@ -694,8 +694,8 @@
           "methodName": "acceptOwnership",
           "methodDescription": "Write by new owner to accept change of ownership",
           "methodVariables": [        {
-            "name": "None",
-            "type": "None"
+            "name": "",
+            "type": ""
           }
           ]
         },
@@ -703,8 +703,8 @@
           "methodName": "pause",
           "methodDescription": "Pauses the injection of fees until unpaused.",
           "methodVariables": [        {
-            "name": "None",
-            "type": "None"
+            "name": "",
+            "type": ""
           }
           ]
         },
@@ -771,8 +771,8 @@
           "methodDescription": "Caches the total supply of veBAL at the beginning of each week. This function will be called automatically before claiming tokens to ensure the contract is properly updated.",
           "methodVariables": [
             {
-              "name": "None",
-              "type": "None"
+              "name": "",
+              "type": ""
             }
           ]
         },
@@ -936,8 +936,8 @@
           "methodDescription": "Updates the smart wallet checker from the previous contract to the newly committed address.",
           "methodVariables": [
             {
-              "name": "None",
-              "type": "None"
+              "name": "",
+              "type": ""
             }
           ]
         },
@@ -990,8 +990,8 @@
           "methodDescription": "Withdraws 80BAL/20WETH tokens from the vote escrow locking contract, only used when a lock duration ends.",
           "methodVariables": [
             {
-              "name": "None",
-              "type": "None"
+              "name": "",
+              "type": ""
             }
           ]
         }
@@ -1094,8 +1094,8 @@
           "methodDescription": "Returns the address of the voting escrow token used in the system, veBAL",
           "methodVariables": [
             {
-              "name": "None",
-              "type": "None"
+              "name": "",
+              "type": ""
             }
           ]
         }
@@ -1177,8 +1177,8 @@
           "methodDescription": "Returns `adapterParams` parameter used in `estimateSendUserBalance` and `sendUserBalance`.",
           "methodVariables": [
             {
-              "name": "None",
-              "type": "None"
+              "name": "",
+              "type": ""
             }
           ]
         },
@@ -1187,8 +1187,8 @@
           "methodDescription": "Returns ` useZro` parameter used in `estimateSendUserBalance`.",
           "methodVariables": [
             {
-              "name": "None",
-              "type": "None"
+              "name": "",
+              "type": ""
             }
           ]
         },
@@ -1197,8 +1197,8 @@
           "methodDescription": "Returns `zroPaymentAddress` parameter used in `sendUserBalance`.",
           "methodVariables": [
             {
-              "name": "None",
-              "type": "None"
+              "name": "",
+              "type": ""
             }
           ]
         }
@@ -1296,8 +1296,8 @@
           "methodDescription": "Returns the layer zero end point where the mainnet information is being sent to.",
           "methodVariables": [
             {
-              "name": "None",
-              "type": "None"
+              "name": "",
+              "type": ""
             }
           ]
         },
@@ -1320,8 +1320,8 @@
           "methodDescription": "Returns the owner address of the contract.",
           "methodVariables": [
             {
-              "name": "None",
-              "type": "None"
+              "name": "",
+              "type": ""
             }
           ]
         },
@@ -1397,11 +1397,11 @@
         },
         {
           "methodName": "renounceOwnership",
-          "methodDescription": "Connect wallet renounces ownership, in the case it is an owner.",
+          "methodDescription": "Connected wallet renounces ownership, in the case it is an owner.",
           "methodVariables": [
             {
-              "name": "None",
-              "type": "None"
+              "name": "",
+              "type": ""
             }
           ]
         },
@@ -1627,8 +1627,8 @@
           "methodDescription": "Returns the current delegation implementation contract.",
           "methodVariables": [
             {
-              "name": "None",
-              "type": "None"
+              "name": "",
+              "type": ""
             }
           ]
         }
@@ -1639,8 +1639,8 @@
           "methodDescription": "Kills the current delegation implementation. For emergency use, and updating the system if need be.",
           "methodVariables": [
             {
-              "name": "None",
-              "type": "None"
+              "name": "",
+              "type": ""
             }
           ]
         },
@@ -1814,6 +1814,377 @@
             }
           ]
         }
+      ]
+    },
+    {
+      "id": "0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675",
+      "title": "LayerZero Endpoint",
+      "description": "The Endpoint contracts acts in LayerZero infrastrcuture as the hub for the mainnet vote escrow to be forwarded through, to be bridged across networks.",
+      "readMethods": [
+        {
+          "methodName": "defaultReceiveLibraryAddress",
+          "methodDescription": "The default receive library address is where the logic for how receiving logic is handled, unless another library is specified.",
+          "methodVariables": [
+            {
+              "name": "",
+              "type": ""
+            }
+          ]
+        },
+        {
+          "methodName": "defaultSendLibraryAddress",
+          "methodDescription": "The default send library address is where the logic for how send logic is handled from endpoint to endpoint.",
+          "methodVariables": [
+            {
+              "name": "",
+              "type": ""
+            }
+          ]
+        },
+        {
+          "methodName": "estimateFees",
+          "methodDescription": "Returns the current total supply of veBAL",
+          "methodVariables": [
+            {
+              "name": "_dstChainId",
+              "type": "uint16"
+            },
+            {
+              "name": "_userApplication",
+              "type": "address"
+            },
+            {
+              "name": "payload",
+              "type": "bytes"
+            },
+            {
+              "name": "_payInZRO",
+              "type": "bool"
+            },
+            {
+              "name": "_adapterParams",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "getConfig",
+          "methodDescription": "Returns current config in bytes being used for a specific version, chain, application, and configuration type.",
+          "methodVariables": [
+            {
+              "name": "_version",
+              "type": "uint16"
+            },
+            {
+              "name": "_chainId",
+              "type": "uint16"
+            },
+            {
+              "name": "_userApplication",
+              "type": "address"
+            },
+            {
+              "name": "_configType",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "getReceiveLibraryAddress",
+          "methodDescription": "Returns the receive library address for a specific user application, this can be different than the default receive library address.",
+          "methodVariables": [
+            {
+              "name": "_userApplication",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "getReceiveVersion",
+          "methodDescription": "Returns the receive version for the specific user application.",
+          "methodVariables": [
+            {
+              "name": "_userApplication",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "getSendLibraryAddress",
+          "methodDescription": "Returns the send library address for a specific user application, this can be different than the default send library address.",
+          "methodVariables": [
+            {
+              "name": "_userApplication",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "getSendVersion",
+          "methodDescription": "Returns the send version for the specific user application.",
+          "methodVariables": [
+            {
+              "name": "_userApplication",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "hasStoredPayload",
+          "methodDescription": "Returns true or false if a payload is stored at a given chain id and address.",
+          "methodVariables": [
+            {
+              "name": "_srcChainOd",
+              "type": "uint16"
+            },
+            {
+              "name": "_srcAddress",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "libraryLookup",
+          "methodDescription": "Returns the library address for a given input, these can be integers.",
+          "methodVariables": [
+            {
+              "name": "input",
+              "type": "uint16"
+            }
+          ]
+        },
+        {
+          "methodName": "owner",
+          "methodDescription": "Returns the owner address of the contract.",
+          "methodVariables": [
+            {
+              "name": "input",
+              "type": "uint16"
+            }
+          ]
+        },
+        {
+          "methodName": "storedPayload",
+          "methodDescription": "Returns the length, destination address, and hash of a payload if it exists based on the entered input and bytes.",
+          "methodVariables": [
+            {
+              "name": "input",
+              "type": "uint16"
+            },
+            {
+              "name": "input",
+              "type": "bytes"
+            }
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "forceResumeReceive",
+          "methodDescription": "Forces a soruce chain Id and address to continue receiving data, in the case it was paused.",
+          "methodVariables": [
+            {
+              "name": "_srcChainId",
+              "type": "uint16"
+            },
+            {
+              "name": "_srcAddress",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "newVersion",
+          "methodDescription": "Adds a new library address to the libraries of layer zero. This can be used when needed for new logic.",
+          "methodVariables": [
+            {
+              "name": "_newLayerZeroLibraryAddress",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "receivePayload",
+          "methodDescription": "When a payload is sent to this contract, the write function receive payload is what allows the payload to take affect on the system.",
+          "methodVariables": [
+            {
+              "name": "_srcChainId",
+              "type": "uint16"
+            },
+            {
+              "name": "_srcAddress",
+              "type": "bytes"
+            },
+            {
+              "name": "_dstAddress",
+              "type": "bytes"
+            },
+            {
+              "name": "_nonce",
+              "type": "uint64"
+            },
+            {
+              "name": "_gasLimit",
+              "type": "uint256"
+            },
+            {
+              "name": "_payload",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "renounceOwnership",
+          "methodDescription": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "retryPayload",
+          "methodDescription": "Retries receiving a payload from a source chain, source address, and with the payloads bytes.",
+          "methodVariables": [
+            {
+              "name": "_srcChainId",
+              "type": "uint16"
+            },
+            {
+              "name": "_srcAddress",
+              "type": "bytes"
+            },
+            {
+              "name": "_payload",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "send",
+          "methodDescription": "Sends a payload to another endpoint, or portion of LayerZero infrastructure. ",
+          "methodVariables": [
+            {
+              "name": "send",
+              "type": "payableAmount"
+            },
+            {
+              "name": "_dstChainId",
+              "type": "uint16"
+            },
+            {
+              "name": "_destination",
+              "type": "bytes"
+            },
+            {
+              "name": "_payload",
+              "type": "bytes"
+            },
+            {
+              "name": "_refundAddress",
+              "type": "address"
+            },
+            {
+              "name": "_zroPaymentAddress",
+              "type": "address"
+            },
+            {
+              "name": "_adapterParams",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "setConfig",
+          "methodDescription": "Sets the configuration for the endpoint based on the version, chain, configuration type, and config itself.",
+          "methodVariables": [
+            {
+              "name": "_version",
+              "type": "uint16"
+            },
+            {
+              "name": "_chainId",
+              "type": "uint16"
+            },
+            {
+              "name": "_configType",
+              "type": "uint256"
+            },
+            {
+              "name": "_config",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "setDefaultReceiveVersion",
+          "methodDescription": "Sets the default receive version to reference the proper library.",
+          "methodVariables": [
+            {
+              "name": "newDefaultReceiveVersion",
+              "type": "uint16"
+            }
+          ]
+        },
+        {
+          "methodName": "setDefaultSendVersion",
+          "methodDescription": "Sets the default send version to reference the proper library.",
+          "methodVariables": [
+            {
+              "name": "newDefaultSendVersion",
+              "type": "uint16"
+            }
+          ]
+        },
+        {
+          "methodName": "setDefaultReceiveVersion",
+          "methodDescription": "Sets the default receive version to reference the proper library.",
+          "methodVariables": [
+            {
+              "name": "newDefaultReceiveVersion",
+              "type": "uint16"
+            }
+          ]
+        },
+        {
+          "methodName": "setReceiveVersion",
+          "methodDescription": "Sets the receive version to reference the proper library.",
+          "methodVariables": [
+            {
+              "name": "newVersion",
+              "type": "uint16"
+            }
+          ]
+        },
+        {
+          "methodName": "setSendVersion",
+          "methodDescription": "Sets the send version to reference the proper library.",
+          "methodVariables": [
+            {
+              "name": "newVersion",
+              "type": "uint16"
+            }
+          ]
+        },
+        {
+          "methodName": "transferOwnership",
+          "methodDescription": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.",
+          "methodVariables": [
+            {
+              "name": "newOwner",
+              "type": "address"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0xCDa8e3ADD00c95E5035617F970096118Ca2F4C92",
+      "title": "LayerZero Multisig",
+      "description": "The LayerZero Multisig is a trusted group in LayerZero whom handles any direct contract interactions neccessary for upkeep and fail safes.",
+      "readMethods": [
+
+      ],
+      "writeMethods": [
+
       ]
     }
   ]
