@@ -27,7 +27,7 @@ export default function GaugeMapper(){
                         <Typography variant={'h5'}>Gauge Map</Typography>
                     </Grid>
                     <Grid item xs={11}>
-                        <Typography variant={'caption'}>Browse a list of Gauges across all Balancer Deployments</Typography>
+                        <Typography variant={'caption'}>Browse a list of Gauges across all Balancer deployments. Note: this list only contains gauges enabled for BAL rewards.</Typography>
                     </Grid>
                     <Grid item mt={2} xs={11}>
                         <GovGaugeTable gaugeDatas={decoratedGaugeData} />

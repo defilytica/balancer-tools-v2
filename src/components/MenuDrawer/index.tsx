@@ -17,6 +17,7 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import ListItemButton from '@mui/material/ListItemButton';
 import HandymanIcon from '@mui/icons-material/Handyman';
+import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import CoingeckoColor from '../../assets/svg/coingecko-color.svg'
@@ -130,7 +131,7 @@ const MenuDrawer = ({
                         </ListItemButton>
                         <ListItemButton key={'Governance Map'} component={NavLink} to={'balancer/governanceMap'}>
                             <ListItemIcon>
-                                <MapIcon />
+                                <TextSnippetIcon />
                             </ListItemIcon>
                             <ListItemText primary={'Governance Map'} />
                         </ListItemButton>

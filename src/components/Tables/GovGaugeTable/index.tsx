@@ -333,7 +333,7 @@ export default function GovGaugeTable({gaugeDatas}: {
         <Box sx={{width: '100%'}}>
             <Paper
                 component="form"
-                sx={{ mb: '5px', p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+                sx={{ mb: '5px', p: '2px 4px', display: 'flex', alignItems: 'center', minWidth: 400, maxWidth: 800 }}
             >
                 <InputBase
                     sx={{ ml: 1, flex: 1 }}
