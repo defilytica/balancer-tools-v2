@@ -25,6 +25,8 @@ import PolygonLogo from '../../../assets/svg/polygon.svg'
 import GnosisLogo from '../../../assets/svg/gnosis.svg'
 import zkevmLogo from '../../../assets/svg/zkevm.svg'
 import OpLogo from '../../../assets/svg/optimism.svg'
+import AvaxLogo from '../../../assets/svg/avalancheLogo.svg'
+import BaseLogo from '../../../assets/svg/base.svg'
 import {BalancerStakingGauges, SimplePoolData} from "../../../data/balancer/balancerTypes";
 import {formatDollarAmount, formatNumber} from "../../../utils/numbers";
 import GaugeComposition from "../../GaugeComposition";
@@ -331,7 +333,9 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
         POLYGON: PolygonLogo,
         GNOSIS: GnosisLogo,
         ARBITRUM: ArbitrumLogo,
-        ZKEVM: zkevmLogo
+        ZKEVM: zkevmLogo,
+        BASE: BaseLogo,
+        AVALANCHE: AvaxLogo,
     };
 
 

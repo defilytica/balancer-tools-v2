@@ -52,6 +52,8 @@ import PolygonLogo from '../../assets/svg/polygon.svg'
 import GnosisLogo from '../../assets/svg/gnosis.svg'
 import zkevmLogo from '../../assets/svg/zkevm.svg'
 import OpLogo from '../../assets/svg/optimism.svg'
+import AvaxLogo from '../../assets/svg/avalancheLogo.svg'
+import BaseLogo from '../../assets/svg/base.svg'
 import {veBALVoteAddress} from "../../constants";
 import SelfImprovementIcon from "@mui/icons-material/SelfImprovement";
 import {useGetPaladinQuests} from "../../data/paladin/useGetPaladinQuests";
@@ -159,7 +161,10 @@ export default function VeBALVoter() {
         OPTIMISM: OpLogo,
         POLYGON: PolygonLogo,
         GNOSIS: GnosisLogo,
-        ARBITRUM: ArbitrumLogo
+        ARBITRUM: ArbitrumLogo,
+        ZKEVM: zkevmLogo,
+        BASE: BaseLogo,
+        AVALANCHE: AvaxLogo,
     };
 
     const networkStringMap :NetworkLogoMap = {
@@ -167,7 +172,10 @@ export default function VeBALVoter() {
         OPTIMISM: "Optimism",
         POLYGON: "Polygon",
         GNOSIS: "Gnosis",
-        ARBITRUM: "Arbitrum"
+        ARBITRUM: "Arbitrum",
+        ZKEVM: "zkEVM",
+        BASE: "Base",
+        AVALANCHE: "Avalanche",
     };
 
     const handleAddAllocation = (address: string) => {
