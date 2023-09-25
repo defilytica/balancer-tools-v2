@@ -4814,6 +4814,1458 @@
           ]
         }
       ]
+    },
+    {
+      "id": "0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98",
+      "title": "StakelessGaugeCheckpointer-v2",
+      "description": "Manages checkpoints for L2 and mainnet stakeless root gauges, allowing to perform mutiple checkpoints in a single call. Supports gauge types registered in `GaugeAdder`. Gauges to be checkpointed need to be added to the controller beforehand.",
+      "readMethods": [
+        {
+          "methodName": "getGaugeAdder",
+          "methodDescription": "Returns `GaugeAdder` contract.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "getGaugeAtIndex",
+          "methodDescription": "Returns a gauge address based on type and index number.",
+          "methodVariables": [
+            {
+              "name": "gaugeType",
+              "type": "string"
+            },
+            {
+              "name": "index",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "getGaugeTypes",
+          "methodDescription": "Returns gauge types available in the checkpointer. ",
+          "methodVariables": [
+            
+          ]
+        },
+        {
+          "methodName": "isValidGaugeType",
+          "methodDescription": "Returns true or false, if gauge type exists on the checkpointer.",
+          "methodVariables": [
+            {
+              "name": "gaugeType",
+              "type": "string"
+            }
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "addGauges",
+          "methodDescription": "Adds an array of gauges from the given type. Gauges added will be considered when performing checkpoints. The gauges to add should meet the following preconditions: - They must have been created in a valid `GaugeFactory`, according to `GaugeAdder#isGaugeFromValidFactory`. - They must exist in the `GaugeController`, according to `GaugeController#gauge_exists`. - They must not be killed. - They must not have been previously added to the checkpointer.",
+          "methodVariables": [
+            {
+              "name": "gaugeType",
+              "type": "string"
+            },
+            {
+              "name": "gauges",
+              "type": "address[]"
+            }
+          ]
+        },
+        {
+          "methodName": "addGaugesWithVerifiedType",
+          "methodDescription": "Adds an array of gauges from the given type. This is a permissioned function. Gauges added will be considered when performing checkpoints. The gauges to add should meet the following preconditions: - They must exist in the GaugeController, according to GaugeController#gauge_exists. - They must not be killed. - They must not have been previously added to the checkpointer. Unlike `addGauges`, this function can add gauges that were created by factories registered in a deprecated `GaugeAdder`, and therefore cannot be validated by the current `GaugeAdder`.",
+          "methodVariables": [
+            {
+              "name": "gaugeType",
+              "type": "string"
+            },
+            {
+              "name": "gauges",
+              "type": "address[]"
+            }
+          ]
+        },
+        {
+          "methodName": "checkpointAllGaugesAboveRelativeWeight",
+          "methodDescription": "Performs a checkpoint for all added gauges above the given relative weight threshold. Reverts if the ETH sent in the call is not enough to cover bridge costs. Use `getTotalBridgeCost` to determine the required amount of ETH for the execution to succeed.",
+          "methodVariables": [
+            {
+              "name": "checkpointAllGaugesAboveRelativeWeight",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "minRelativeWeight",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "checkpointGaugesOfTypesAboveRelativeWeight",
+          "methodDescription": "Performs a checkpoint for all added gauges above the given relative weight threshold for the given types. Reverts if the ETH sent in the call is not enough to cover bridge costs. Use `getGaugeTypesBridgeCost` to determine the required amount of ETH for the execution to succeed. Reverts if invalid gauge types are given.",
+          "methodVariables": [
+            {
+              "name": "checkpointGaugesOfTypesAboveRelativeWeight",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "gaugeTypes",
+              "type": "string"
+            },
+            {
+              "name": "minRelativeWeight",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "checkpointMultipleGauges",
+          "methodDescription": "Performs a checkpoint for a multiple added gauges of the given types. Reverts if the ETH sent in the call is not enough to cover bridge costs. Reverts if the gauges were not added to the checkpointer beforehand, or if invalid gauge types are given. Reverts if the types array does not have the same length as the gauges array.",
+          "methodVariables": [
+            {
+              "name": "checkpointMultipleGauges",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "gaugeTypes",
+              "type": "string[]"
+            },
+            {
+              "name": "gauges",
+              "type": "address[]"
+            }
+          ]
+        },
+        {
+          "methodName": "checkpointMultipleGaugesOfMatchingTypes",
+          "methodDescription": "Performs a checkpoint for a multiple added gauges of the given types. Reverts if the ETH sent in the call is not enough to cover bridge costs. Reverts if the gauges were not added to the checkpointer beforehand, or if an invalid gauge type is given.",
+          "methodVariables": [
+            {
+              "name": "checkpointMultipleGaugesOfMatchingType",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "gaugeType",
+              "type": "string"
+            },
+            {
+              "name": "gauges",
+              "type": "address[]"
+            }
+          ]
+        },
+        {
+          "methodName": "checkpointSingleGauge",
+          "methodDescription": "Performs a checkpoint for a single added gauge of a given type. Reverts if the ETH sent in the call is not enough to cover bridge costs. Use `getSingleBridgeCost` to determine the required amount of ETH for the execution to succeed. Reverts if the gauge was not added to the checkpointer beforehand.",
+          "methodVariables": [
+            {
+              "name": "checkpointSingleGauge",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "gaugeType",
+              "type": "string"
+            },
+            {
+              "name": "gauge",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "removeGauges",
+          "methodDescription": "Removes an array of gauges from the given type. Removed gauges will not be considered when performing checkpoints. To remove gauges: - They must be killed. - They must have been previously added to the checkpointer.",
+          "methodVariables": [
+            {
+              "name": "gaugeType",
+              "type": "string"
+            },
+            {
+              "name": "gauges",
+              "type": "address[]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0x6817149cb753BF529565B4D023d7507eD2ff4Bc0",
+      "title": "ChildChainGaugeFactory",
+      "description": "ChildChainGaugeFactories require only the pool address on the L2 network to be passed to it, to create a child gauge. The child gauges are used on mainnet to be set as recipients from root gauges. Pseudominter contracts on each network are used to stream the bridged BAL to each child gauge. All child gauge factories can be seen here. https://forum.balancer.fi/t/instructions-overview/2674",
+      "readMethods": [
+        {
+          "methodName": "getGaugeImplementation",
+          "methodDescription": "Returns an implementation of the child chain gauge",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "getProductVersion",
+          "methodDescription": "Returns the child chain gauge version",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "isGaugeFromFactory",
+          "methodDescription": "Returns true or false if the address is a gauge from the factory.",
+          "methodVariables": [
+            {
+              "name": "gauge",
+              "type": "address"
+            }        
+          ]
+        },
+        {
+          "methodName": "version",
+          "methodDescription": "Returns the child chain gauge version",
+          "methodVariables": [
+
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "create",
+          "methodDescription": "Creates a new child chain gauge for a specific pool address",
+          "methodVariables": [
+            {
+              "name": "pool",
+              "type": "address"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0xa523f47A933D5020b23629dDf689695AA94612Dc",
+      "title": "ChildLiquidityGauge",
+      "description": "Child liquidity gauges correspond to a specific pool on their respective network. Their address is on the network speficic root gauge factory on Ethereum in order to link the BAL minter to each gauge, bridge BAL and distribute BAL to the proper pools. ",
+      "readMethods": [
+        {
+          "methodName": "claimed_reward",
+          "methodDescription": "Returns the amount of a reward token an address has claimed from this gauge.",
+          "methodVariables": [
+            {
+              "name": "_addr",
+              "type": "address"
+            },
+            {
+              "name": "_token",
+              "type": "address"
+            }  
+          ]
+        },
+        {
+          "methodName": "claimeable_reward",
+          "methodDescription": "Returns the amount of a reward token an address is able to currently claim from this gauge.",
+          "methodVariables": [
+            {
+              "name": "_addr",
+              "type": "address"
+            },
+            {
+              "name": "_reward_token",
+              "type": "address"
+            }  
+          ]
+        },
+        {
+          "methodName": "allowance",
+          "methodDescription": "The child chain gauge is a balance in a user's wallet. This function returns the number of those tokens a spender is approved to use on behalf of an owner.",
+          "methodVariables": [
+            {
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "name": "spender",
+              "type": "address"
+            }        
+          ]
+        },
+        {
+          "methodName": "bal_token",
+          "methodDescription": "Returns the BAL token address on the respective network.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "bal_pseudo_minter",
+          "methodDescription": "Returns the BAL pseudominter address on the respective network.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "voting_escrow_delegation_proxy",
+          "methodDescription": "Returns the BAL VotingEscrowDelegationProxy address on the respective network.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "authorizer_adaptor",
+          "methodDescription": "Returns the AuthorizerAdaptor address on the respective network.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "name",
+          "methodDescription": "Returns the name of the child chain gauge, normally the pool token name followed by `Gauge Deposit`.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "symbol",
+          "methodDescription": "Returns the symbol of the child chain gauge, normally the pool token symbol followed by `-gauge`.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "balanceOf",
+          "methodDescription": "Returns the balance of gauge tokens held by an address.",
+          "methodVariables": [
+            {
+              "name": "arg0",
+              "type": "address"
+            }  
+          ]
+        },
+        {
+          "methodName": "totalSupply",
+          "methodDescription": "Returns the total supply of staked gauge LP tokens.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "lp_token",
+          "methodDescription": "Returns the address of the corresponding liquidity pool token.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "factory",
+          "methodDescription": "Returns the address of the child chain gauge factory.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "working_balances",
+          "methodDescription": "Returns the user's working balance in the gauge. This is related to their rewards boosting, based on their veBAL holdings.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "working_supply",
+          "methodDescription": "Returns the working supply in the gauge. Sum of all user's working balances. This is crucial in determing rewards boosting for each staked liquidity provider.",
+          "methodVariables": [
+ 
+          ]
+        },
+        {
+          "methodName": "reward_tokens",
+          "methodDescription": "Returns the address of the reward tokens based on an index of when they were added. This only appleis to non-BAL reward tokens.",
+          "methodVariables": [
+            {
+              "name": "arg0",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "is_killed",
+          "methodDescription": "Returns if the gauge is killed or not. This means it can not have rewards streamed to it.",
+          "methodVariables": [
+
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "deposit",
+          "methodDescription": "Deposits pool tokens into the gauge, staking them.",
+          "methodVariables": [
+            {
+              "name": "_value",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "deposit",
+          "methodDescription": "Deposits pool tokens into the gauge, staking them. This is used for another user, assuming the spender is approved.",
+          "methodVariables": [
+            {
+              "name": "_value",
+              "type": "uint256"
+            },
+            {
+              "name": "_addr",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "deposit",
+          "methodDescription": "Deposits pool tokens into the gauge, staking them. This is used for another user, assuming the spender is approved. This also claims rewards if desired.",
+          "methodVariables": [
+            {
+              "name": "_value",
+              "type": "uint256"
+            },
+            {
+              "name": "_addr",
+              "type": "address"
+            },
+            {
+              "name": "_claim_rewards",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "methodName": "claim_rewards",
+          "methodDescription": "Claims rewards for the specified address, and sends them to that address.",
+          "methodVariables": [
+            {
+              "name": "_addr",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "claim_rewards",
+          "methodDescription": "Claims rewards for the specified address, and sends them to a different address.",
+          "methodVariables": [
+            {
+              "name": "_addr",
+              "type": "address"
+            },
+            {
+              "name": "_receiver",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "transferFrom",
+          "methodDescription": "Transfers the staked LP token, remaining staked, from one address to another.",
+          "methodVariables": [
+            {
+              "name": "_from",
+              "type": "address"
+            },
+            {
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "name": "_value",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "transfer",
+          "methodDescription": "Transfers the staked LP token, remaining staked, from your address to another.",
+          "methodVariables": [
+            {
+              "name": "_to",
+              "type": "address"
+            },
+            {
+              "name": "_value",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "approve",
+          "methodDescription": "Approves another address the ability to spend the senders BAL upon signing a transaction.",
+          "methodVariables": [
+            {
+              "name": "_spender",
+              "type": "address"
+            },
+            {
+              "name": "_value",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "increaseAllowance",
+          "methodDescription": "Atomically increases the allowance granted to `spender` by the caller. * This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}.",
+          "methodVariables": [
+            {
+              "name": "spender",
+              "type": "address"
+            },
+            {
+              "name": "addedValue",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "decreaseAllowance",
+          "methodDescription": "Atomically decreases the allowance granted to `spender` by the caller. * This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}.",
+          "methodVariables": [
+            {
+              "name": "spender",
+              "type": "address"
+            },
+            {
+              "name": "subtractedValue",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "user_checkpoint",
+          "methodDescription": "Checkpoints a user's place in the gauge. This updates their working balances, and their boost based on their current veBAL holdings.",
+          "methodVariables": [
+            {
+              "name": "addr",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "set_rewards_receiver",
+          "methodDescription": "Sets an addres to receive gauge rewards on behalf of the sender.",
+          "methodVariables": [
+            {
+              "name": "addr",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "deposit_reward_token",
+          "methodDescription": "Deposits reward tokens into the gauge to be distributed throughout the current epoch.",
+          "methodVariables": [
+            {
+              "name": "_reward_token",
+              "type": "address"
+            },
+            {
+              "name": "_amount",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "add_reward",
+          "methodDescription": "Adds a new reward token as eligible to be sent to the gauge, and the address which is must come from.",
+          "methodVariables": [
+            {
+              "name": "_reward_token",
+              "type": "address"
+            },
+            {
+              "name": "_distributor",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "set_reward_dsitributor",
+          "methodDescription": "Sets a new distributor contract for a specific reward token.",
+          "methodVariables": [
+            {
+              "name": "_reward_token",
+              "type": "address"
+            },
+            {
+              "name": "_distributor",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "killGauge",
+          "methodDescription": "Kills the gauge, meaning it can no longer receive rewards from the veBAL system.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "unkillGauge",
+          "methodDescription": "Unkills the gauge, meaning it can receive rewards from the veBAL system.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "setRelativeWeightCap",
+          "methodDescription": "Updates the relative weight cap a gauge is able to have. Often 2%, 10%, or 100% of total emmissions.",
+          "methodVariables": [
+            {
+              "name": "relative_weight_cap",
+              "type": "uint256"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0xf77018c0d817dA22caDbDf504C00c0d32cE1e5C2",
+      "title": "BatchRelayerLibrary",
+      "description": "This contract is not a relayer by itself and calls into it directly will fail. The associated relayer can be found by calling `getEntrypoint` on this contract.",
+      "readMethods": [
+        {
+          "methodName": "getEntrypoint",
+          "methodDescription": "Returns the Batch Relayer contract that can be called by other contracts.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "getVault",
+          "methodDescription": "Returns the Balancer Vault address",
+          "methodVariables": [
+
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "apporveVault",
+          "methodDescription": "Approves the Vault to use tokens held in the relayer. This is needed to avoid having to send intermediate tokens back to the user",
+          "methodVariables": [
+            {
+              "name": "approveVault",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "name": "amount",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "batchSwap",
+          "methodDescription": "Executes a batchswap across the vault based on the input data.",
+          "methodVariables": [
+            {
+              "name": "batchSwap",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "kind",
+              "type": "uint8"
+            },
+            {
+              "name": "swaps",
+              "type": "tuple[]"
+            },
+            {
+              "name": "funds",
+              "type": "tuple"
+            },
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "fromInternalBalance",
+              "type": "bool"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "toInternalBalance",
+              "type": "bool"
+            },
+            {
+              "name": "limits",
+              "type": "int256[]"
+            },
+            {
+              "name": "deadline",
+              "type": "uint256"
+            },
+            {
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "name": "outputReferences",
+              "type": "tuple[]"
+            }
+          ]
+        },
+        {
+          "methodName": "exitPool",
+          "methodDescription": "Exits pool for a user.",
+          "methodVariables": [
+            {
+              "name": "exitPool",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "poolId",
+              "type": "bytes32"
+            },
+            {
+              "name": "kind",
+              "type": "uint8"
+            },
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "request",
+              "type": "tuple"
+            },
+            {
+              "name": "assets",
+              "type": "address[]"
+            },
+            {
+              "name": "minAmountsOut",
+              "type": "uint256[]"
+            },
+            {
+              "name": "userData",
+              "type": "bytes"
+            },
+            {
+              "name": "toInternalBalance",
+              "type": "bool"
+            },
+            {
+              "name": "outputReferences",
+              "type": "tuple[]"
+            }
+          ]
+        },
+        {
+          "methodName": "gaugeClaimRewards",
+          "methodDescription": "Claims gauge rewards for a user.",
+          "methodVariables": [
+            {
+              "name": "gaugeClaimRewards",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "gauges",
+              "type": "address[]"
+            }
+          ]
+        },
+        {
+          "methodName": "gaugeDeposit",
+          "methodDescription": "Deposits pool tokens into a gauge for a user.",
+          "methodVariables": [
+            {
+              "name": "gaugeDeposit",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "gauge",
+              "type": "address"
+            },
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "amount",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "gaugeMint",
+          "methodDescription": "Mints tokens from a particular gauge, typically in the case of being used for bridging to L2s.",
+          "methodVariables": [
+            {
+              "name": "gaugeMint",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "gauges",
+              "type": "address[]"
+            },
+            {
+              "name": "outputReference",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "gaugeWithdraw",
+          "methodDescription": "Withdraws pool tokens from a gauge for a user.",
+          "methodVariables": [
+            {
+              "name": "gaugeWithdraw",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "gauge",
+              "type": "address"
+            },
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "amount",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "joinPool",
+          "methodDescription": "Joins pool for a user.",
+          "methodVariables": [
+            {
+              "name": "joinPool",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "poolId",
+              "type": "bytes32"
+            },
+            {
+              "name": "kind",
+              "type": "uint8"
+            },
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "request",
+              "type": "tuple"
+            },
+            {
+              "name": "assets",
+              "type": "address[]"
+            },
+            {
+              "name": "maxAmounntsIn",
+              "type": "uint256[]"
+            },
+            {
+              "name": "userData",
+              "type": "bytes"
+            },
+            {
+              "name": "fromInternalBalance",
+              "type": "bool"
+            },
+            {
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "name": "outputReferences",
+              "type": "tuple[]"
+            }
+          ]
+        },
+        {
+          "methodName": "setRelayerApproval",
+          "methodDescription": "Sets whether a particular relayer is authorised to act on behalf of the user.",
+          "methodVariables": [
+            {
+              "name": "setRelayerApproval",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "relayer",
+              "type": "address"
+            },
+            {
+              "name": "approved",
+              "type": "bool"
+            },
+            {
+              "name": "authorisation",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "stakeETH",
+          "methodDescription": "Stakes ETH into Lido to receive stETH on behalf of the user.",
+          "methodVariables": [
+            {
+              "name": "stakeETH",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "name": "outputReference",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "stakeETHAndWrap",
+          "methodDescription": "Stakes ETH into Lido and wraps it to receive wstETH on behalf of the user.",
+          "methodVariables": [
+            {
+              "name": "stakeETHAndWrap",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "name": "outputReference",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "swap",
+          "methodDescription": "Executes a basic swap across the vault based on the input data.",
+          "methodVariables": [
+            {
+              "name": "swap",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "singleSwap",
+              "type": "tuple"
+            },
+            {
+              "name": "poolId",
+              "type": "bytes32"
+            },
+            {
+              "name": "kind",
+              "type": "uint8"
+            },
+            {
+              "name": "assetIn",
+              "type": "address"
+            },
+            {
+              "name": "assetOut",
+              "type": "address"
+            },
+            {
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "name": "userData",
+              "type": "bytes"
+            },
+            {
+              "name": "funds",
+              "type": "tuple"
+            },
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "fromInternalBalance",
+              "type": "bool"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "toInternalBalance",
+              "type": "bool"
+            },
+            {
+              "name": "limit",
+              "type": "int256"
+            },
+            {
+              "name": "deadline",
+              "type": "uint256"
+            },
+            {
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "name": "outputReferences",
+              "type": "tuple[]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0xfeA793Aa415061C483D2390414275AD314B3F621",
+      "title": "BatchRelayer",
+      "description": " Relayers are composed of two contracts: This contract, which acts as a single point of entry into the system through a multicall function. A library contract, which defines the allowed behaviour of the relayer. The relayer entrypoint can then repeatedly delegatecall into the library's code to perform actions. We can then run combinations of the library contract's functions in the context of the relayer entrypoint, without having to expose all these functions on the entrypoint contract itself. The multicall function is then a single point of entry for all actions, so we can easily prevent reentrancy. This design gives much stronger reentrancy guarantees, as otherwise a malicious contract could reenter the relayer through another function (which must allow reentrancy for multicall logic), and that would potentially allow them to manipulate global state, resulting in loss of funds in some cases: e.g., sweeping any leftover ETH that should have been refunded to the user. NOTE: Only the entrypoint contract should be allowlisted by Balancer governance as a relayer, so that the Vault will reject calls from outside the context of the entrypoint: e.g., if a user mistakenly called directly into the library contract.",
+      "readMethods": [
+        {
+          "methodName": "getEntrypoint",
+          "methodDescription": "Returns the Batch Relayer contract that can be called by other contracts.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "getVault",
+          "methodDescription": "Returns the Balancer Vault address",
+          "methodVariables": [
+
+          ]
+        }
+      ],
+      "writeMethods": [
+        {
+          "methodName": "apporveVault",
+          "methodDescription": "Approves the Vault to use tokens held in the relayer. This is needed to avoid having to send intermediate tokens back to the user",
+          "methodVariables": [
+            {
+              "name": "approveVault",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "token",
+              "type": "address"
+            },
+            {
+              "name": "amount",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "batchSwap",
+          "methodDescription": "Executes a batchswap across the vault based on the input data.",
+          "methodVariables": [
+            {
+              "name": "batchSwap",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "kind",
+              "type": "uint8"
+            },
+            {
+              "name": "swaps",
+              "type": "tuple[]"
+            },
+            {
+              "name": "funds",
+              "type": "tuple"
+            },
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "fromInternalBalance",
+              "type": "bool"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "toInternalBalance",
+              "type": "bool"
+            },
+            {
+              "name": "limits",
+              "type": "int256[]"
+            },
+            {
+              "name": "deadline",
+              "type": "uint256"
+            },
+            {
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "name": "outputReferences",
+              "type": "tuple[]"
+            }
+          ]
+        },
+        {
+          "methodName": "exitPool",
+          "methodDescription": "Exits pool for a user.",
+          "methodVariables": [
+            {
+              "name": "exitPool",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "poolId",
+              "type": "bytes32"
+            },
+            {
+              "name": "kind",
+              "type": "uint8"
+            },
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "request",
+              "type": "tuple"
+            },
+            {
+              "name": "assets",
+              "type": "address[]"
+            },
+            {
+              "name": "minAmountsOut",
+              "type": "uint256[]"
+            },
+            {
+              "name": "userData",
+              "type": "bytes"
+            },
+            {
+              "name": "toInternalBalance",
+              "type": "bool"
+            },
+            {
+              "name": "outputReferences",
+              "type": "tuple[]"
+            }
+          ]
+        },
+        {
+          "methodName": "gaugeClaimRewards",
+          "methodDescription": "Claims gauge rewards for a user.",
+          "methodVariables": [
+            {
+              "name": "gaugeClaimRewards",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "gauges",
+              "type": "address[]"
+            }
+          ]
+        },
+        {
+          "methodName": "gaugeDeposit",
+          "methodDescription": "Deposits pool tokens into a gauge for a user.",
+          "methodVariables": [
+            {
+              "name": "gaugeDeposit",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "gauge",
+              "type": "address"
+            },
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "amount",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "gaugeMint",
+          "methodDescription": "Mints tokens from a particular gauge, typically in the case of being used for bridging to L2s.",
+          "methodVariables": [
+            {
+              "name": "gaugeMint",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "gauges",
+              "type": "address[]"
+            },
+            {
+              "name": "outputReference",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "gaugeWithdraw",
+          "methodDescription": "Withdraws pool tokens from a gauge for a user.",
+          "methodVariables": [
+            {
+              "name": "gaugeWithdraw",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "gauge",
+              "type": "address"
+            },
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "amount",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "joinPool",
+          "methodDescription": "Joins pool for a user.",
+          "methodVariables": [
+            {
+              "name": "joinPool",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "poolId",
+              "type": "bytes32"
+            },
+            {
+              "name": "kind",
+              "type": "uint8"
+            },
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "request",
+              "type": "tuple"
+            },
+            {
+              "name": "assets",
+              "type": "address[]"
+            },
+            {
+              "name": "maxAmounntsIn",
+              "type": "uint256[]"
+            },
+            {
+              "name": "userData",
+              "type": "bytes"
+            },
+            {
+              "name": "fromInternalBalance",
+              "type": "bool"
+            },
+            {
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "name": "outputReferences",
+              "type": "tuple[]"
+            }
+          ]
+        },
+        {
+          "methodName": "setRelayerApproval",
+          "methodDescription": "Sets whether a particular relayer is authorised to act on behalf of the user.",
+          "methodVariables": [
+            {
+              "name": "setRelayerApproval",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "relayer",
+              "type": "address"
+            },
+            {
+              "name": "approved",
+              "type": "bool"
+            },
+            {
+              "name": "authorisation",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "stakeETH",
+          "methodDescription": "Stakes ETH into Lido to receive stETH on behalf of the user.",
+          "methodVariables": [
+            {
+              "name": "stakeETH",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "name": "outputReference",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "stakeETHAndWrap",
+          "methodDescription": "Stakes ETH into Lido and wraps it to receive wstETH on behalf of the user.",
+          "methodVariables": [
+            {
+              "name": "stakeETHAndWrap",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "name": "outputReference",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "swap",
+          "methodDescription": "Executes a basic swap across the vault based on the input data.",
+          "methodVariables": [
+            {
+              "name": "swap",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "singleSwap",
+              "type": "tuple"
+            },
+            {
+              "name": "poolId",
+              "type": "bytes32"
+            },
+            {
+              "name": "kind",
+              "type": "uint8"
+            },
+            {
+              "name": "assetIn",
+              "type": "address"
+            },
+            {
+              "name": "assetOut",
+              "type": "address"
+            },
+            {
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "name": "userData",
+              "type": "bytes"
+            },
+            {
+              "name": "funds",
+              "type": "tuple"
+            },
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "fromInternalBalance",
+              "type": "bool"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "toInternalBalance",
+              "type": "bool"
+            },
+            {
+              "name": "limit",
+              "type": "int256"
+            },
+            {
+              "name": "deadline",
+              "type": "uint256"
+            },
+            {
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "name": "outputReferences",
+              "type": "tuple[]"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
