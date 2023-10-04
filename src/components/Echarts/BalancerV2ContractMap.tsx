@@ -9,6 +9,7 @@ import {
     balancerContractDataLinks,
     balancerContractMapData
 } from "../../data/static/balancer-v2/balancerContractMapData";
+import {isMobile} from "react-device-detect";
 
 export interface GovMapProps {
     backgroundColor?: string,
@@ -40,7 +41,7 @@ export default function BalancerV2ContractMap({backgroundColor = '#6a7985', heig
         }
     };
 
-    const nodeSize = 75;
+    const nodeSize = isMobile ? 40 : 75;
     const option = {
         tooltip: {},
         animationDurationUpdate: 1500,
@@ -59,7 +60,7 @@ export default function BalancerV2ContractMap({backgroundColor = '#6a7985', heig
                     show: true,
                     formatter: function(params: { name: any; }) {
                         // Manually add line breaks to limit the width
-                        const labelWidth = nodeSize * 0.95; // Width in pixels
+                        const labelWidth = isMobile ? nodeSize : nodeSize * 0.95; // Width in pixels
                         const text = params.name;
                         let wrappedText = '';
                         let line = '';
@@ -92,7 +93,7 @@ export default function BalancerV2ContractMap({backgroundColor = '#6a7985', heig
                 edgeSymbol: ['circle', 'arrow'],
                 edgeSymbolSize: [4, 10],
                 edgeLabel: {
-                    fontSize: 20
+                    fontSize: isMobile ? 10 : 20
                 },
                 data: balancerContractMapData,
                 // links: [],

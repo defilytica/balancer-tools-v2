@@ -91,7 +91,7 @@ export default function ContractDetailedView() {
                             </Box>
                         </Grid>
                         <Grid
-                            mt={2}
+                            mt={3}
                             container
                             sx={{
                                 direction: {xs: 'column', sm: 'row'}

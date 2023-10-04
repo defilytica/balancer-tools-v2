@@ -178,7 +178,7 @@ export const balancerContractMapData = [
     },
     {
         name: 'Balancer Maxi LM Multisig',
-        value: '0x10A19e7eE7d7F8a52822f6817de8ea18204F2e4f',
+        value: '0xc38c5f97B34E175FFd35407fc91a937300E33860',
         x: 1000,
         y: 200
     },
