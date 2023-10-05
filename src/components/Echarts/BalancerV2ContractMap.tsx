@@ -43,6 +43,15 @@ export default function BalancerV2ContractMap({backgroundColor = '#6a7985', heig
 
     const nodeSize = isMobile ? 40 : 75;
     const option = {
+        toolbox: {
+            show: true,
+            feature: {
+                mark: { show: true },
+                dataView: { show: true, readOnly: false },
+                restore: { show: false },
+                saveAsImage: { show: true }
+            }
+        },
         tooltip: {},
         animationDurationUpdate: 1500,
         animationEasingUpdate: 'quinticInOut',
