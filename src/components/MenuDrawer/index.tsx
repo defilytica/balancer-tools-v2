@@ -31,6 +31,7 @@ import HowToVoteIcon from '@mui/icons-material/HowToVote';
 import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
+import KeyIcon from '@mui/icons-material/Key';
 
 
 export type MenuDrawerProps = {
@@ -134,6 +135,12 @@ const MenuDrawer = ({
                                 <TextSnippetIcon />
                             </ListItemIcon>
                             <ListItemText primary={'Governance Map'} />
+                        </ListItemButton>
+                        <ListItemButton key={'Permissions'} component={NavLink} to={'balancer/permissions'}>
+                            <ListItemIcon>
+                                <KeyIcon />
+                            </ListItemIcon>
+                            <ListItemText primary={'Permissions'} />
                         </ListItemButton>
                     </List>
                 </Collapse>

@@ -32,6 +32,7 @@ import GaugeMapper from "../../pages/GaugeMapper";
 import BribeSimulator from "../../pages/BribeSimulator";
 import GovernanceMap from '../../pages/GovernanceMap';
 import ContractDetailedView from "../../pages/ContractDetailedView";
+import SmartContractPermissions from "../../pages/SmartContractPermissions/SmartContractPermissions";
 
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
@@ -263,6 +264,8 @@ function Dashboard() {
                                            element={<GaugeMapper/>}/>
                                     <Route path={'balancer/governanceMap'}
                                            element={<GovernanceMap/>}/>
+                                    <Route path={'balancer/permissions'}
+                                           element={<SmartContractPermissions/>}/>
                                     <Route path={networkPrefix(activeNetwork) + 'incentiveSimulator'}
                                            element={<BribeSimulator/>}/>
                                     <Route path={'balancer/incentiveSimulator'} element={<ContractDetailedView />}/>

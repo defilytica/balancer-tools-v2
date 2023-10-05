@@ -25,7 +25,6 @@ export default function NetworkSelector() {
         switchNetwork?.(Number(chainId))
         if (chainId === EthereumNetworkInfo.chainId) {
             update(EthereumNetworkInfo)
-            navigate('/')
         } else if (chainId === PolygonNetworkInfo.chainId) {
             update(PolygonNetworkInfo)
         } else if (chainId === ArbitrumNetworkInfo.chainId) {
