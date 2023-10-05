@@ -230,6 +230,30 @@ export const balancerContractMapData = [
         x: 600,
         y: -600
     },
+    {
+        name: 'StakelessGaugeCheckpointer-v2',
+        value: '0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98',
+        x: 1400,
+        y: -200
+    },
+    {
+        name: 'BatchRelayer',
+        value: '0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98',
+        x: 1200,
+        y: 800
+    },
+    {
+        name: 'BatchRelayerLibrary',
+        value: '0xf77018c0d817dA22caDbDf504C00c0d32cE1e5C2',
+        x: 1400,
+        y: 800
+    },
+    {
+        name: 'Emergency subDAO Multisig',
+        value: '0xA29F61256e948F3FB707b4b3B138C5cCb9EF9888',
+        x: 1400,
+        y: 0
+    },
 ]
 
 export const balancerContractDataLinks = [
