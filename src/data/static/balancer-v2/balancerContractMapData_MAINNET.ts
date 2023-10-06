@@ -1,4 +1,4 @@
-export const balancerContractMapData = [
+export const balancerContractMapData_MAINNET = [
     {
         name: 'Vault',
         value: '0xBA12222222228d8Ba445958a75a0704d566BF2C8',
@@ -234,13 +234,13 @@ export const balancerContractMapData = [
     {
         name: 'BatchRelayer',
         value: '0xfeA793Aa415061C483D2390414275AD314B3F621',
-        x: 1200,
+        x: 400,
         y: 800
     },
     {
         name: 'BatchRelayerLibrary',
         value: '0xf77018c0d817dA22caDbDf504C00c0d32cE1e5C2',
-        x: 1400,
+        x: 600,
         y: 800
     },
     {
@@ -251,7 +251,7 @@ export const balancerContractMapData = [
     },
 ]
 
-export const balancerContractDataLinks = [
+export const balancerContractDataLinks_MAINNET = [
     {
         source: 'Vault',
         target: 'Protocol Fee Collector'

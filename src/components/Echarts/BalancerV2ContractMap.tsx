@@ -1,15 +1,18 @@
-import ReactEcharts,  { EChartsOption } from 'echarts-for-react';
+import ReactEcharts from 'echarts-for-react';
 import EChartsRef from 'echarts-for-react';
-import {ECElementEvent, graphic} from 'echarts';
-import { CircularProgress } from '@mui/material';
-import { BalancerChartDataItem} from '../../data/balancer/balancerTypes';
-import { formatAmount, formatDollarAmount } from '../../utils/numbers';
+import {ECElementEvent} from 'echarts';
 import {useEffect, useRef} from "react";
 import {
-    balancerContractDataLinks,
-    balancerContractMapData
-} from "../../data/static/balancer-v2/balancerContractMapData";
+    balancerContractDataLinks_MAINNET,
+    balancerContractMapData_MAINNET
+} from "../../data/static/balancer-v2/balancerContractMapData_MAINNET";
+import {
+    balancerContractDataLinks_ARBITRUM,
+    balancerContractMapData_ARBITRUM
+} from "../../data/static/balancer-v2/balancerContractMapData_ARBITRUM";
 import {isMobile} from "react-device-detect";
+import {useActiveNetworkVersion} from "../../state/application/hooks";
+import {ArbitrumNetworkInfo, EthereumNetworkInfo} from "../../constants/networks";
 
 export interface GovMapProps {
     backgroundColor?: string,
@@ -29,6 +32,7 @@ interface NodeData {
 export default function BalancerV2ContractMap({backgroundColor = '#6a7985', height = '800px'}: GovMapProps) {
 
     const chartRef = useRef<EChartsRef | null>(null);
+    const [activeNetwork] = useActiveNetworkVersion()
 
     const handleClick = (params: ECElementEvent): void => {
         // Check if the clicked item is a node
@@ -104,9 +108,13 @@ export default function BalancerV2ContractMap({backgroundColor = '#6a7985', heig
                 edgeLabel: {
                     fontSize: isMobile ? 10 : 20
                 },
-                data: balancerContractMapData,
+                data: activeNetwork === EthereumNetworkInfo ? balancerContractMapData_MAINNET :
+                        activeNetwork === ArbitrumNetworkInfo ? balancerContractMapData_ARBITRUM :
+                            null,
                 // links: [],
-                links: balancerContractDataLinks,
+                links: activeNetwork === EthereumNetworkInfo ? balancerContractDataLinks_MAINNET:
+                        activeNetwork === ArbitrumNetworkInfo ? balancerContractDataLinks_ARBITRUM:
+                            null,
                 lineStyle: {
                     opacity: 0.9,
                     width: 2,

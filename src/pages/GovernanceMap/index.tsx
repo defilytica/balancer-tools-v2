@@ -1,15 +1,21 @@
 import {Box} from "@mui/system";
 import {Card, Grid, Typography} from "@mui/material";
 import {BalancerSmartContractData} from "../../data/static/balancerStaticTypes";
-import contractData from "../../data/static/balancer-v2/governanceMap_MAINNET.json";
+import contractData_MAINNET from "../../data/static/balancer-v2/governanceMap_MAINNET.json";
+import contractData_ARBITRUM from "../../data/static/balancer-v2/governanceMap_ARBITRUM.json";
 import ContractOverviewTable from "../../components/Tables/ContractOverviewTable";
 import BalancerV2ContractMap from "../../components/Echarts/BalancerV2ContractMap";
 import {isMobile} from "react-device-detect";
+import {useActiveNetworkVersion} from "../../state/application/hooks";
+import {ArbitrumNetworkInfo, EthereumNetworkInfo} from "../../constants/networks";
 
 export default function GovernanceMap() {
 
+    const [activeNetwork] = useActiveNetworkVersion()
 
-    const smartContractData: BalancerSmartContractData = contractData;
+    const smartContractData: BalancerSmartContractData = activeNetwork === EthereumNetworkInfo ? contractData_MAINNET :
+                                                            activeNetwork === ArbitrumNetworkInfo ? contractData_ARBITRUM :
+                                                                contractData_MAINNET;
 
 
     return (
@@ -33,46 +39,49 @@ export default function GovernanceMap() {
           </Grid>
           {/* Legend */}
           <Grid item xs={11} mt={1}>
-            <Typography variant={"caption"}>Legend</Typography>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <div
-                style={{
-                  width: "30px",
-                  height: "2px",
-                  backgroundColor: "white", // Use the color you prefer
-                  marginRight: "5px",
-                }}
-              />
-              <Typography variant={"body2"}>Fee Flows</Typography>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginTop: "5px",
-              }}
-            >
-              <div
-                style={{
-                  width: "30px",
-                  height: "2px",
-                  border: "1px dotted white", // Use the color you prefer
-                  marginRight: "5px",
-                }}
-              />
-              <Typography variant={"body2"}>
-                Permissioned Interactions
-              </Typography>
-            </div>
+
           </Grid>
           <Grid item xs={11} mt={1}>
             <Card sx={{ overflowX: "auto" }}>
               <BalancerV2ContractMap height={isMobile ? "400px" : "800px"} />
+                <Box ml={2} mb={1}>
+                    <Typography variant={"body1"}>Legend</Typography>
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                        }}
+                    >
+                        <div
+                            style={{
+                                width: "30px",
+                                height: "2px",
+                                backgroundColor: "white", // Use the color you prefer
+                                marginRight: "5px",
+                            }}
+                        />
+                        <Typography variant={"body2"}>Fee Flows</Typography>
+                    </div>
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            marginTop: "5px",
+                        }}
+                    >
+                        <div
+                            style={{
+                                width: "30px",
+                                height: "2px",
+                                border: "1px dotted white", // Use the color you prefer
+                                marginRight: "5px",
+                            }}
+                        />
+                        <Typography variant={"body2"}>
+                            Permissioned Interactions
+                        </Typography>
+                    </div>
+                </Box>
             </Card>
           </Grid>
           <Grid item xs={11} mt={1}>
