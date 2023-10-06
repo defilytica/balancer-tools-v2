@@ -20,30 +20,25 @@ export const balancerContractMapData = [
     {
         name: 'Protocol Fee Withdrawer',
         value: '0x5ef4c5352882b10893b70DbcaA0C000965bd23c5',
-        x: 300,
+        x: 200,
         y: 600
     },
     {
         name: 'Mimic Smart Vault',
         value: '0x94Dd9C6152a2A0BBcB52d3297b723A6F01D5F9f7',
-        x: 500,
+        x: 400,
         y: 600
-    },
-    {
-        name: 'DAO Treasury',
-        x: 800,
-        y: 400
     },
     {
         name: 'Protocol Fee Multisig',
         value: '0x7c68c42De679ffB0f16216154C996C354cF1161B',
-        x: 800,
+        x: 600,
         y: 600
     },
 
     {
         name: 'Core Pool Voting Incentives',
-        x: 1000,
+        x: 800,
         y: 400
     },
     {
@@ -160,7 +155,7 @@ export const balancerContractMapData = [
     },
     {
         name: 'Gauge Controller',
-        value: '0x67F8DF125B796B05895a6dc8Ecf944b9556ecb0B',
+        value: '0xC128468b7Ce63eA702C1f104D55A2566b13D3ABD',
         x: 800,
         y: 0
 
@@ -238,7 +233,7 @@ export const balancerContractMapData = [
     },
     {
         name: 'BatchRelayer',
-        value: '0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98',
+        value: '0xfeA793Aa415061C483D2390414275AD314B3F621',
         x: 1200,
         y: 800
     },
@@ -262,10 +257,10 @@ export const balancerContractDataLinks = [
         target: 'Protocol Fee Collector'
     },
     {
-        source: 'Vault',
-        target: 'Liquidity Pools',
+        source: 'Liquidity Pools',
+        target: 'Vault',
         lineStyle: {
-            curveness: -0.5
+            curveness: 0.5
         }
     },
     {
@@ -279,7 +274,8 @@ export const balancerContractDataLinks = [
         source: 'Protocol Fee Withdrawer',
         target: 'Protocol Fee Collector',
         lineStyle: {
-            curveness: -0.2
+            curveness: -0.2,
+            type: 'dotted'
         }
     },
     {
@@ -297,16 +293,20 @@ export const balancerContractDataLinks = [
         source: 'Mimic Smart Vault',
         target: 'Protocol Fee Withdrawer',
         lineStyle: {
-            curveness: -0.2
+            curveness: -0.2,
+            type: 'dotted'
         }
     },
     {
         source: 'Mimic Smart Vault',
-        target: 'Protocol Fee Multisig'
+        target: 'Protocol Fee Multisig',
     },
     {
         source: 'Protocol Fee Multisig',
-        target: 'DAO Treasury'
+        target: 'DAO Multisig',
+        lineStyle: {
+            curveness: 0.25
+        }
     },
     {
         source: 'Protocol Fee Multisig',
@@ -325,7 +325,10 @@ export const balancerContractDataLinks = [
     },
     {
         source: 'Balancer Maxi LM Multisig',
-        target: 'Liquidity Pools'
+        target: 'Liquidity Pools',
+        lineStyle: {
+            type: 'dotted'
+        }
     },
     {
         source: 'Liquidity Pools',
@@ -337,7 +340,10 @@ export const balancerContractDataLinks = [
     },
     {
         source: 'Balancer Maxi LM Multisig',
-        target: 'Gauge Adder'
+        target: 'Gauge Adder',
+        lineStyle: {
+            type: 'dotted'
+        }
     },
     {
         source: 'veBAL Fee Injector',
@@ -349,7 +355,10 @@ export const balancerContractDataLinks = [
     },
     {
         source: 'Gauge Adder',
-        target: 'Gauge Controller'
+        target: 'Gauge Controller',
+        lineStyle: {
+            type: 'dotted'
+        }
     },
     {
         source: 'Gauge Adder',
@@ -363,19 +372,30 @@ export const balancerContractDataLinks = [
         target: 'veBAL'
     },
     {
-        source: 'Gauges',
-        target: 'Balancer Minter'
+        source: 'Gauge Controller',
+        target: 'Balancer Minter',
+        lineStyle: {
+            curveness: 0.2,
+            type: 'dotted'
+        }
     },
     {
-        source: 'BAL Token',
-        target: 'Gauges',
+        source: 'Balancer Minter',
+        target: 'BAL Token',
         lineStyle: {
             type: 'dotted'
         }
     },
     {
+        source: 'BAL Token',
+        target: 'Gauges'
+    },
+    {
         source: 'Balancer Token Admin',
-        target: 'BAL Token'
+        target: 'BAL Token',
+        lineStyle: {
+            type: 'dotted'
+        }
     },
     {
         source: 'Root Gauge Factory',
@@ -386,7 +406,10 @@ export const balancerContractDataLinks = [
     },
     {
         source: 'Child Chain Gauge',
-        target: 'Root Gauge Factory'
+        target: 'Root Gauge Factory',
+        lineStyle: {
+            type: 'dotted'
+        }
     },
     {
         source: 'Child Chain Gauge Factory',
@@ -425,11 +448,17 @@ export const balancerContractDataLinks = [
     },
     {
         source: 'Voting Escrow Delegation Proxy',
-        target: 'veBoost'
+        target: 'veBoost',
+        lineStyle: {
+            type: 'dotted'
+        }
     },
     {
         source: 'Voting Escrow Remapper',
-        target: 'Omni Voting Escrow Adaptor'
+        target: 'Omni Voting Escrow Adaptor',
+        lineStyle: {
+            type: 'dotted'
+        }
     },
     {
         source: 'Omni Voting Escrow Adaptor',
@@ -447,11 +476,17 @@ export const balancerContractDataLinks = [
     },
     {
         source: 'Layer Zero Multisig',
-        target: 'Layer Zero Endpoint (L2 Boosts)'
+        target: 'Layer Zero Endpoint (L2 Boosts)',
+        lineStyle: {
+            type: 'dotted'
+        }
     },
     {
         source: 'DAO Multisig',
-        target: 'Authorizer Adaptor Entry Point'
+        target: 'Authorizer Adaptor Entry Point',
+        lineStyle: {
+            type: 'dotted'
+        }
     },
     {
         source: 'DAO Multisig',
@@ -462,14 +497,65 @@ export const balancerContractDataLinks = [
     },
     {
         source: 'Authorizer Adaptor Entry Point',
-        target: 'Authorizer Adaptor'
+        target: 'Authorizer Adaptor',
+        lineStyle: {
+            type: 'dotted'
+        }
     },
     {
         source: 'Authorizer Adaptor',
-        target: 'Authorizer'
+        target: 'Authorizer',
+        lineStyle: {
+            type: 'dotted'
+        }
     },
     {
         source: 'Authorizer',
-        target: 'Authorizer with Adaptor Validation'
+        target: 'Authorizer with Adaptor Validation',
+        lineStyle: {
+            type: 'dotted'
+        }
     },
+    {
+        source: 'StakelessGaugeCheckpointer-v2',
+        target: 'Gauges',
+        lineStyle: {
+            type: 'dotted'
+        }
+    },
+    {
+        source: 'Emergency subDAO Multisig',
+        target: 'Gauges',
+        lineStyle: {
+            type: 'dotted'
+        }
+    },
+    {
+        source: 'Emergency subDAO Multisig',
+        target: 'Liquidity Pools',
+        lineStyle: {
+            type: 'dotted'
+        }
+    },
+    {
+        source: 'BatchRelayerLibrary',
+        target: 'BatchRelayer',
+        lineStyle: {
+            type: 'dotted'
+        }
+    },
+    {
+        source: 'BatchRelayerLibrary',
+        target: 'Vault',
+        lineStyle: {
+            type: 'dotted'
+        }
+    },
+    {
+        source: 'Core Pool Voting Incentives',
+        target: 'veBAL',
+        lineStyle: {
+            curveness: -0.2,
+        }
+    }
 ]

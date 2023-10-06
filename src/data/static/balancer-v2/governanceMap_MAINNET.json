@@ -2210,7 +2210,7 @@
       ]
     },
     {
-      "id": "0x67F8DF125B796B05895a6dc8Ecf944b9556ecb0B",
+      "id": "0xC128468b7Ce63eA702C1f104D55A2566b13D3ABD",
       "title": "Gauge Controller",
       "description": "The Gauge Controller is responsible for all the logic related to liquidity gauges and the issuance of coins through them. This is where veBAL voting occurs and where gauges are added to, by the gauge adder.",
       "readMethods": [
