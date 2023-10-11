@@ -54,7 +54,11 @@ export default function SmartContractPermissions() {
                                     aria-controls="panel-content"
                                     id="panel-header"
                                 >
-                                    <Typography>{permission.Contract} - {permission.Fx.split('(')[0]}</Typography>
+                                    <Box>
+                                        <Typography>{permission.Contract} - {permission.Fx.split('(')[0]}</Typography>
+                                        <Typography variant={'caption'}>({permission.Deployment})</Typography>
+                                    </Box>
+
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <List>
