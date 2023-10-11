@@ -6,25 +6,107 @@
       "description": "The `Vault` is Balancer V2's core contract. A single instance of it exists for each network, and it is the entity used to interact with Pools by Liquidity Providers who join and exit them, traders who swap, and asset managers who withdraw and deposit tokens.",
       "readMethods": [
         {
-          "methodName": "getTotalTokenValueLocked",
-          "methodDescription": "Get total token value locked",
+          "methodName": "WETH",
+          "methodDescription": "Returns address for the WETH token on the network",
+          "methodVariables": [
+          ]
+        },
+        {
+          "methodName": "getAuthorizer",
+          "methodDescription": "Returns the Vault's Authorizer.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "getDomainSeperator",
+          "methodDescription": "Returns the EIP712 domain separator.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "getInternalBalance",
+          "methodDescription": "Returns a user's internal balance of each quantity of specified tokens.",
           "methodVariables": [
             {
-              "name": "userAddress",
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "name": "tokens",
+              "type": "address[]"
+            }
+          ]
+        },
+        {
+          "methodName": "getNextNonce",
+          "methodDescription": "Returns the next nonce for a specified user.",
+          "methodVariables": [
+            {
+              "name": "user",
               "type": "address"
             }
           ]
         },
         {
-          "methodName": "getTokenBalance",
-          "methodDescription": "Get token balance for an address",
+          "methodName": "getPausedState",
+          "methodDescription": "Returns the current contract pause status, as well as the end times of the Pause Window and Buffer Period.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "getPool",
+          "methodDescription": "Returns the pool address based on the pool id",
           "methodVariables": [
             {
-              "name": "userAddress",
+              "name": "poolId",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "methodName": "getPoolTokenInfo",
+          "methodDescription": "Returns the token info within a specific pool.",
+          "methodVariables": [
+            {
+              "name": "poolId",
+              "type": "bytes32"
+            },
+            {
+              "name": "token",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "getPoolTokens",
+          "methodDescription": "Returns the tokens within a specific pool.",
+          "methodVariables": [
+            {
+              "name": "poolId",
+              "type": "bytes32"
+            }
+          ]
+        },
+        {
+          "methodName": "getProtocolFeesCollector",
+          "methodDescription": "Returns the protocol fees collector contract.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "hasApprovedRelayer",
+          "methodDescription": "Returns true or false is a user has approved the passed relayer contract",
+          "methodVariables": [
+            {
+              "name": "user",
               "type": "address"
             },
             {
-              "name": "tokenAddress",
+              "name": "relayer",
               "type": "address"
             }
           ]
@@ -32,21 +114,295 @@
       ],
       "writeMethods": [
         {
-          "methodName": "depositTokens",
-          "methodDescription": "Deposit tokens",
+          "methodName": "batchSwap",
+          "methodDescription": "Executes a batchswap across the vault based on the input data.",
           "methodVariables": [
             {
-              "name": "amount",
+              "name": "batchSwap",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "kind",
+              "type": "uint8"
+            },
+            {
+              "name": "assets",
+              "type": "address[]"
+            },
+            {
+              "name": "swaps",
+              "type": "tuple[]"
+            },
+            {
+              "name": "funds",
+              "type": "tuple"
+            },
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "fromInternalBalance",
+              "type": "bool"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "toInternalBalance",
+              "type": "bool"
+            },
+            {
+              "name": "limits",
+              "type": "int256[]"
+            },
+            {
+              "name": "deadline",
               "type": "uint256"
             }
           ]
         },
         {
-          "methodName": "withdrawTokens",
-          "methodDescription": "Withdraw tokens",
+          "methodName": "deregisterTokens",
+          "methodDescription": "Deregisters `tokens` for the `poolId` Pool. Must be called by the Pool's contract. Only registered tokens (via `registerTokens`) can be deregistered. Additionally, they must have zero total balance. For Pools with the Two Token specialization, `tokens` must have a length of two, that is, both tokens must be deregistered in the same `deregisterTokens` call. A deregistered token can be re-registered later on, possibly with a different Asset Manager. Emits a `TokensDeregistered` event.",
           "methodVariables": [
             {
+              "name": "poolId",
+              "type": "bytes32"
+            },
+            {
+              "name": "tokens",
+              "type": "address[]"
+            }
+          ]
+        },
+        {
+          "methodName": "exitPool",
+          "methodDescription": "Exits pool for a user.",
+          "methodVariables": [
+            {
+              "name": "poolId",
+              "type": "bytes32"
+            },
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "request",
+              "type": "tuple"
+            },
+            {
+              "name": "assets",
+              "type": "address[]"
+            },
+            {
+              "name": "minAmountsOut",
+              "type": "uint256[]"
+            },
+            {
+              "name": "userData",
+              "type": "bytes"
+            },
+            {
+              "name": "toInternalBalance",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "methodName": "flashLoan",
+          "methodDescription": "Performs a 'flash loan', sending tokens to `recipient`, executing the `receiveFlashLoan` hook on it, and then reverting unless the tokens plus a proportional protocol fee have been returned. The `tokens` and `amounts` arrays must have the same length, and each entry in these indicates the loan amount for each token contract. `tokens` must be sorted in ascending order. The 'userData' field is ignored by the Vault, and forwarded as-is to `recipient` as part of the `receiveFlashLoan` call. Emits `FlashLoan` events.",
+          "methodVariables": [
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "tokens",
+              "type": "address[]"
+            },
+            {
+              "name": "amounts",
+              "type": "uint256[]"
+            },
+            {
+              "name": "userData",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "methodName": "queryBatchSwap",
+          "methodDescription": "Queries the swaps a user is interested in.",
+          "methodVariables": [
+            {
+              "name": "kind",
+              "type": "uint8"
+            },
+            {
+              "name": "swaps",
+              "type": "tuple"
+            },
+            {
+              "name": "assets",
+              "type": "address[]"
+            },
+            {
+              "name": "funds",
+              "type": "tuple"
+            },
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "fromInternalBalance",
+              "type": "bool"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "toInternalBalance",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "methodName": "registerPool",
+          "methodDescription": "Registers the caller account as a Pool with a given specialization setting. Returns the Pool's ID, which is used in all Pool-related functions. Pools cannot be deregistered, nor can the Pool's specialization be changed. The caller is expected to be a smart contract that implements either `IGeneralPool` or `IMinimalSwapInfoPool`, depending on the chosen specialization setting. This contract is known as the Pool's contract. Note that the same contract may register itself as multiple Pools with unique Pool IDs, or in other words, multiple Pools may share the same contract. Emits a `PoolRegistered` event.",
+          "methodVariables": [
+            {
+              "name": "specialization",
+              "type": "uint8"
+            }
+          ]
+        },
+        {
+          "methodName": "registerTokens",
+          "methodDescription": "Registers `tokens` for the `poolId` Pool. Must be called by the Pool's contract. Pools can only interact with tokens they have registered. Users join a Pool by transferring registered tokens, exit by receiving registered tokens, and can only swap registered tokens. Each token can only be registered once. For Pools with the Two Token specialization, `tokens` must have a length of two, that is, both tokens must be registered in the same `registerTokens` call, and they must be sorted in ascending order. The `tokens` and `assetManagers` arrays must have the same length, and each entry in these indicates the Asset Manager for the corresponding token. Asset Managers can manage a Pool's tokens via `managePoolBalance`, depositing and withdrawing them directly, and can even set their balance to arbitrary amounts. They are therefore expected to be highly secured smart contracts with sound design principles, and the decision to register an Asset Manager should not be made lightly. Pools can choose not to assign an Asset Manager to a given token by passing in the zero address. Once an Asset Manager is set, it cannot be changed except by deregistering the associated token and registering again with a different Asset Manager. Emits a `TokensRegistered` event.",
+          "methodVariables": [
+            {
+              "name": "poolId",
+              "type": "bytes32"
+            },
+            {
+              "name": "tokens",
+              "type": "address[]"
+            },
+            {
+              "name": "assetManagers",
+              "type": "address[]"
+            }
+          ]
+        },
+        {
+          "methodName": "registerTokens",
+          "methodDescription": "Sets a new Authorizer for the Vault. The caller must be allowed by the current Authorizer to do this. Emits an `AuthorizerChanged` event.",
+          "methodVariables": [
+            {
+              "name": "newAuthorizer",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "methodName": "setPaused",
+          "methodDescription": "Safety mechanism to pause most Vault operations in the event of an emergency - typically detection of an error in some part of the system. The Vault can only be paused during an initial time period, after which pausing is forever disabled. While the contract is paused, the following features are disabled: - depositing and transferring internal balance - transferring external balance (using the Vault's allowance) - swaps - joining Pools - Asset Manager interactions Internal Balance can still be withdrawn, and Pools exited.",
+          "methodVariables": [
+            {
+              "name": "paused",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "methodName": "setRelayerApproval",
+          "methodDescription": "Allows `relayer` to act as a relayer for `sender` if `approved` is true, and disallows it otherwise. Emits a `RelayerApprovalChanged` event.",
+          "methodVariables": [
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "relayer",
+              "type": "address"
+            },
+            {
+              "name": "approved",
+              "type": "bool"
+            }
+          ]
+        },
+        {
+          "methodName": "swap",
+          "methodDescription": "Executes a swap across the vault based on the input data.",
+          "methodVariables": [
+            {
+              "name": "swap",
+              "type": "payableAmount(ether)"
+            },
+            {
+              "name": "singleSwap",
+              "type": "tuple"
+            },
+            {
+              "name": "poolId",
+              "type": "bytes32"
+            },
+            {
+              "name": "kind",
+              "type": "uint8"
+            },
+            {
+              "name": "assetIn",
+              "type": "address"
+            },
+            {
+              "name": "asseOut",
+              "type": "address"
+            },
+            {
               "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "name": "userData",
+              "type": "bytes"
+            },
+            {
+              "name": "funds",
+              "type": "tuple"
+            },
+            {
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "name": "fromInternalBalance",
+              "type": "bool"
+            },
+            {
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "toInternalBalance",
+              "type": "bool"
+            },
+            {
+              "name": "limits",
+              "type": "int256[]"
+            },
+            {
+              "name": "deadline",
               "type": "uint256"
             }
           ]

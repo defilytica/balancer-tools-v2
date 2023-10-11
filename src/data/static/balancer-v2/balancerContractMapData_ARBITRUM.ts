@@ -2,162 +2,86 @@ export const balancerContractMapData_ARBITRUM = [
     {
         name: 'Vault',
         value: '0xBA12222222228d8Ba445958a75a0704d566BF2C8',
-        x: -50,
+        x: 200,
         y: 800
     },
     {
         name: 'Protocol Fee Collector',
         value: '0xce88686553686DA562CE7Cea497CE749DA109f9F',
-        x: 200,
-        y: 400
+        x: 400,
+        y: 200
     },
     {
         name: 'Protocol Fee Percentages Provider',
-        value: '0x97207B095e4D5C9a6e4cfbfcd2C3358E03B90c4A',
-        x: 0,
+        value: '0x5ef4c5352882b10893b70DbcaA0C000965bd23c5',
+        x: 200,
         y: 400
     },
     {
         name: 'Protocol Fee Withdrawer',
-        value: '0x5ef4c5352882b10893b70DbcaA0C000965bd23c5',
-        x: 200,
+        value: '0x70Bbd023481788e443472e123AB963e5EBF58D06',
+        x: 400,
         y: 600
     },
     {
         name: 'Mimic Smart Vault',
         value: '0x94Dd9C6152a2A0BBcB52d3297b723A6F01D5F9f7',
-        x: 400,
-        y: 600
+        x: 600,
+        y: 400
     },
     {
         name: 'Protocol Fee Multisig',
         value: '0x7c68c42De679ffB0f16216154C996C354cF1161B',
-        x: 600,
-        y: 600
-    },
-
-    {
-        name: 'Core Pool Voting Incentives',
         x: 800,
         y: 400
     },
     {
-        name: 'veBAL Fee Injector',
-        value: '0x8AD2512819A7eae1dd398973EFfaE48dafBe8255',
-        x: 600,
-        y: 400
-
-    },
-    {
-        name: 'Fee Distributor',
-        value: '0xD3cf852898b21fc233251427c2DC93d3d604F3BB',
-        x: 600,
-        y: 200
-
-    },
-    {
         name: 'DAO Multisig',
-        value: '0x10A19e7eE7d7F8a52822f6817de8ea18204F2e4f',
-        x: 400,
-        y: 200
-
-    },
-    {
-        name: 'veBAL',
-        value: '0xC128a9954e6c874eA3d62ce62B468bA073093F25',
-        x: 600,
+        value: '0xaF23DC5983230E9eEAf93280e312e57539D098D0',
+        x: 800,
         y: 0
-
-    },
-    {
-        name: 'Smart Wallet Checker',
-        value: '0x7869296Efd0a76872fEE62A058C8fBca5c1c826C',
-        x: 600,
-        y: -200
-
-    },
-    {
-        name: 'Voting Escrow Remapper',
-        value: '0x83E443EF4f9963C77bd860f94500075556668cb8',
-        x: 400,
-        y: 0
-
-    },
-    {
-        name: 'Omni Voting Escrow',
-        value: '0xE241C6e48CA045C7f631600a0f1403b2bFea05ad',
-        x: 400,
-        y: -200
 
     },
     {
         name: 'Voting Escrow Delegation Proxy',
-        value: '0xE241C6e48CA045C7f631600a0f1403b2bFea05ad',
-        x: 400,
+        value: '0x81cFAE226343B24BA12EC6521Db2C79E7aeeb310',
+        x: 800,
         y: -400
 
     },
     {
         name: 'veBoost',
-        value: '0x67F8DF125B796B05895a6dc8Ecf944b9556ecb0B',
-        x: 200,
+        value: '0x6B5dA774890Db7B7b96C6f44e6a4b0F657399E2e',
+        x: 600,
         y: -400
-
-    },
-    {
-        name: 'Layer Zero Multisig',
-        value: '0xCDa8e3ADD00c95E5035617F970096118Ca2F4C92',
-        x: 0,
-        y: -400
-
-    },
-    {
-        name: 'Layer Zero Endpoint (L2 Boosts)',
-        value: '0x66A71Dcef29A0fFBDBE3c6a460a3B5BC225Cd675',
-        x: 0,
-        y: -200
-
-    },
-    {
-        name: 'Omni Voting Escrow Adaptor',
-        value: '0x96484f2aBF5e58b15176dbF1A799627B53F13B6d',
-        x: 200,
-        y: 0
 
     },
     {
         name: 'Authorizer Adaptor Entry Point',
-        value: '0xf5dECDB1f3d1ee384908Fbe16D2F0348AE43a9eA',
-        x: -200,
-        y: 0
+        value: '0x97207B095e4D5C9a6e4cfbfcd2C3358E03B90c4A',
+        x: 200,
+        y: -400
 
     },
     {
         name: 'Authorizer Adaptor',
-        value: '0x8F42aDBbA1B16EaAE3BB5754915E0D06059aDd75',
-        x: -200,
-        y: 200
+        value: '0x0F3e0c4218b7b0108a3643cFe9D3ec0d4F57c54e',
+        x: 200,
+        y: -200
 
     },
     {
         name: 'Authorizer',
         value: '0xA331D84eC860Bf466b4CdCcFb4aC09a1B43F3aE6',
-        x: -200,
-        y: 400
+        x: 200,
+        y: 0
 
     },
     {
         name: 'Authorizer with Adaptor Validation',
-        value: '0x6048A8c631Fb7e77EcA533Cf9C29784e482391e7',
-        x: -200,
-        y: 600
-
-    },
-    {
-        name: 'Gauge Controller',
-        value: '0xC128468b7Ce63eA702C1f104D55A2566b13D3ABD',
-        x: 800,
-        y: 0
+        value: '0x6B1Da720Be2D11d95177ccFc40A917c2688f396c',
+        x: 200,
+        y: 200
 
     },
     {
@@ -167,87 +91,87 @@ export const balancerContractMapData_ARBITRUM = [
     },
     {
         name: 'Pool Factories',
-        value: '0x897888115Ada5773E02aA29F775430BFB5F34c51',
+        value: '0xc7E5ED1054A24Ef31D827E6F86caA58B3Bc168d7',
         x: 1400,
         y: 200
     },
     {
         name: 'Balancer Maxi LM Multisig',
         value: '0xc38c5f97B34E175FFd35407fc91a937300E33860',
-        x: 1000,
-        y: 200
+        x: 1400,
+        y: 400
     },
     {
-        name: 'Gauge Adder',
-        value: '0x5DbAd78818D4c8958EfF2d5b95b28385A22113Cd',
+        name: 'Root Gauges - Mainnet',
+        value: '0x90DDAa2A6D192Db2F47195d847626F94E940c7Ac',
         x: 1000,
         y: 0
     },
     {
-        name: 'Gauges',
-        value: '0x0021e01b9fab840567a8291b864ff783894eabc6',
-        x: 1000,
+        name: 'L2BalancerPseudoMinter',
+        value: '0x239e55F427D44C3cc793f49bFB507ebe76638a2b',
+        x: 800,
         y: -200
     },
     {
-        name: 'Balancer Minter',
-        value: '0x239e55F427D44C3cc793f49bFB507ebe76638a2b',
-        x: 1000,
-        y: -400
-    },
-    {
         name: 'BAL Token',
-        value: '0xba100000625a3754423978a60c9317c58a424e3D',
-        x: 1200,
-        y: -400
+        value: '0x040d1EdC9569d4Bab2D15287Dc5A4F10F56a56B8',
+        x: 1000,
+        y: -200
     },
     {
         name: 'Root Gauge Factory',
         value: '0x1c99324EDC771c82A0DCCB780CC7DDA0045E50e7',
-        x: 800,
-        y: -400
-    },
-    {
-        name: 'Balancer Token Admin',
-        value: '0xf302f9F50958c5593770FDf4d4812309fF77414f',
         x: 1000,
-        y: -600
+        y: 200
     },
     {
         name: 'Child Chain Gauge',
-        value: '',
-        x: 800,
-        y: -600
+        value: '0xfC745035F31BCbaEb2D1a89aA9171495c671F6cE',
+        x: 1200,
+        y: 0
     },
     {
         name: 'Child Chain Gauge Factory',
         value: '0x6817149cb753BF529565B4D023d7507eD2ff4Bc0',
-        x: 600,
-        y: -600
+        x: 1200,
+        y: -400
     },
     {
         name: 'StakelessGaugeCheckpointer-v2',
         value: '0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98',
-        x: 1400,
-        y: -200
+        x: 800,
+        y: 200
     },
     {
         name: 'BatchRelayer',
-        value: '0xfeA793Aa415061C483D2390414275AD314B3F621',
-        x: 400,
+        value: '0x598ce0f1ab64B27256759ef99d883EE51138b9bd',
+        x: 1200,
         y: 800
     },
     {
         name: 'BatchRelayerLibrary',
-        value: '0xf77018c0d817dA22caDbDf504C00c0d32cE1e5C2',
-        x: 600,
+        value: '0xD87F44Df0159DC78029AB9CA7D7e57E7249F5ACD',
+        x: 1400,
         y: 800
     },
     {
         name: 'Emergency subDAO Multisig',
-        value: '0xA29F61256e948F3FB707b4b3B138C5cCb9EF9888',
+        value: '0xf404C5a0c02397f0908A3524fc5eb84e68Bbe60D',
         x: 1400,
         y: 0
+    },
+    {
+        name: 'L2LayerZeroBridgeForward',
+        value: '0x598ce0f1ab64B27256759ef99d883EE51138b9bd',
+        x: 400,
+        y: -400
+    },
+    {
+        name: 'Mainnet Smart Vault',
+        value: '',
+        x: 600,
+        y: 200
     },
 ]
 
@@ -283,6 +207,10 @@ export const balancerContractDataLinks_ARBITRUM = [
         target: 'Protocol Fee Collector'
     },
     {
+        source: 'BAL Token',
+        target: 'Child Chain Gauge'
+    },
+    {
         source: 'Protocol Fee Withdrawer',
         target: 'Mimic Smart Vault',
         lineStyle: {
@@ -299,22 +227,7 @@ export const balancerContractDataLinks_ARBITRUM = [
     },
     {
         source: 'Mimic Smart Vault',
-        target: 'Protocol Fee Multisig',
-    },
-    {
-        source: 'Protocol Fee Multisig',
-        target: 'DAO Multisig',
-        lineStyle: {
-            curveness: 0.25
-        }
-    },
-    {
-        source: 'Protocol Fee Multisig',
-        target: 'veBAL Fee Injector'
-    },
-    {
-        source: 'Protocol Fee Multisig',
-        target: 'Core Pool Voting Incentives'
+        target: 'Mainnet Smart Vault',
     },
     {
         source: 'Pool Factories',
@@ -331,75 +244,15 @@ export const balancerContractDataLinks_ARBITRUM = [
         }
     },
     {
-        source: 'Liquidity Pools',
-        target: 'Gauges',
-        lineStyle: {
-            curveness: -0.2,
-            type: 'dotted'
-        }
-    },
-    {
-        source: 'Balancer Maxi LM Multisig',
-        target: 'Gauge Adder',
-        lineStyle: {
-            type: 'dotted'
-        }
-    },
-    {
-        source: 'veBAL Fee Injector',
-        target: 'Fee Distributor'
-    },
-    {
-        source: 'veBAL',
-        target: 'Gauge Controller'
-    },
-    {
-        source: 'Gauge Adder',
-        target: 'Gauge Controller',
-        lineStyle: {
-            type: 'dotted'
-        }
-    },
-    {
-        source: 'Gauge Adder',
-        target: 'Gauges',
-        lineStyle: {
-            type: 'dotted'
-        }
-    },
-    {
-        source: 'Fee Distributor',
-        target: 'veBAL'
-    },
-    {
-        source: 'Gauge Controller',
-        target: 'Balancer Minter',
-        lineStyle: {
-            curveness: 0.2,
-            type: 'dotted'
-        }
-    },
-    {
-        source: 'Balancer Minter',
+        source: 'L2BalancerPseudoMinter',
         target: 'BAL Token',
         lineStyle: {
             type: 'dotted'
         }
     },
     {
-        source: 'BAL Token',
-        target: 'Gauges'
-    },
-    {
-        source: 'Balancer Token Admin',
-        target: 'BAL Token',
-        lineStyle: {
-            type: 'dotted'
-        }
-    },
-    {
-        source: 'Root Gauge Factory',
-        target: 'Gauges',
+        source: 'Root Gauges - Mainnet',
+        target: 'L2BalancerPseudoMinter',
         lineStyle: {
             type: 'dotted'
         }
@@ -414,69 +267,6 @@ export const balancerContractDataLinks_ARBITRUM = [
     {
         source: 'Child Chain Gauge Factory',
         target: 'Child Chain Gauge',
-        lineStyle: {
-            type: 'dotted'
-        }
-    },
-    {
-        source: 'veBAL',
-        target: 'Smart Wallet Checker',
-        lineStyle: {
-            type: 'dotted'
-        }
-    },
-    {
-        source: 'veBAL',
-        target: 'Voting Escrow Remapper',
-        lineStyle: {
-            type: 'dotted'
-        }
-    },
-    {
-        source: 'veBAL',
-        target: 'Omni Voting Escrow',
-        lineStyle: {
-            type: 'dotted'
-        }
-    },
-    {
-        source: 'veBAL',
-        target: 'Voting Escrow Delegation Proxy',
-        lineStyle: {
-            type: 'dotted'
-        }
-    },
-    {
-        source: 'Voting Escrow Delegation Proxy',
-        target: 'veBoost',
-        lineStyle: {
-            type: 'dotted'
-        }
-    },
-    {
-        source: 'Voting Escrow Remapper',
-        target: 'Omni Voting Escrow Adaptor',
-        lineStyle: {
-            type: 'dotted'
-        }
-    },
-    {
-        source: 'Omni Voting Escrow Adaptor',
-        target: 'Omni Voting Escrow',
-        lineStyle: {
-            type: 'dotted'
-        }
-    },
-    {
-        source: 'Omni Voting Escrow',
-        target: 'Layer Zero Endpoint (L2 Boosts)',
-        lineStyle: {
-            type: 'dotted'
-        }
-    },
-    {
-        source: 'Layer Zero Multisig',
-        target: 'Layer Zero Endpoint (L2 Boosts)',
         lineStyle: {
             type: 'dotted'
         }
@@ -518,16 +308,31 @@ export const balancerContractDataLinks_ARBITRUM = [
     },
     {
         source: 'StakelessGaugeCheckpointer-v2',
-        target: 'Gauges',
+        target: 'Root Gauges - Mainnet',
         lineStyle: {
             type: 'dotted'
         }
     },
     {
-        source: 'Emergency subDAO Multisig',
-        target: 'Gauges',
+        source: 'Voting Escrow Delegation Proxy',
+        target: 'veBoost',
         lineStyle: {
             type: 'dotted'
+        }
+    },
+    {
+        source: 'L2LayerZeroBridgeForward',
+        target: 'veBoost',
+        lineStyle: {
+            type: 'dotted'
+        }
+    },
+    {
+        source: 'L2LayerZeroBridgeForward',
+        target: 'Child Chain Gauge',
+        lineStyle: {
+            type: 'dotted',
+            curveness: 0.7,
         }
     },
     {
@@ -549,13 +354,6 @@ export const balancerContractDataLinks_ARBITRUM = [
         target: 'Vault',
         lineStyle: {
             type: 'dotted'
-        }
-    },
-    {
-        source: 'Core Pool Voting Incentives',
-        target: 'veBAL',
-        lineStyle: {
-            curveness: -0.2,
         }
     }
 ]
