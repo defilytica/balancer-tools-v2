@@ -32,6 +32,7 @@ import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import KeyIcon from '@mui/icons-material/Key';
+import PostAddIcon from '@mui/icons-material/PostAdd';
 
 
 export type MenuDrawerProps = {
@@ -141,6 +142,12 @@ const MenuDrawer = ({
                                 <KeyIcon />
                             </ListItemIcon>
                             <ListItemText primary={'Permissions'} />
+                        </ListItemButton>
+                        <ListItemButton key={'Payload Builder'} component={NavLink} to={'balancer/payloadBuilder'}>
+                            <ListItemIcon>
+                                <PostAddIcon />
+                            </ListItemIcon>
+                            <ListItemText primary={'Payload Builder'} />
                         </ListItemButton>
                     </List>
                 </Collapse>
