@@ -1664,61 +1664,43 @@
     },
     {
       "id": "0x90DDAa2A6D192Db2F47195d847626F94E940c7Ac",
-      "title": "Mainnet Roots Gauges",
-      "description": "Mainnet Liquidity Gauges correspond to pools only on mainnet and are responsbile for streaming BAL tokens to user's with pool tokens staked in them. The mainnet gauge factory is 0xf1665E19bc105BE4EDD3739F88315cC699cc5b65",
+      "title": "ArbitrumRootGauge",
+      "description": "Root gauges correspond to mainnet guage added to the gauge controller for L2 child gauges. The root gauge has a recipient gauge on each L2 to sent BAL to via a respective bridge.",
       "readMethods": [
         {
-          "methodName": "claimed_reward",
-          "methodDescription": "Returns the amount of tokens claimed from the gauge for a specific user, for a specific reward token.",
-          "methodVariables": [
-            {
-              "name": "_addr",
-              "type": "address"
-            },
-            {
-              "name": "_token",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "methodName": "claimeable_reward",
-          "methodDescription": "Returns the amount of tokens that have not yet been claimed from the gauge for a specific user, for a specific reward token.",
-          "methodVariables": [
-            {
-              "name": "_addr",
-              "type": "address"
-            },
-            {
-              "name": "_reward_token",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "methodName": "inflation_rate",
-          "methodDescription": "Returns the current BAL inflation rate.",
+          "methodName": "MAX_RELATIVE_WEIGHT_CAP",
+          "methodDescription": "Returns the max relative weight cap possible for a gauge. This is 100% or 10e18",
           "methodVariables": [
 
           ]
         },
         {
-          "methodName": "allowance",
-          "methodDescription": "Returns allowance approbed for a spender address, in relation to an owner address.",
+          "methodName": "getCappedRelativeWeight",
+          "methodDescription": "Returns the relative weight cap of the gauge at a specified time stamp.",
           "methodVariables": [
             {
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "name": "spender",
-              "type": "address"
+              "name": "time",
+              "type": "uint256"
             }
           ]
         },
         {
+          "methodName": "getRecipient",
+          "methodDescription": "Returns the corresponding network child chain gauge address corresponding to this root gauge.",
+          "methodVariables": [
+
+          ]
+        },
+        {
           "methodName": "getRelativeWeightCap",
-          "methodDescription": "Returns gauges relative weight cap.",
+          "methodDescription": "Gets the relative weight cap for the gauge.",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "getTotalBridgeCost",
+          "methodDescription": "Returns the bridge cost in wei as a uint256",
           "methodVariables": [
 
           ]
@@ -1734,292 +1716,127 @@
           ]
         },
         {
-          "methodName": "getMaxRelativeWeightCap",
-          "methodDescription": "Returns the maximum relative weight cap a gauge can have.",
+          "methodName": "isKilled",
+          "methodDescription": "Returns true if gauge is killed; false otherwise.",
           "methodVariables": [
 
           ]
-        },
+        }
+      ],
+      "writeMethods": [
         {
-          "methodName": "balanceOf",
-          "methodDescription": "Returns the amount of pool tokens a user has staked in the gauge.",
+          "methodName": "checkpoint",
+          "methodDescription": "Checkpoints the gauge to update it in the system as weights, total veBAL, and the overall system changes.",
           "methodVariables": [
             {
-              "name": "arg0",
-              "type": "address"
+              "name": "checkpoint",
+              "type": "payableAmount(ether)"
             }
           ]
         },
         {
-          "methodName": "totalSupply",
-          "methodDescription": "Returns the total supply of LP tokens staked in the gauge.",
-          "methodVariables": [
-
-          ]
-        },
-        {
-          "methodName": "lptoken",
-          "methodDescription": "Returns the pool token address, corresponding to this gauge.",
-          "methodVariables": [
-
-          ]
-        },
-        {
-          "methodName": "is_killed",
-          "methodDescription": "Returns true or false, depending on if the gauge is killed.",
-          "methodVariables": [
-
-          ]
-        },
-        {
-          "methodName": "working_balances",
-          "methodDescription": "Returns the user's working balance in the gauge. This is related to their rewards boosting, based on their veBAL holdings.",
-          "methodVariables": [
-
-          ]
-        },
-        {
-          "methodName": "working_supply",
-          "methodDescription": "Returns the working supply in the gauge. Sum of all user's working balances. This is crucial in determing rewards boosting for each staked liquidity provider.",
-          "methodVariables": [
-
-          ]
-        },
-        {
-          "methodName": "reward_tokens",
-          "methodDescription": "Returns the address of the reward tokens based on an index of when they were added. This only appleis to non-BAL reward tokens.",
+          "methodName": "initialize",
+          "methodDescription": "Initializes the gauge with a specific recipient and relativeWeightCap",
           "methodVariables": [
             {
-              "name": "arg0",
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "relativeWeightCap",
               "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "killGauge",
+          "methodDescription": "Kills the gauge so it cannot mint BAL.",
+          "methodVariables": [
+            
+          ]
+        },
+        {
+          "methodName": "setRelativeWeightCap",
+          "methodDescription": "Sets a new relative weight cap for the gauge. The value shall be normalized to 1e18, and not greater than MAX_RELATIVE_WEIGHT_CAP.",
+          "methodVariables": [
+            {
+              "name": "relativeWeightCap",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "methodName": "unkillGauge",
+          "methodDescription": "Unkills the gauge so it can mint BAL again.",
+          "methodVariables": [
+
+          ]
+        }
+      ]
+    },
+    {
+      "id": "0x1c99324EDC771c82A0DCCB780CC7DDA0045E50e7",
+      "title": "Root Gauge Factories",
+      "description": "Root gauge factories create the mainnet gauges for each layer 2 network. A unique factory exists for each network. Arbitrum: 0x1c99324EDC771c82A0DCCB780CC7DDA0045E50e7 Polygon: 0xa98Bce70c92aD2ef3288dbcd659bC0d6b62f8F13  Optimism: 0x866D4B65694c66fbFD15Dd6fa933D0A6b3940A36 Gnosis Chain: 0x2a18B396829bc29F66a1E59fAdd7a0269A6605E8 Polygon zkEVM: 0x9bF951848288cCD87d06FaC426150262cD3447De Avalanche: 0x22625eEDd92c81a219A83e1dc48f88d54786B017 Base: 0x8e3B64b3737097F283E965869e3503AA20F31E4D (https://forum.balancer.fi/t/instructions-overview/2674)",
+      "readMethods": [
+        {
+          "methodName": "getNetworkFees",
+          "methodDescription": "Returns the fees for the Layer 2 Network's side of the bridging transaction",
+          "methodVariables": [
+
+          ]
+        },
+        {
+          "methodName": "getGaugeImplementation",
+          "methodDescription": "Returns the address of the implementation used for gauge deployments.",
+          "methodVariables": [
+            {
+              "name": "gaugeType",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "methodName": "isGaugeFromFactory",
+          "methodDescription": "Returns true or false if the gauge address is from this factory.",
+          "methodVariables": [
+            {
+              "name": "gauge",
+              "type": "address"
             }
           ]
         }
       ],
       "writeMethods": [
         {
-          "methodName": "deposit",
-          "methodDescription": "Deposits pool tokens into the gauge, staking them.",
+          "methodName": "create",
+          "methodDescription": "Deploys a new gauge which bridges all of its BAL allowance to a single recipient on Arbitrum.",
           "methodVariables": [
             {
-              "name": "_value",
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "name": "relativeWeightCap",
               "type": "uint256"
             }
           ]
         },
         {
-          "methodName": "deposit",
-          "methodDescription": "Deposits pool tokens into the gauge, staking them. This is used for another user, assuming the spender is approved.",
+          "methodName": "setNetworkFees",
+          "methodDescription": "Set the fees for the Layer 2 Network's side of the bridging transaction",
           "methodVariables": [
             {
-              "name": "_value",
-              "type": "uint256"
+              "name": "gasLimit",
+              "type": "uint64"
             },
             {
-              "name": "_addr",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "methodName": "deposit",
-          "methodDescription": "Deposits pool tokens into the gauge, staking them. This is used for another user, assuming the spender is approved. This also claims rewards if desired.",
-          "methodVariables": [
-            {
-              "name": "_value",
-              "type": "uint256"
+              "name": "gasPrice",
+              "type": "uint64"
             },
             {
-              "name": "_addr",
-              "type": "address"
-            },
-            {
-              "name": "_claim_rewards",
-              "type": "bool"
-            }
-          ]
-        },
-        {
-          "methodName": "claim_rewards",
-          "methodDescription": "Claims rewards for the specified address, and sends them to that address.",
-          "methodVariables": [
-            {
-              "name": "_addr",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "methodName": "claim_rewards",
-          "methodDescription": "Claims rewards for the specified address, and sends them to a different address.",
-          "methodVariables": [
-            {
-              "name": "_addr",
-              "type": "address"
-            },
-            {
-              "name": "_receiver",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "methodName": "transferFrom",
-          "methodDescription": "Transfers the staked LP token, remaining staked, from one address to another.",
-          "methodVariables": [
-            {
-              "name": "_from",
-              "type": "address"
-            },
-            {
-              "name": "_to",
-              "type": "address"
-            },
-            {
-              "name": "_value",
-              "type": "uint256"
-            }
-          ]
-        },
-        {
-          "methodName": "transfer",
-          "methodDescription": "Transfers the staked LP token, remaining staked, from your address to another.",
-          "methodVariables": [
-            {
-              "name": "_to",
-              "type": "address"
-            },
-            {
-              "name": "_value",
-              "type": "uint256"
-            }
-          ]
-        },
-        {
-          "methodName": "approve",
-          "methodDescription": "Approves another address the ability to spend the senders BAL upon signing a transaction.",
-          "methodVariables": [
-            {
-              "name": "_spender",
-              "type": "address"
-            },
-            {
-              "name": "_value",
-              "type": "uint256"
-            }
-          ]
-        },
-        {
-          "methodName": "increaseAllowance",
-          "methodDescription": "Atomically increases the allowance granted to `spender` by the caller. * This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}.",
-          "methodVariables": [
-            {
-              "name": "spender",
-              "type": "address"
-            },
-            {
-              "name": "addedValue",
-              "type": "uint256"
-            }
-          ]
-        },
-        {
-          "methodName": "decreaseAllowance",
-          "methodDescription": "Atomically decreases the allowance granted to `spender` by the caller. * This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}.",
-          "methodVariables": [
-            {
-              "name": "spender",
-              "type": "address"
-            },
-            {
-              "name": "subtractedValue",
-              "type": "uint256"
-            }
-          ]
-        },
-        {
-          "methodName": "user_checkpoint",
-          "methodDescription": "Checkpoints a user's place in the gauge. This updates their working balances, and their boost based on their current veBAL holdings.",
-          "methodVariables": [
-            {
-              "name": "addr",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "methodName": "set_rewards_receiver",
-          "methodDescription": "Sets an addres to receive gauge rewards on behalf of the sender.",
-          "methodVariables": [
-            {
-              "name": "addr",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "methodName": "deposit_reward_token",
-          "methodDescription": "Deposits reward tokens into the gauge to be distributed throughout the current epoch.",
-          "methodVariables": [
-            {
-              "name": "_reward_token",
-              "type": "address"
-            },
-            {
-              "name": "_amount",
-              "type": "uint256"
-            }
-          ]
-        },
-        {
-          "methodName": "add_reward",
-          "methodDescription": "Adds a new reward token as eligible to be sent to the gauge, and the address which is must come from.",
-          "methodVariables": [
-            {
-              "name": "_reward_token",
-              "type": "address"
-            },
-            {
-              "name": "_distributor",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "methodName": "set_reward_dsitributor",
-          "methodDescription": "Sets a new distributor contract for a specific reward token.",
-          "methodVariables": [
-            {
-              "name": "_reward_token",
-              "type": "address"
-            },
-            {
-              "name": "_distributor",
-              "type": "address"
-            }
-          ]
-        },
-        {
-          "methodName": "killGauge",
-          "methodDescription": "Kills the gauge, meaning it can no longer receive rewards from the veBAL system.",
-          "methodVariables": [
-
-          ]
-        },
-        {
-          "methodName": "unkillGauge",
-          "methodDescription": "Unkills the gauge, meaning it can receive rewards from the veBAL system.",
-          "methodVariables": [
-
-          ]
-        },
-        {
-          "methodName": "setRelativeWeightCap",
-          "methodDescription": "Updates the relative weight cap a gauge is able to have. Often 2%, 10%, or 100% of total emmissions.",
-          "methodVariables": [
-            {
-              "name": "relative_weight_cap",
-              "type": "uint256"
+              "name": "maxSubmissionCost",
+              "type": "uint64"
             }
           ]
         }
