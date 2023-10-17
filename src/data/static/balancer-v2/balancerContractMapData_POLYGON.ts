@@ -1,4 +1,4 @@
-export const balancerContractMapData_ARBITRUM = [
+export const balancerContractMapData_POLYGON = [
     {
         name: 'Vault',
         value: '0xBA12222222228d8Ba445958a75a0704d566BF2C8',
@@ -13,13 +13,13 @@ export const balancerContractMapData_ARBITRUM = [
     },
     {
         name: 'Protocol Fee Percentages Provider',
-        value: '0x5ef4c5352882b10893b70DbcaA0C000965bd23c5',
+        value: '0x42AC0e6FA47385D55Aff070d79eF0079868C48a6',
         x: 200,
         y: 400
     },
     {
         name: 'Protocol Fee Withdrawer',
-        value: '0x70Bbd023481788e443472e123AB963e5EBF58D06',
+        value: '0xEF44D6786b2b4d544b7850Fe67CE6381626Bf2D6',
         x: 400,
         y: 600
     },
@@ -37,35 +37,35 @@ export const balancerContractMapData_ARBITRUM = [
     },
     {
         name: 'DAO Multisig',
-        value: '0xaF23DC5983230E9eEAf93280e312e57539D098D0',
+        value: '0xeE071f4B516F69a1603dA393CdE8e76C40E5Be85',
         x: 800,
         y: 0
 
     },
     {
         name: 'Voting Escrow Delegation Proxy',
-        value: '0x81cFAE226343B24BA12EC6521Db2C79E7aeeb310',
+        value: '0x0f08eEf2C785AA5e7539684aF04755dEC1347b7c',
         x: 800,
         y: -400
 
     },
     {
         name: 'veBoost',
-        value: '0x6B5dA774890Db7B7b96C6f44e6a4b0F657399E2e',
+        value: '0xD961E30156C2E0D0d925A0De45f931CB7815e970',
         x: 600,
         y: -400
 
     },
     {
         name: 'Authorizer Adaptor Entry Point',
-        value: '0x97207B095e4D5C9a6e4cfbfcd2C3358E03B90c4A',
+        value: '0xAB093cd16e765b5B23D34030aaFaF026558e0A19',
         x: 200,
         y: -400
 
     },
     {
         name: 'Authorizer Adaptor',
-        value: '0x0F3e0c4218b7b0108a3643cFe9D3ec0d4F57c54e',
+        value: '0xC128468b7Ce63eA702C1f104D55A2566b13D3ABD',
         x: 200,
         y: -200
 
@@ -79,7 +79,7 @@ export const balancerContractMapData_ARBITRUM = [
     },
     {
         name: 'Authorizer with Adaptor Validation',
-        value: '0x6B1Da720Be2D11d95177ccFc40A917c2688f396c',
+        value: '0x020301b0a99EFB6816B41007765Fb577259eC418',
         x: 200,
         y: 200
 
@@ -91,7 +91,7 @@ export const balancerContractMapData_ARBITRUM = [
     },
     {
         name: 'Pool Factories',
-        value: '0xc7E5ED1054A24Ef31D827E6F86caA58B3Bc168d7',
+        value: '0xe2fa4e1d17725e72dcdAfe943Ecf45dF4B9E285b',
         x: 1400,
         y: 200
     },
@@ -103,37 +103,37 @@ export const balancerContractMapData_ARBITRUM = [
     },
     {
         name: 'Root Gauges - Mainnet',
-        value: '0x90DDAa2A6D192Db2F47195d847626F94E940c7Ac',
+        value: '0x98FF7a7b63130de492eB95dc35119601E1ED5188',
         x: 1000,
         y: 0
     },
     {
         name: 'L2BalancerPseudoMinter',
-        value: '0x239e55F427D44C3cc793f49bFB507ebe76638a2b',
+        value: '0x47B489bf5836f83ABD928C316F8e39bC0587B020',
         x: 800,
         y: -200
     },
     {
         name: 'BAL Token',
-        value: '0x040d1EdC9569d4Bab2D15287Dc5A4F10F56a56B8',
+        value: '0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3',
         x: 1000,
         y: -200
     },
     {
         name: 'Root Gauge Factory',
-        value: '0x1c99324EDC771c82A0DCCB780CC7DDA0045E50e7',
+        value: '0xa98Bce70c92aD2ef3288dbcd659bC0d6b62f8F13',
         x: 1000,
         y: 200
     },
     {
         name: 'Child Chain Gauge',
-        value: '0xfC745035F31BCbaEb2D1a89aA9171495c671F6cE',
+        value: '0xc9b36096f5201ea332Db35d6D195774ea0D5988f',
         x: 1200,
         y: 0
     },
     {
         name: 'Child Chain Gauge Factory',
-        value: '0x6817149cb753BF529565B4D023d7507eD2ff4Bc0',
+        value: '0x22625eEDd92c81a219A83e1dc48f88d54786B017',
         x: 1200,
         y: -400
     },
@@ -145,25 +145,25 @@ export const balancerContractMapData_ARBITRUM = [
     },
     {
         name: 'BatchRelayer',
-        value: '0x598ce0f1ab64B27256759ef99d883EE51138b9bd',
+        value: '0xd18d5D377eb23362e54Fa496597d7E962d56C554',
         x: 1200,
         y: 800
     },
     {
         name: 'BatchRelayerLibrary',
-        value: '0xD87F44Df0159DC78029AB9CA7D7e57E7249F5ACD',
+        value: '0x4271de2595c3d85d2D455C5778adF2d7Ad54322C',
         x: 1400,
         y: 800
     },
     {
         name: 'Emergency subDAO Multisig',
-        value: '0xf404C5a0c02397f0908A3524fc5eb84e68Bbe60D',
+        value: '0x3c58668054c299bE836a0bBB028Bee3aD4724846',
         x: 1400,
         y: 0
     },
     {
         name: 'L2LayerZeroBridgeForward',
-        value: '0x598ce0f1ab64B27256759ef99d883EE51138b9bd',
+        value: '0xB98F54A74590a6e681fF664b2Fa22EBfFe1a929E',
         x: 400,
         y: -400
     },
@@ -175,7 +175,7 @@ export const balancerContractMapData_ARBITRUM = [
     },
 ]
 
-export const balancerContractDataLinks_ARBITRUM = [
+export const balancerContractDataLinks_POLYGON = [
     {
         source: 'Vault',
         target: 'Protocol Fee Collector'

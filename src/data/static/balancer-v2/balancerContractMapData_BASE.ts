@@ -1,4 +1,4 @@
-export const balancerContractMapData_ARBITRUM = [
+export const balancerContractMapData_BASE = [
     {
         name: 'Vault',
         value: '0xBA12222222228d8Ba445958a75a0704d566BF2C8',
@@ -175,7 +175,7 @@ export const balancerContractMapData_ARBITRUM = [
     },
 ]
 
-export const balancerContractDataLinks_ARBITRUM = [
+export const balancerContractDataLinks_BASE = [
     {
         source: 'Vault',
         target: 'Protocol Fee Collector'

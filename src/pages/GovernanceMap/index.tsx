@@ -3,11 +3,13 @@ import {Card, Grid, Typography} from "@mui/material";
 import {BalancerSmartContractData} from "../../data/static/balancerStaticTypes";
 import contractData_MAINNET from "../../data/static/balancer-v2/governanceMap_MAINNET.json";
 import contractData_ARBITRUM from "../../data/static/balancer-v2/governanceMap_ARBITRUM.json";
+import contractData_POLYGON from "../../data/static/balancer-v2/governanceMap_POLYGON.json";
+import contractData_GNOSIS from "../../data/static/balancer-v2/governanceMap_GNOSIS.json";
 import ContractOverviewTable from "../../components/Tables/ContractOverviewTable";
 import BalancerV2ContractMap from "../../components/Echarts/BalancerV2ContractMap";
 import {isMobile} from "react-device-detect";
 import {useActiveNetworkVersion} from "../../state/application/hooks";
-import {ArbitrumNetworkInfo, EthereumNetworkInfo} from "../../constants/networks";
+import {ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo, GnosisNetworkInfo} from "../../constants/networks";
 
 export default function GovernanceMap() {
 
@@ -15,6 +17,8 @@ export default function GovernanceMap() {
 
     const smartContractData: BalancerSmartContractData = activeNetwork === EthereumNetworkInfo ? contractData_MAINNET :
                                                             activeNetwork === ArbitrumNetworkInfo ? contractData_ARBITRUM :
+                                                            activeNetwork === PolygonNetworkInfo ? contractData_POLYGON :
+                                                            activeNetwork === GnosisNetworkInfo ? contractData_GNOSIS :
                                                                 contractData_MAINNET;
 
 
