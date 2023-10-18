@@ -25,6 +25,9 @@ import ArbitrumLogo from '../../../assets/svg/arbitrum.svg'
 import EtherLogo from '../../../assets/svg/ethereum.svg'
 import PolygonLogo from '../../../assets/svg/polygon.svg'
 import GnosisLogo from '../../../assets/svg/gnosis.svg'
+import AvalancheLogo from '../../../assets/svg/avalancheLogo.svg'
+import BaseLogo from '../../../assets/svg/base.svg'
+import ZkevmLogo from '../../../assets/svg/zkevm.svg'
 import {BalancerStakingGauges, SimplePoolData} from "../../../data/balancer/balancerTypes";
 import {formatNumber} from "../../../utils/numbers";
 import GaugeComposition from "../../GaugeComposition";
@@ -315,7 +318,10 @@ export default function GovGaugeTable({gaugeDatas}: {
         OPTIMISM: OpLogo,
         POLYGON: PolygonLogo,
         GNOSIS: GnosisLogo,
-        ARBITRUM: ArbitrumLogo
+        ARBITRUM: ArbitrumLogo,
+        AVALANCHE: AvalancheLogo,
+        BASE: BaseLogo,
+        ZKEVM: ZkevmLogo,
     };
 
     const networkStringMap :NetworkLogoMap = {
@@ -323,7 +329,8 @@ export default function GovGaugeTable({gaugeDatas}: {
         OPTIMISM: "Optimism",
         POLYGON: "Polygon",
         GNOSIS: "Gnosis",
-        ARBITRUM: "Arbitrum"
+        ARBITRUM: "Arbitrum",
+        ZKEVM: 'Polygon zkEVM'
     };
 
 
@@ -348,9 +355,9 @@ export default function GovGaugeTable({gaugeDatas}: {
             </Paper>
             <Paper sx={{mb: 2, boxShadow: 3}}>
 
-                <TableContainer>
+                <TableContainer sx={{ maxWidth: '100%' }}>
                     <Table
-                        //sx={{ minWidth: 750 }}
+                        sx={{ maxWidth: '90%' }}
                         aria-labelledby="tableTitle"
                         size={dense ? 'small' : 'medium'}
                     >

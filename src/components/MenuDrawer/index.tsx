@@ -110,12 +110,6 @@ const MenuDrawer = ({
                     </ListItemIcon>
                     <ListItemText primary={'Incentive Simulator'} />
                 </ListItemButton>
-                <ListItemButton key={'Authorizations'} component={NavLink} to={networkPrefix(activeNetwork) + 'authorizations'}>
-                    <ListItemIcon>
-                        <SecurityIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={'Authorizations'} />
-                </ListItemButton>
                 <ListItemButton onClick={handleGovClick}>
                     <ListItemIcon>
                         <HandymanIcon />

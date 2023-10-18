@@ -297,6 +297,94 @@ export const optimismBlockClient = new ApolloClient({
     },
 })
 
+export const avalancheBlockClient = new ApolloClient({
+    uri: 'https://api.thegraph.com/subgraphs/name/iliaazhel/avalanche-blocks',
+    cache: new InMemoryCache(),
+    queryDeduplication: true,
+    defaultOptions: {
+        watchQuery: {
+            fetchPolicy: 'cache-first',
+        },
+        query: {
+            fetchPolicy: 'cache-first',
+            errorPolicy: 'all',
+        },
+    },
+})
+
+export const avalancheClient = new ApolloClient({
+    //uri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-v2',
+    uri: 'https://balancer-avalanche-v2-analytics.stellate.sh',
+    cache: new InMemoryCache({
+        typePolicies: {
+            Token: {
+                // Singleton types that have no identifying field can use an empty
+                // array for their keyFields.
+                keyFields: false,
+            },
+            Pool: {
+                // Singleton types that have no identifying field can use an empty
+                // array for their keyFields.
+                keyFields: false,
+            },
+        },
+    }),
+    queryDeduplication: true,
+    defaultOptions: {
+        watchQuery: {
+            fetchPolicy: 'cache-first',
+        },
+        query: {
+            fetchPolicy: 'cache-first',
+            errorPolicy: 'all',
+        },
+    },
+})
+
+export const baseBlockClient = new ApolloClient({
+    uri: 'https://api.studio.thegraph.com/query/48427/bleu-base-blocks/version/latest',
+    cache: new InMemoryCache(),
+    queryDeduplication: true,
+    defaultOptions: {
+        watchQuery: {
+            fetchPolicy: 'cache-first',
+        },
+        query: {
+            fetchPolicy: 'cache-first',
+            errorPolicy: 'all',
+        },
+    },
+})
+
+export const baseClient = new ApolloClient({
+    //uri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-v2',
+    uri: 'https://api.studio.thegraph.com/query/24660/balancer-base-v2/version/latest',
+    cache: new InMemoryCache({
+        typePolicies: {
+            Token: {
+                // Singleton types that have no identifying field can use an empty
+                // array for their keyFields.
+                keyFields: false,
+            },
+            Pool: {
+                // Singleton types that have no identifying field can use an empty
+                // array for their keyFields.
+                keyFields: false,
+            },
+        },
+    }),
+    queryDeduplication: true,
+    defaultOptions: {
+        watchQuery: {
+            fetchPolicy: 'cache-first',
+        },
+        query: {
+            fetchPolicy: 'cache-first',
+            errorPolicy: 'all',
+        },
+    },
+})
+
 //FTM and OP token client
 export const tokenClient = new ApolloClient({
     uri: 'https://backend-v3.beets-ftm-node.com/',

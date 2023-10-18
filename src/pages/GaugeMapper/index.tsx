@@ -30,7 +30,9 @@ export default function GaugeMapper(){
                         <Typography variant={'caption'}>Browse a list of Gauges across all Balancer deployments. Note: this list only contains gauges enabled for BAL rewards.</Typography>
                     </Grid>
                     <Grid item mt={2} xs={11}>
+                        <Box sx={{ maxWidth: '90%' }}>
                         <GovGaugeTable gaugeDatas={decoratedGaugeData} />
+                        </Box>
                     </Grid>
                 </Grid>
             :

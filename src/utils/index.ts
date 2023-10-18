@@ -5,7 +5,7 @@ import { Contract } from '@ethersproject/contracts';
 import { JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import { SupportedChainId } from '@uniswap/sdk-core';
 import {
-    ArbitrumNetworkInfo,
+    ArbitrumNetworkInfo, AvalancheNetworkInfo, BaseNetworkInfo,
     GnosisNetworkInfo,
     NetworkInfo,
     OptimismNetworkInfo,
@@ -107,6 +107,44 @@ export function getEtherscanLink(
 
     if (networkVersion === PolygonZkEVMNetworkInfo) {
         prefix = 'https://zkevm.polygonscan.com/';
+        switch (type) {
+            case 'transaction': {
+                return `${prefix}/tx/${data}`;
+            }
+            case 'token': {
+                return `${prefix}/address/${data}`;
+            }
+            case 'block': {
+                return `${prefix}/block/${data}`;
+            }
+            case 'address':
+            default: {
+                return `${prefix}/address/${data}`;
+            }
+        }
+    }
+
+    if (networkVersion === AvalancheNetworkInfo) {
+        prefix = 'https://snowtrace.io/';
+        switch (type) {
+            case 'transaction': {
+                return `${prefix}/tx/${data}`;
+            }
+            case 'token': {
+                return `${prefix}/address/${data}`;
+            }
+            case 'block': {
+                return `${prefix}/block/${data}`;
+            }
+            case 'address':
+            default: {
+                return `${prefix}/address/${data}`;
+            }
+        }
+    }
+
+    if (networkVersion === BaseNetworkInfo) {
+        prefix = 'https://basescan.org/';
         switch (type) {
             case 'transaction': {
                 return `${prefix}/tx/${data}`;
