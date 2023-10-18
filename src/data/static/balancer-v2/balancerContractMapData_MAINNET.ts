@@ -320,7 +320,7 @@ export const balancerContractDataLinks_MAINNET = [
         source: 'Pool Factories',
         target: 'Liquidity Pools',
         lineStyle: {
-            type: 'dotted'
+            type: 'dashed'
         }
     },
     {
@@ -401,21 +401,21 @@ export const balancerContractDataLinks_MAINNET = [
         source: 'Root Gauge Factory',
         target: 'Gauges',
         lineStyle: {
-            type: 'dotted'
+            type: 'dashed'
         }
     },
     {
         source: 'Child Chain Gauge',
         target: 'Root Gauge Factory',
         lineStyle: {
-            type: 'dotted'
+            type: 'dashed'
         }
     },
     {
         source: 'Child Chain Gauge Factory',
         target: 'Child Chain Gauge',
         lineStyle: {
-            type: 'dotted'
+            type: 'dashed'
         }
     },
     {

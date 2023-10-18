@@ -233,7 +233,7 @@ export const balancerContractDataLinks_ARBITRUM = [
         source: 'Pool Factories',
         target: 'Liquidity Pools',
         lineStyle: {
-            type: 'dotted'
+            type: 'dashed'
         }
     },
     {
@@ -258,17 +258,32 @@ export const balancerContractDataLinks_ARBITRUM = [
         }
     },
     {
+        source: 'Root Gauge Factory',
+        target: 'Root Gauges - Mainnet',
+        lineStyle: {
+            type: 'dashed'
+        }
+    },
+    {
+        source: 'Liquidity Pools',
+        target: 'Child Chain Gauge Factory',
+        lineStyle: {
+            type: 'dashed',
+            curveness: -0.3
+        }
+    },
+    {
         source: 'Child Chain Gauge',
         target: 'Root Gauge Factory',
         lineStyle: {
-            type: 'dotted'
+            type: 'dashed'
         }
     },
     {
         source: 'Child Chain Gauge Factory',
         target: 'Child Chain Gauge',
         lineStyle: {
-            type: 'dotted'
+            type: 'dashed'
         }
     },
     {

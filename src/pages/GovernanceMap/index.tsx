@@ -5,11 +5,12 @@ import contractData_MAINNET from "../../data/static/balancer-v2/governanceMap_MA
 import contractData_ARBITRUM from "../../data/static/balancer-v2/governanceMap_ARBITRUM.json";
 import contractData_POLYGON from "../../data/static/balancer-v2/governanceMap_POLYGON.json";
 import contractData_GNOSIS from "../../data/static/balancer-v2/governanceMap_GNOSIS.json";
+import contractData_ZKEVM from "../../data/static/balancer-v2/governanceMap_ZKEVM.json";
 import ContractOverviewTable from "../../components/Tables/ContractOverviewTable";
 import BalancerV2ContractMap from "../../components/Echarts/BalancerV2ContractMap";
 import {isMobile} from "react-device-detect";
 import {useActiveNetworkVersion} from "../../state/application/hooks";
-import {ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo, GnosisNetworkInfo} from "../../constants/networks";
+import {ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo, GnosisNetworkInfo, PolygonZkEVMNetworkInfo} from "../../constants/networks";
 
 export default function GovernanceMap() {
 
@@ -19,6 +20,7 @@ export default function GovernanceMap() {
                                                             activeNetwork === ArbitrumNetworkInfo ? contractData_ARBITRUM :
                                                             activeNetwork === PolygonNetworkInfo ? contractData_POLYGON :
                                                             activeNetwork === GnosisNetworkInfo ? contractData_GNOSIS :
+                                                            activeNetwork === PolygonZkEVMNetworkInfo ? contractData_ZKEVM :
                                                                 contractData_MAINNET;
 
 
@@ -83,6 +85,25 @@ export default function GovernanceMap() {
                         />
                         <Typography variant={"body2"}>
                             Permissioned Interactions
+                        </Typography>
+                    </div>
+                    <div
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            marginTop: "5px",
+                        }}
+                    >
+                        <div
+                            style={{
+                                width: "30px",
+                                height: "2px",
+                                border: "1px dashed white", // Use the color you prefer
+                                marginRight: "5px",
+                            }}
+                        />
+                        <Typography variant={"body2"}>
+                            Permissionless Interactions
                         </Typography>
                     </div>
                 </Box>
