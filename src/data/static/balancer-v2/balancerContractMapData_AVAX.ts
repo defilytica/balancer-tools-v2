@@ -162,7 +162,7 @@ export const balancerContractMapData_AVAX = [
         y: 0
     },
     {
-        name: 'L2LayerZeroBridgeForward',
+        name: 'L2LayerZeroBridgeForwarder',
         value: '0x4638ab64022927C9bD5947607459D13f57f1551C',
         x: 400,
         y: -400
@@ -212,21 +212,21 @@ export const balancerContractDataLinks_AVAX = [
     },
     {
         source: 'Protocol Fee Withdrawer',
-        target: 'Mimic Smart Vault',
+        target: 'Protocol Fee Multisig',
         lineStyle: {
-            curveness: -0.2
+            curveness: -0.4
         }
     },
     {
-        source: 'Mimic Smart Vault',
+        source: 'Protocol Fee Multisig',
         target: 'Protocol Fee Withdrawer',
         lineStyle: {
-            curveness: -0.2,
+            curveness: 0.2,
             type: 'dotted'
         }
     },
     {
-        source: 'Mimic Smart Vault',
+        source: 'Protocol Fee Multisig',
         target: 'Mainnet Smart Vault',
     },
     {
@@ -336,14 +336,14 @@ export const balancerContractDataLinks_AVAX = [
         }
     },
     {
-        source: 'L2LayerZeroBridgeForward',
+        source: 'L2LayerZeroBridgeForwarder',
         target: 'veBoost',
         lineStyle: {
             type: 'dotted'
         }
     },
     {
-        source: 'L2LayerZeroBridgeForward',
+        source: 'L2LayerZeroBridgeForwarder',
         target: 'Child Chain Gauge',
         lineStyle: {
             type: 'dotted',

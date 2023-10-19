@@ -4135,7 +4135,7 @@
       },
       {
         "id": "0x8eA89804145c007e7D226001A96955ad53836087",
-        "title": "L2LayerZeroBridgeForward",
+        "title": "L2LayerZeroBridgeForwarder",
         "description": "Forwards calls from LayerZero's system to a custom hook whenever a veBAL balance is updated for a given user in a L2 chain. The delegation contract can be set so that e.g. Child Chain Gauges are updated automatically whenever there is a veBAL balance update.",
         "readMethods": [
           {

@@ -162,7 +162,7 @@ export const balancerContractMapData_GNOSIS = [
         y: 0
     },
     {
-        name: 'L2LayerZeroBridgeForward',
+        name: 'L2LayerZeroBridgeForwarder',
         value: '0xeb151668006CD04DAdD098AFd0a82e78F77076c3',
         x: 400,
         y: -400
@@ -336,14 +336,14 @@ export const balancerContractDataLinks_GNOSIS = [
         }
     },
     {
-        source: 'L2LayerZeroBridgeForward',
+        source: 'L2LayerZeroBridgeForwarder',
         target: 'veBoost',
         lineStyle: {
             type: 'dotted'
         }
     },
     {
-        source: 'L2LayerZeroBridgeForward',
+        source: 'L2LayerZeroBridgeForwarder',
         target: 'Child Chain Gauge',
         lineStyle: {
             type: 'dotted',

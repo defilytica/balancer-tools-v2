@@ -24,7 +24,7 @@ export const balancerContractMapData_BASE = [
         y: 600
     },
     {
-        name: 'Mimic Smart Vault',
+        name: 'Mimic Smart Vault - DNE',
         value: '0x65226673F3D202E0f897C862590d7e1A992B2048',
         x: 600,
         y: 400
@@ -162,7 +162,7 @@ export const balancerContractMapData_BASE = [
         y: 0
     },
     {
-        name: 'L2LayerZeroBridgeForward',
+        name: 'L2LayerZeroBridgeForwarder',
         value: '0x8eA89804145c007e7D226001A96955ad53836087',
         x: 400,
         y: -400
@@ -212,21 +212,21 @@ export const balancerContractDataLinks_BASE = [
     },
     {
         source: 'Protocol Fee Withdrawer',
-        target: 'Mimic Smart Vault',
+        target: 'Protocol Fee Multisig',
         lineStyle: {
-            curveness: -0.2
+            curveness: -0.4
         }
     },
     {
-        source: 'Mimic Smart Vault',
+        source: 'Protocol Fee Multisig',
         target: 'Protocol Fee Withdrawer',
         lineStyle: {
-            curveness: -0.2,
+            curveness: 0.2,
             type: 'dotted'
         }
     },
     {
-        source: 'Mimic Smart Vault',
+        source: 'Protocol Fee Multisig',
         target: 'Mainnet Smart Vault',
     },
     {
@@ -336,14 +336,14 @@ export const balancerContractDataLinks_BASE = [
         }
     },
     {
-        source: 'L2LayerZeroBridgeForward',
+        source: 'L2LayerZeroBridgeForwarder',
         target: 'veBoost',
         lineStyle: {
             type: 'dotted'
         }
     },
     {
-        source: 'L2LayerZeroBridgeForward',
+        source: 'L2LayerZeroBridgeForwarder',
         target: 'Child Chain Gauge',
         lineStyle: {
             type: 'dotted',

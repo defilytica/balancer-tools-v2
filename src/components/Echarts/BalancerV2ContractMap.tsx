@@ -22,9 +22,21 @@ import {
     balancerContractDataLinks_ZKEVM,
     balancerContractMapData_ZKEVM
 } from "../../data/static/balancer-v2/balancerContractMapData_ZKEVM";
+import {
+  balancerContractDataLinks_AVAX,
+  balancerContractMapData_AVAX
+} from "../../data/static/balancer-v2/balancerContractMapData_AVAX";
+import {
+  balancerContractDataLinks_BASE,
+  balancerContractMapData_BASE
+} from "../../data/static/balancer-v2/balancerContractMapData_BASE";
+import {
+  balancerContractDataLinks_OPTIMISM,
+  balancerContractMapData_OPTIMISM
+} from "../../data/static/balancer-v2/balancerContractMapData_OPTIMISM";
 import {isMobile} from "react-device-detect";
 import {useActiveNetworkVersion} from "../../state/application/hooks";
-import {ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo, GnosisNetworkInfo, PolygonZkEVMNetworkInfo} from "../../constants/networks";
+import {ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo, GnosisNetworkInfo, PolygonZkEVMNetworkInfo, AvalancheNetworkInfo, BaseNetworkInfo, OptimismNetworkInfo} from "../../constants/networks";
 
 export interface GovMapProps {
     backgroundColor?: string,
@@ -50,6 +62,9 @@ export default function BalancerV2ContractMap({backgroundColor = '#6a7985', heig
     Polygon: "#5D3FD3",
     Gnosis: "#008080",
     zkEVM: "#CF9FFF",
+    Base: "#0052ff",
+    Avalanche: "#E84142",
+    Optismim: "#E50914"
   };
   const specificNodeIdentifiers = ["Root Gauge Factory", "Root Gauges - Mainnet","StakelessGaugeCheckpointer-v2","Mainnet Smart Vault"]; // Replace with your specific node's identifiers
 
@@ -141,32 +156,63 @@ export default function BalancerV2ContractMap({backgroundColor = '#6a7985', heig
           fontSize: isMobile ? 10 : 20,
         },
         data:
-        activeNetwork === EthereumNetworkInfo
-          ? balancerContractMapData_MAINNET.map((node) => ({
-              ...node,
-              itemStyle: { color: colorsByNetwork.Ethereum }, // Use the color for Ethereum
-            })).map(updateNodeColor)
-          : activeNetwork === ArbitrumNetworkInfo
-          ? balancerContractMapData_ARBITRUM.map((node) => ({
-              ...node,
-              itemStyle: { color: colorsByNetwork.Arbitrum }, // Use the color for Arbitrum
-            })).map(updateNodeColor)
-          : activeNetwork === PolygonNetworkInfo
-          ? balancerContractMapData_POLYGON.map((node) => ({
-              ...node,
-              itemStyle: { color: colorsByNetwork.Polygon }, // Use the color for Polygon
-            })).map(updateNodeColor)
-          : activeNetwork === GnosisNetworkInfo
-          ? balancerContractMapData_GNOSIS.map((node) => ({
-              ...node,
-              itemStyle: { color: colorsByNetwork.Gnosis }, // Use the color for Gnosis
-            })).map(updateNodeColor)
-          : activeNetwork === PolygonZkEVMNetworkInfo
-          ? balancerContractMapData_ZKEVM.map((node) => ({
-              ...node,
-              itemStyle: { color: colorsByNetwork.zkEVM }, // Use the color for zkEVM
-            })).map(updateNodeColor)
-          : [], // links: [],
+          activeNetwork === EthereumNetworkInfo
+            ? balancerContractMapData_MAINNET
+                .map((node) => ({
+                  ...node,
+                  itemStyle: { color: colorsByNetwork.Ethereum }, // Use the color for Ethereum
+                }))
+                .map(updateNodeColor)
+            : activeNetwork === ArbitrumNetworkInfo
+            ? balancerContractMapData_ARBITRUM
+                .map((node) => ({
+                  ...node,
+                  itemStyle: { color: colorsByNetwork.Arbitrum }, // Use the color for Arbitrum
+                }))
+                .map(updateNodeColor)
+            : activeNetwork === PolygonNetworkInfo
+            ? balancerContractMapData_POLYGON
+                .map((node) => ({
+                  ...node,
+                  itemStyle: { color: colorsByNetwork.Polygon }, // Use the color for Polygon
+                }))
+                .map(updateNodeColor)
+            : activeNetwork === GnosisNetworkInfo
+            ? balancerContractMapData_GNOSIS
+                .map((node) => ({
+                  ...node,
+                  itemStyle: { color: colorsByNetwork.Gnosis }, // Use the color for Gnosis
+                }))
+                .map(updateNodeColor)
+            : activeNetwork === PolygonZkEVMNetworkInfo
+            ? balancerContractMapData_ZKEVM
+                .map((node) => ({
+                  ...node,
+                  itemStyle: { color: colorsByNetwork.zkEVM }, // Use the color for zkEVM
+                }))
+                .map(updateNodeColor)
+            : activeNetwork === AvalancheNetworkInfo
+            ? balancerContractMapData_AVAX
+                .map((node) => ({
+                  ...node,
+                  itemStyle: { color: colorsByNetwork.Avalanche }, // Use the color for Avalanche
+                }))
+                .map(updateNodeColor)
+            : activeNetwork === BaseNetworkInfo
+            ? balancerContractMapData_BASE
+                .map((node) => ({
+                  ...node,
+                  itemStyle: { color: colorsByNetwork.Base }, // Use the color for Base
+                }))
+                .map(updateNodeColor)
+            : activeNetwork === OptimismNetworkInfo
+            ? balancerContractMapData_OPTIMISM
+                .map((node) => ({
+                  ...node,
+                  itemStyle: { color: colorsByNetwork.Optismim }, // Use the color for Optimism
+                }))
+                .map(updateNodeColor)
+            : [], // links: [],
         links:
           activeNetwork === EthereumNetworkInfo
             ? balancerContractDataLinks_MAINNET
@@ -178,6 +224,12 @@ export default function BalancerV2ContractMap({backgroundColor = '#6a7985', heig
             ? balancerContractDataLinks_GNOSIS
             : activeNetwork === PolygonZkEVMNetworkInfo
             ? balancerContractDataLinks_ZKEVM
+            : activeNetwork === AvalancheNetworkInfo
+            ? balancerContractDataLinks_AVAX
+            : activeNetwork === BaseNetworkInfo
+            ? balancerContractDataLinks_BASE
+            : activeNetwork === OptimismNetworkInfo
+            ? balancerContractDataLinks_OPTIMISM
             : null,
         lineStyle: {
           opacity: 0.9,

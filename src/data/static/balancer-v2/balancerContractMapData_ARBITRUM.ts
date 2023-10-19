@@ -162,7 +162,7 @@ export const balancerContractMapData_ARBITRUM = [
         y: 0
     },
     {
-        name: 'L2LayerZeroBridgeForward',
+        name: 'L2LayerZeroBridgeForwarder',
         value: '0x598ce0f1ab64B27256759ef99d883EE51138b9bd',
         x: 400,
         y: -400
@@ -336,14 +336,14 @@ export const balancerContractDataLinks_ARBITRUM = [
         }
     },
     {
-        source: 'L2LayerZeroBridgeForward',
+        source: 'L2LayerZeroBridgeForwarder',
         target: 'veBoost',
         lineStyle: {
             type: 'dotted'
         }
     },
     {
-        source: 'L2LayerZeroBridgeForward',
+        source: 'L2LayerZeroBridgeForwarder',
         target: 'Child Chain Gauge',
         lineStyle: {
             type: 'dotted',

@@ -162,7 +162,7 @@ export const balancerContractMapData_POLYGON = [
         y: 0
     },
     {
-        name: 'L2LayerZeroBridgeForward',
+        name: 'L2LayerZeroBridgeForwarder',
         value: '0xB98F54A74590a6e681fF664b2Fa22EBfFe1a929E',
         x: 400,
         y: -400
@@ -336,14 +336,14 @@ export const balancerContractDataLinks_POLYGON = [
         }
     },
     {
-        source: 'L2LayerZeroBridgeForward',
+        source: 'L2LayerZeroBridgeForwarder',
         target: 'veBoost',
         lineStyle: {
             type: 'dotted'
         }
     },
     {
-        source: 'L2LayerZeroBridgeForward',
+        source: 'L2LayerZeroBridgeForwarder',
         target: 'Child Chain Gauge',
         lineStyle: {
             type: 'dotted',

@@ -410,7 +410,7 @@
         ]
       },
       {
-        "id": "0x020301b0a99EFB6816B41007765Fb577259eC418",
+        "id": "0xAcf05BE5134d64d150d153818F8C67EE36996650",
         "title": "AuthorizerWithAdaptorValidation",
         "description": "The AuthorizerWithAdaptorValidation is an upgrade that fixes an issue in the AuthorizerAdaptor and allows usage of the AuthorizerAdaptorEntrypoint for contract interactions. The primary Authorizer is the one that keeps track of permissions. This is the placeholder for a TimelockAuthorizer, which has yet to developed.",
         "readMethods": [
@@ -620,7 +620,7 @@
         ]
       },
       {
-        "id": "0xC128468b7Ce63eA702C1f104D55A2566b13D3ABD",
+        "id": "0x8F42aDBbA1B16EaAE3BB5754915E0D06059aDd75",
         "title": "AuthorizerAdaptor",
         "description": "This contract is intended to act as an adaptor between systems which expect a single admin address and the Balancer Authorizer such that the Authorizer may grant/revoke admin powers to unlimited addresses. The permissions the Authorizer can grant are granular such they may be global or specific to a particular contract. When calculating the actionId to call a function on a target contract, it must be calculated as if it were to be called on this adaptor. This can be done by passing the function selector to the `getActionId` function.",
         "readMethods": [
@@ -657,7 +657,7 @@
         ]
       },
       {
-        "id": "0xAB093cd16e765b5B23D34030aaFaF026558e0A19",
+        "id": "0xed86ff0c507D3AF5F35d3523B77C17415FCfFaCb",
         "title": "AuthorizerAdaptorEntrypoint",
         "description": "This contract exists as a fix for a critical bug in the `AuthorizerAdaptor` that could lead to escalation of privileges. The Entrypoint contract addresses this by working in combination with `TimelockAuthorizer` so that all Adaptor calls that are not made via the Entrypoint fail, while those that do happen through the Entrypoint check for permissions correctly. ",
         "readMethods": [
@@ -702,7 +702,7 @@
         ]
       },
       {
-        "id": "0x42AC0e6FA47385D55Aff070d79eF0079868C48a6",
+        "id": "0xacAaC3e6D6Df918Bf3c809DFC7d42de0e4a72d4C",
         "title": "ProtocolFeePercentagesProvider",
         "description": "The Protocol Fee Percentage Provider has two critical write functions. The purpose is to add new protocol fee types to the Balancer system, and to adjust protocol fees on each type. There are four current types of protocol fees, swap, flash loan, yield, and asset under management.",
         "readMethods": [
@@ -878,7 +878,7 @@
         ]
       },
       {
-        "id": "0xEF44D6786b2b4d544b7850Fe67CE6381626Bf2D6",
+        "id": "0xC128a9954e6c874eA3d62ce62B468bA073093F25",
         "title": "ProtocolFeeWithdrawer",
         "description": "The Protocol Fees Withdrawer is a safety layer around the Protocol Fees Collector which allows withdrawals of specific tokens to be blocked. This is useful for the case in which tokens which shouldn't be distributed are unexpectedly paid into the Protocol Fees Collector.",
         "readMethods": [
@@ -994,7 +994,7 @@
         ]
       },
       {
-        "id": " 0x7c68c42De679ffB0f16216154C996C354cF1161B",
+        "id": "0x09Df1626110803C7b3b07085Ef1E053494155089",
         "title": "Protocol Fee Multisig",
         "description": "The protocol fee multisigs core purpose is to take protocol fees and distribute them to the treasury, veBAL holders, and core pool incentives.",
         "readMethods": [
@@ -1023,7 +1023,7 @@
         ]
       },
       {
-        "id": "0x0f08eEf2C785AA5e7539684aF04755dEC1347b7c",
+        "id": "0x9dA18982a33FD0c7051B19F0d7C76F2d5E7e017c",
         "title": "VotingEscrowDelegationProxy",
         "description": " The VotingEscrowDelegationProxy handles the delegation of veBAL between addresses. This permits the system to move to a new delegation mechanism if needed.",
         "readMethods": [
@@ -1082,7 +1082,7 @@
         ]
       },
       {
-        "id": "0xD961E30156C2E0D0d925A0De45f931CB7815e970",
+        "id": "0x6817149cb753BF529565B4D023d7507eD2ff4Bc0",
         "title": "veBoost - Boost Delegation v2",
         "description": "The veBoost contract handles the boosting of user rewards when staking their liquidity positions in gauges to receive emissions. This contract also handles the delegations of boost between contracts.",
         "readMethods": [
@@ -1242,7 +1242,7 @@
         ]
       },
       {
-        "id": "0xeE071f4B516F69a1603dA393CdE8e76C40E5Be85",
+        "id": "0x043f9687842771b3dF8852c1E9801DCAeED3f6bc",
         "title": "Balancer DAO Multisig",
         "description": "The DAO Multisig consists of several highly trusted stakeholders in the Balancer ecosystem, this multisig holds the DAO Treasury, kills gauges, and is used for critical infrastructure permssions & changes only when approved by governance.",
         "readMethods": [
@@ -1253,7 +1253,7 @@
         ]
       },
       {
-        "id": "0xc38c5f97B34E175FFd35407fc91a937300E33860",
+        "id": "0x09Df1626110803C7b3b07085Ef1E053494155089",
         "title": "Balancer Liquidity Mining Multisig",
         "description": "The Liquidity Mining (LM) Multisig consists of the Balancer Maxis, a group of community members. This multisigs purpose is adding gauges and managing pool parameters. ",
         "readMethods": [
@@ -1264,7 +1264,7 @@
         ]
       },
       {
-        "id": "0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3",
+        "id": "0xfe8b128ba8c78aabc59d4c64cee7ff28e9379921",
         "title": "BalancerGovernanceToken",
         "description": "This contract is the ERC20 BAL Token on mainnet.",
         "readMethods": [
@@ -1448,7 +1448,7 @@
         ]
       },
       {
-        "id": "0x47B489bf5836f83ABD928C316F8e39bC0587B020",
+        "id": "0x4fb47126Fa83A8734991E41B942Ac29A3266C968",
         "title": "L2BalancerPseudoMinter",
         "description": "This contract is in charge of minting BAL according to the liquidity gauge scheduling supplied by the gauge controller.",
         "readMethods": [
@@ -1663,8 +1663,8 @@
         ]
       },
       {
-        "id": "0x98FF7a7b63130de492eB95dc35119601E1ED5188",
-        "title": "PolygonRootGauge",
+        "id": "0x6A2C2d4502335638d2c2f40f0171253fb2c2db88",
+        "title": "OptimismRootGauge",
         "description": "Root gauges correspond to mainnet guage added to the gauge controller for L2 child gauges. The root gauge has a recipient gauge on each L2 to sent BAL to via a respective bridge.",
         "readMethods": [
           {
@@ -1775,7 +1775,7 @@
         ]
       },
       {
-        "id": "0xa98Bce70c92aD2ef3288dbcd659bC0d6b62f8F13",
+        "id": "0x866D4B65694c66fbFD15Dd6fa933D0A6b3940A36",
         "title": "Root Gauge Factories",
         "description": "Root gauge factories create the mainnet gauges for each layer 2 network. A unique factory exists for each network. Arbitrum: 0x1c99324EDC771c82A0DCCB780CC7DDA0045E50e7 Polygon: 0xa98Bce70c92aD2ef3288dbcd659bC0d6b62f8F13  Optimism: 0x866D4B65694c66fbFD15Dd6fa933D0A6b3940A36 Gnosis Chain: 0x2a18B396829bc29F66a1E59fAdd7a0269A6605E8 Polygon zkEVM: 0x9bF951848288cCD87d06FaC426150262cD3447De Avalanche: 0x22625eEDd92c81a219A83e1dc48f88d54786B017 Base: 0x8e3B64b3737097F283E965869e3503AA20F31E4D (https://forum.balancer.fi/t/instructions-overview/2674)",
         "readMethods": [
@@ -1843,7 +1843,7 @@
         ]
       },
       {
-        "id": "0xFc8a407Bba312ac761D8BFe04CE1201904842B76",
+        "id": "0x230a59F4d9ADc147480f03B0D3fFfeCd56c3289a",
         "title": "Weighted Pool Factory",
         "description": "The weighted pool factory uses the Balancer invariant similar to x * y = k but for varying weights and can hold up to eight tokens.",
         "readMethods": [
@@ -1928,7 +1928,7 @@
         ]
       },
       {
-        "id": "0xe2fa4e1d17725e72dcdAfe943Ecf45dF4B9E285b",
+        "id": "0x043A2daD730d585C44FB79D2614F295D2d625412",
         "title": "Composable Stable Pool Factory",
         "description": "The composable stable pool factory uses the StableSwap invariant similar to Curve v1, but has the ability to consider rate providers, which maintain the invariant in relation to diverging assets, such as wstETH and ETH.",
         "readMethods": [
@@ -2022,7 +2022,7 @@
         ]
       },
       {
-        "id": "0x3c58668054c299bE836a0bBB028Bee3aD4724846",
+        "id": "0xd4c87b33afcE39F1E3F4aF1ce8fFFF7241d9128B",
         "title": "Emergency SubDAO Multisig",
         "description": "The Emergency Multisig is meant to act in the case a security event related to Balancer. The Multisig holds the ability to kill gauges, denylist tokens on the protocol fee withdrawer, disable pool factories, and enable recovery mode on pools. This essentially will create guard rails on the protocol in the case of a bug or exploit. Only vetted community members and contributors are on the multisig.",
         "readMethods": [
@@ -2051,7 +2051,7 @@
         ]
       },
       {
-        "id": "0x89B753153678BC434c610B7e9182297caDA8Ff29",
+        "id": "0x5F8893506Ddc4C271837187d14A9C87964a074Dc",
         "title": "Composable Stable Pool",
         "description": "A composable stable pool contract has come from the proper factory. The main changes that can be made are the swap fee, amplification parameter, and token cache rate durations.",
         "readMethods": [
@@ -2592,7 +2592,7 @@
         ]
       },
       {
-        "id": "0x754Bf00573c4E1846d06714e76095891E5F9718e",
+        "id": "0x00b82bc5EdEa6E5E6c77635e31a1A25Aad99f881",
         "title": "Weighted Pool",
         "description": "A weighted pool contract has come from the proper factory. The main changes that can be made are the swap fee and token cache rate durations.",
         "readMethods": [
@@ -3243,7 +3243,7 @@
         ]
       },
       {
-        "id": "0x22625eEDd92c81a219A83e1dc48f88d54786B017",
+        "id": "0xa523f47A933D5020b23629dDf689695AA94612Dc",
         "title": "ChildChainGaugeFactory",
         "description": "ChildChainGaugeFactories require only the pool address on the L2 network to be passed to it, to create a child gauge. The child gauges are used on mainnet to be set as recipients from root gauges. Pseudominter contracts on each network are used to stream the bridged BAL to each child gauge. All child gauge factories can be seen here. https://forum.balancer.fi/t/instructions-overview/2674",
         "readMethods": [
@@ -3293,7 +3293,7 @@
         ]
       },
       {
-        "id": "0xc9b36096f5201ea332Db35d6D195774ea0D5988f",
+        "id": "0x81cFAE226343B24BA12EC6521Db2C79E7aeeb310",
         "title": "ChildLiquidityGauge",
         "description": "Child liquidity gauges correspond to a specific pool on their respective network. Their address is on the network speficic root gauge factory on Ethereum in order to link the BAL minter to each gauge, bridge BAL and distribute BAL to the proper pools. ",
         "readMethods": [
@@ -3674,7 +3674,7 @@
         ]
       },
       {
-        "id": "0x4271de2595c3d85d2D455C5778adF2d7Ad54322C",
+        "id": "0x45fFd460cC6642B8D8Fb12373DFd77Ceb0f4932B",
         "title": "BatchRelayerLibrary",
         "description": "This contract is not a relayer by itself and calls into it directly will fail. The associated relayer can be found by calling `getEntrypoint` on this contract.",
         "readMethods": [
@@ -4097,7 +4097,7 @@
         ]
       },
       {
-        "id": "0xd18d5D377eb23362e54Fa496597d7E962d56C554",
+        "id": "0x03F1ab8b19bcE21EB06C364aEc9e40322572a1e9",
         "title": "BatchRelayer",
         "description": " Relayers are composed of two contracts: This contract, which acts as a single point of entry into the system through a multicall function. A library contract, which defines the allowed behaviour of the relayer. The relayer entrypoint can then repeatedly delegatecall into the library's code to perform actions. We can then run combinations of the library contract's functions in the context of the relayer entrypoint, without having to expose all these functions on the entrypoint contract itself. The multicall function is then a single point of entry for all actions, so we can easily prevent reentrancy. This design gives much stronger reentrancy guarantees, as otherwise a malicious contract could reenter the relayer through another function (which must allow reentrancy for multicall logic), and that would potentially allow them to manipulate global state, resulting in loss of funds in some cases: e.g., sweeping any leftover ETH that should have been refunded to the user. NOTE: Only the entrypoint contract should be allowlisted by Balancer governance as a relayer, so that the Vault will reject calls from outside the context of the entrypoint: e.g., if a user mistakenly called directly into the library contract.",
         "readMethods": [
@@ -4134,7 +4134,7 @@
         ]
       },
       {
-        "id": "0xB98F54A74590a6e681fF664b2Fa22EBfFe1a929E",
+        "id": "0xbef13D1e54D0c79DA8B0AD704883E1Cea7EB2100",
         "title": "L2LayerZeroBridgeForwarder",
         "description": "Forwards calls from LayerZero's system to a custom hook whenever a veBAL balance is updated for a given user in a L2 chain. The delegation contract can be set so that e.g. Child Chain Gauges are updated automatically whenever there is a veBAL balance update.",
         "readMethods": [
