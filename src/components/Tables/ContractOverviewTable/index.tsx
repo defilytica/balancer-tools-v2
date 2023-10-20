@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import Box from '@mui/material/Box';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Table from '@mui/material/Table';
@@ -8,7 +8,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import {Avatar, FormControlLabel, Typography} from '@mui/material';
+import {Avatar, FormControlLabel, IconButton, InputBase, Typography} from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
 import { useNavigate } from 'react-router-dom';
 import {NetworkInfo} from "../../../constants/networks";
@@ -17,6 +17,8 @@ import {useActiveNetworkVersion} from "../../../state/application/hooks";
 import {deepPurple} from "@mui/material/colors";
 import {generateIdenticon} from "../../../utils/generateIdenticon";
 import TablePagination from "@mui/material/TablePagination";
+import ClearIcon from "@mui/icons-material/Clear";
+import SearchIcon from "@mui/icons-material/Search";
 
 
 interface Contract {
@@ -114,12 +116,18 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
 }
 
 export default function ContractOverviewTable({ contracts }: ContractTableProps) {
-    const [order, setOrder] = React.useState<'asc' | 'desc'>('asc');
-    const [orderBy, setOrderBy] = React.useState<keyof Contract>('title');
     let navigate = useNavigate();
     const [activeNetwork] = useActiveNetworkVersion();
+    const [order, setOrder] = React.useState<'asc' | 'desc'>('asc');
+    const [orderBy, setOrderBy] = React.useState<keyof Contract>('title');
     const [rowsPerPage, setRowsPerPage] = React.useState(25);
     const [page, setPage] = React.useState(0);
+    const [rows, setRows] = useState<Contract[]>(contracts);
+    const [searched, setSearched] = useState<string>("");
+
+    useEffect(() => {
+        setRows(contracts)
+    }, [activeNetwork]);
 
     const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Contract) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -136,9 +144,41 @@ export default function ContractOverviewTable({ contracts }: ContractTableProps)
         setPage(0);
     };
 
+    //Search Bar functionality
+    const requestSearch = (searchedVal: string) => {
+        const filteredRows = contracts.filter((contract) => {
+            const lowerCaseSearchedVal = searchedVal.toLowerCase();
+            const hasPartialMatchInAddress = contract.id.toLowerCase().includes(lowerCaseSearchedVal);
+            const hasPartialMatchInSymbol = contract.title.toLowerCase().includes(lowerCaseSearchedVal);
+            return hasPartialMatchInAddress || hasPartialMatchInSymbol;
+        });
+        setRows(filteredRows);
+        setSearched(searchedVal)
+    };
+
+    const clearSearch = (): void => {
+        setSearched("");
+        setRows(contracts)
+    };
+
     return (
         <Box sx={{ width: '100%' }}>
-            <Paper elevation={1} sx={{ boxShadow: 3 }}>
+            <Paper
+                component="form"
+                sx={{ mb: '5px', p: '2px 4px', display: 'flex', alignItems: 'center', minWidth: 400, maxWidth: 800 }}
+            >
+                <InputBase
+                    sx={{ ml: 1, flex: 1 }}
+                    placeholder="Search for a contract"
+                    inputProps={{ 'aria-label': 'search Balancer contracts' }}
+                    value={searched}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => requestSearch(event.target.value)}
+                />
+                <IconButton onClick={clearSearch} type="button" sx={{ p: '10px' }} aria-label="search">
+                    {searched !== "" ? <ClearIcon /> : <SearchIcon />}
+                </IconButton>
+            </Paper>
+            <Paper sx={{mb: 2, boxShadow: 3}}>
                 <TableContainer>
                     <Table aria-labelledby="tableTitle" size="medium">
                         <EnhancedTableHead
@@ -147,7 +187,7 @@ export default function ContractOverviewTable({ contracts }: ContractTableProps)
                             onRequestSort={handleRequestSort}
                         />
                         <TableBody>
-                            {stableSort(contracts, getComparator(order, orderBy))
+                            {stableSort(rows, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((contract, index) => {
                                     const labelId = `enhanced-table-checkbox-${index}`;
@@ -190,7 +230,7 @@ export default function ContractOverviewTable({ contracts }: ContractTableProps)
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25, 100]}
                         component="div"
-                        count={contracts.length}
+                        count={rows.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}

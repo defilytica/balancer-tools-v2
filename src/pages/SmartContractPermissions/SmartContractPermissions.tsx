@@ -5,7 +5,7 @@ import {
     AccordionSummary,
     Avatar, CircularProgress,
     Divider,
-    Grid,
+    Grid, IconButton, InputBase,
     Link,
     List,
     ListItem,
@@ -19,12 +19,43 @@ import {useActiveNetworkVersion} from "../../state/application/hooks";
 import * as React from "react";
 import {deepPurple} from "@mui/material/colors";
 import {generateIdenticon} from "../../utils/generateIdenticon";
+import {useEffect, useState} from "react";
+import {BalancerPermission} from "../../data/balancer-docs/permissionTypes";
+import ClearIcon from "@mui/icons-material/Clear";
+import SearchIcon from "@mui/icons-material/Search";
+import Paper from "@mui/material/Paper";
 
 export default function SmartContractPermissions() {
 
 
     const [activeNetwork] = useActiveNetworkVersion()
     const {data, isLoading, error} = useGetBalancerContractPermissions(activeNetwork.v3NetworkID.toLowerCase());
+
+    //Search functionality
+    const [rows, setRows] = useState<BalancerPermission[]>(data);
+    const [searched, setSearched] = useState<string>("");
+
+    useEffect(() => {
+        setRows(data)
+    }, [activeNetwork, data]);
+
+    const requestSearch = (searchedVal: string) => {
+        const filteredRows = data.filter((permission) => {
+            const lowerCaseSearchedVal = searchedVal.toLowerCase();
+            const hasPartialMatchInContract = permission.Contract.toLowerCase().includes(lowerCaseSearchedVal);
+            const hasPartialMatchInSymbol = permission.Fx.toLowerCase().includes(lowerCaseSearchedVal);
+            const hasPartialMatchInDeployment = permission.Deployment.toLowerCase().includes(lowerCaseSearchedVal);
+            const hasPartialMatchInAddresses= permission.Authorized_Caller_Addresses.some((address) => address.toLowerCase().includes(lowerCaseSearchedVal));
+            return hasPartialMatchInContract || hasPartialMatchInSymbol || hasPartialMatchInDeployment || hasPartialMatchInAddresses;
+        });
+        setRows(filteredRows);
+        setSearched(searchedVal)
+    };
+
+    const clearSearch = (): void => {
+        setSearched("");
+        setRows(data)
+    };
 
 
     return (
@@ -34,10 +65,10 @@ export default function SmartContractPermissions() {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                minHeight: '100vh'
+                minHeight: rows.length === 0 && searched === '' ? '100vh' : '0hv'
             }}
         >
-            {data.length > 1 ?
+            {rows.length > 1 || searched ?
             <Grid mt={2} container sx={{justifyContent: "center"}}>
                 <Grid item xs={11}>
                     <Typography variant={'h5'}>Smart Contract Permissions</Typography>
@@ -45,9 +76,26 @@ export default function SmartContractPermissions() {
                 <Grid item xs={11}>
                     <Typography variant={'caption'}>Browse the Balancer V2 Smart Contract Permission state</Typography>
                 </Grid>
+                <Grid item xs={11}>
+                <Paper
+                    component="form"
+                    sx={{ mb: '10px', p: '2px 4px', display: 'flex', alignItems: 'center', maxWidth: 500 }}
+                >
+                    <InputBase
+                        sx={{ ml: 1, flex: 1 }}
+                        placeholder="Search for a Permission or Address"
+                        inputProps={{ 'aria-label': 'search Balancer gauges' }}
+                        value={searched}
+                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => requestSearch(event.target.value)}
+                    />
+                    <IconButton onClick={clearSearch} type="button" sx={{ p: '10px' }} aria-label="search">
+                        {searched !== "" ? <ClearIcon /> : <SearchIcon />}
+                    </IconButton>
+                </Paper>
+                </Grid>
                 <Grid item mt={2} xs={11}>
                     <div>
-                        {data.map(permission => (
+                        {rows.map(permission => (
                             <Accordion key={`${permission.Contract}-${permission.Fx}-${Math.random()}`}>
                                 <AccordionSummary
                                     expandIcon={<ExpandMoreIcon/>}

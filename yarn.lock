@@ -9011,10 +9011,10 @@ eth-rpc-errors@^4.0.2:
   dependencies:
     fast-safe-stringify "^2.0.6"
 
-ethereum-multicall@^2.17.0:
-  version "2.17.0"
-  resolved "https://registry.yarnpkg.com/ethereum-multicall/-/ethereum-multicall-2.17.0.tgz#c56a8884f2d895a87bc90b1257653e2f131ad8a5"
-  integrity sha512-9me2vHVjzLbb9Y5xWHCSu0PDtm13SVTZyvV3y2/VAtbuMykoET5g8h/ktL4ECZ8k76cn9jnZythoQki3nJqhSA==
+ethereum-multicall@^2.21.0:
+  version "2.21.0"
+  resolved "https://registry.yarnpkg.com/ethereum-multicall/-/ethereum-multicall-2.21.0.tgz#a0dc5d5e7bbddabd484a75037ecb9b77ad5688ba"
+  integrity sha512-J234OuvUheTKvZVhMk41SwyB66m+MU+Xe2FFWOln8xu6TXKzOzsjSFQn/f5OTDGEiRStKMnJpCvQDim+Uk+qBQ==
   dependencies:
     "@ethersproject/providers" "^5.0.10"
     ethers "^5.0.15"

@@ -2555,7 +2555,7 @@
       ]
     },
     {
-      "id": "0x10A19e7eE7d7F8a52822f6817de8ea18204F2e4f",
+      "id": "0xc38c5f97B34E175FFd35407fc91a937300E33860",
       "title": "Balancer Liquidity Mining Multisig",
       "description": "The Liquidity Mining (LM) Multisig consists of the Balancer Maxis, a group of community members. This multisigs purpose is adding gauges and managing pool parameters. ",
       "readMethods": [

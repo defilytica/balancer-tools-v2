@@ -18,7 +18,7 @@ export default function GaugeMapper(){
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                minHeight: '100vh'
+                minHeight: decoratedGaugeData.length === 0 ? '100vh' : '0hv'
             }}
         >
             {decoratedGaugeData && decoratedGaugeData.length > 1 ?

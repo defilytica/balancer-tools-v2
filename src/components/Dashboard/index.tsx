@@ -265,7 +265,11 @@ function Dashboard() {
                                            element={<GaugeMapper/>}/>
                                     <Route path={'balancer/governanceMap'}
                                            element={<GovernanceMap/>}/>
+                                    <Route path={networkPrefix(activeNetwork) + 'balancer/governanceMap'}
+                                           element={<GovernanceMap/>}/>
                                     <Route path={'balancer/permissions'}
+                                           element={<SmartContractPermissions/>}/>
+                                    <Route path={networkPrefix(activeNetwork) + 'balancer/permissions'}
                                            element={<SmartContractPermissions/>}/>
                                     <Route path={networkPrefix(activeNetwork) + 'incentiveSimulator'}
                                            element={<BribeSimulator/>}/>

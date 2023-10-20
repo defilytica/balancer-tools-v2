@@ -6,22 +6,43 @@ import contractData_ARBITRUM from "../../data/static/balancer-v2/governanceMap_A
 import contractData_POLYGON from "../../data/static/balancer-v2/governanceMap_POLYGON.json";
 import contractData_GNOSIS from "../../data/static/balancer-v2/governanceMap_GNOSIS.json";
 import contractData_ZKEVM from "../../data/static/balancer-v2/governanceMap_ZKEVM.json";
+import contractData_AVAX from "../../data/static/balancer-v2/governanceMap_AVAX.json";
+import contractData_BASE from "../../data/static/balancer-v2/governanceMap_BASE.json";
+import contractData_OPTIMISM from "../../data/static/balancer-v2/governanceMap_OPTIMISM.json";
 import ContractOverviewTable from "../../components/Tables/ContractOverviewTable";
 import BalancerV2ContractMap from "../../components/Echarts/BalancerV2ContractMap";
 import {isMobile} from "react-device-detect";
 import {useActiveNetworkVersion} from "../../state/application/hooks";
-import {ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo, GnosisNetworkInfo, PolygonZkEVMNetworkInfo} from "../../constants/networks";
+import {
+    ArbitrumNetworkInfo,
+    EthereumNetworkInfo,
+    PolygonNetworkInfo,
+    GnosisNetworkInfo,
+    PolygonZkEVMNetworkInfo,
+    AvalancheNetworkInfo, BaseNetworkInfo, OptimismNetworkInfo
+} from "../../constants/networks";
+import {useEffect, useState} from "react";
 
 export default function GovernanceMap() {
 
     const [activeNetwork] = useActiveNetworkVersion()
+    const [smartContractData, setSmartContractData] = useState<BalancerSmartContractData>(contractData_MAINNET);
 
-    const smartContractData: BalancerSmartContractData = activeNetwork === EthereumNetworkInfo ? contractData_MAINNET :
-                                                            activeNetwork === ArbitrumNetworkInfo ? contractData_ARBITRUM :
-                                                            activeNetwork === PolygonNetworkInfo ? contractData_POLYGON :
-                                                            activeNetwork === GnosisNetworkInfo ? contractData_GNOSIS :
-                                                            activeNetwork === PolygonZkEVMNetworkInfo ? contractData_ZKEVM :
-                                                                contractData_MAINNET;
+
+    useEffect(() => {
+        const currentSmartContractData: BalancerSmartContractData = activeNetwork === EthereumNetworkInfo ? contractData_MAINNET :
+            activeNetwork === ArbitrumNetworkInfo ? contractData_ARBITRUM :
+                activeNetwork === PolygonNetworkInfo ? contractData_POLYGON :
+                    activeNetwork === GnosisNetworkInfo ? contractData_GNOSIS :
+                        activeNetwork === PolygonZkEVMNetworkInfo ? contractData_ZKEVM :
+                            activeNetwork === AvalancheNetworkInfo ? contractData_AVAX :
+                                activeNetwork === BaseNetworkInfo ? contractData_BASE :
+                                    activeNetwork === OptimismNetworkInfo ? contractData_OPTIMISM :
+                                        contractData_MAINNET;
+
+        setSmartContractData(currentSmartContractData);
+        console.log("triggered")
+        }, [activeNetwork]);
 
 
     return (
@@ -35,17 +56,16 @@ export default function GovernanceMap() {
       >
         <Grid mt={2} container sx={{ justifyContent: "center" }}>
           <Grid item xs={11}>
-            <Typography variant={"h5"}>Governance Map</Typography>
+            <Typography variant={"h5"}>Balancer Smart Contract Map</Typography>
           </Grid>
           <Grid item xs={11}>
             <Typography variant={"caption"}>
               Browse Balancer Contracts. Click on a contract to get more
-              information.
+              information. Use the top right network selector to change EVM deployments
             </Typography>
           </Grid>
           {/* Legend */}
           <Grid item xs={11} mt={1}>
-
           </Grid>
           <Grid item xs={11} mt={1}>
             <Card sx={{ overflowX: "auto" }}>
@@ -109,10 +129,10 @@ export default function GovernanceMap() {
                 </Box>
             </Card>
           </Grid>
-          <Grid item xs={11} mt={1}>
+          <Grid item xs={11} mt={2}>
             <Typography variant={"h5"}>Contract Overview </Typography>
           </Grid>
-          <Grid item xs={11} mt={1}>
+          <Grid item xs={11}>
             <Typography variant={"caption"}>
               A list of all deployed contracts. Click on an item to get more
               information.

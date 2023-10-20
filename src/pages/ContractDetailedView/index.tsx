@@ -9,14 +9,37 @@ import {useActiveNetworkVersion} from "../../state/application/hooks";
 import {useParams} from "react-router-dom";
 import NavCrumbs, {NavElement} from "../../components/NavCrumbs";
 import StyledExternalLink from "../../components/StyledExternalLink";
+import {
+    ArbitrumNetworkInfo, AvalancheNetworkInfo, BaseNetworkInfo,
+    EthereumNetworkInfo,
+    GnosisNetworkInfo, OptimismNetworkInfo,
+    PolygonNetworkInfo, PolygonZkEVMNetworkInfo
+} from "../../constants/networks";
+import contractData_MAINNET from "../../data/static/balancer-v2/governanceMap_MAINNET.json";
+import contractData_ARBITRUM from "../../data/static/balancer-v2/governanceMap_ARBITRUM.json";
+import contractData_POLYGON from "../../data/static/balancer-v2/governanceMap_POLYGON.json";
+import contractData_GNOSIS from "../../data/static/balancer-v2/governanceMap_GNOSIS.json";
+import contractData_ZKEVM from "../../data/static/balancer-v2/governanceMap_ZKEVM.json";
+import contractData_AVAX from "../../data/static/balancer-v2/governanceMap_AVAX.json";
+import contractData_BASE from "../../data/static/balancer-v2/governanceMap_BASE.json";
+import contractData_OPTIMISM from "../../data/static/balancer-v2/governanceMap_OPTIMISM.json";
 
 export default function ContractDetailedView() {
     const params = useParams();
+    const [activeNetwork] = useActiveNetworkVersion()
     const id = params.id ? params.id : '';
-    const smartContractData: BalancerSmartContractData = contractData;
+    const smartContractData: BalancerSmartContractData = activeNetwork === EthereumNetworkInfo ? contractData_MAINNET :
+        activeNetwork === ArbitrumNetworkInfo ? contractData_ARBITRUM :
+            activeNetwork === PolygonNetworkInfo ? contractData_POLYGON :
+                activeNetwork === GnosisNetworkInfo ? contractData_GNOSIS :
+                    activeNetwork === PolygonZkEVMNetworkInfo ? contractData_ZKEVM :
+                        activeNetwork === AvalancheNetworkInfo ? contractData_AVAX:
+                            activeNetwork === BaseNetworkInfo ? contractData_BASE:
+                                activeNetwork === OptimismNetworkInfo ? contractData_OPTIMISM :
+                                    contractData_MAINNET;
+
     const contract = smartContractData.contracts.find(contract => contract.id === id) ?
         smartContractData.contracts.find(contract => contract.id === id) : smartContractData.contracts[0]
-    const [activeNetwork] = useActiveNetworkVersion()
 
     //Navigation
     const homeNav: NavElement = {

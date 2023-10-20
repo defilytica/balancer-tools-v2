@@ -37,6 +37,7 @@ import {
 import {isMobile} from "react-device-detect";
 import {useActiveNetworkVersion} from "../../state/application/hooks";
 import {ArbitrumNetworkInfo, EthereumNetworkInfo, PolygonNetworkInfo, GnosisNetworkInfo, PolygonZkEVMNetworkInfo, AvalancheNetworkInfo, BaseNetworkInfo, OptimismNetworkInfo} from "../../constants/networks";
+import {active} from "@rainbow-me/rainbowkit/dist/css/touchableStyles.css";
 
 export interface GovMapProps {
     backgroundColor?: string,
@@ -86,9 +87,11 @@ export default function BalancerV2ContractMap({backgroundColor = '#6a7985', heig
     if (params.dataType === "node") {
       const nodeData = params.data as NodeData;
       const nodeValue = nodeData.value;
+      const isEthereumNetwork = activeNetwork === EthereumNetworkInfo;
+      console.log("isEthereumNetwork", isEthereumNetwork)
 
       // Construct the URL and navigate to it
-      window.location.href = `#/balancer/balancerContracts/${nodeValue}`;
+      window.location.href = isEthereumNetwork ? `#/balancer/balancerContracts/${nodeValue}` : `#/${activeNetwork.route}/balancer/balancerContracts/${nodeValue}`;
     }
   };
 
@@ -252,7 +255,7 @@ export default function BalancerV2ContractMap({backgroundColor = '#6a7985', heig
         chartRef.current.getEchartsInstance().off("click", handleClick);
       }
     };
-  }, []);
+  }, [activeNetwork]);
 
   return (
     <ReactEcharts

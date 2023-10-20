@@ -119,17 +119,17 @@ const MenuDrawer = ({
                 </ListItemButton>
                 <Collapse in={openGov} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
-                        <ListItemButton key={'Gauge Mapper'} component={NavLink} to={'balancer/gaugeMap'}>
+                        <ListItemButton key={'veBAL Gauge Map'} component={NavLink} to={'balancer/gaugeMap'}>
                             <ListItemIcon>
                                 <MapIcon />
                             </ListItemIcon>
-                            <ListItemText primary={'Gauge Mapper'} />
+                            <ListItemText primary={'veBAL Gauge Map'} />
                         </ListItemButton>
-                        <ListItemButton key={'Governance Map'} component={NavLink} to={'balancer/governanceMap'}>
+                        <ListItemButton key={'Contract Map'} component={NavLink} to={'balancer/governanceMap'}>
                             <ListItemIcon>
                                 <TextSnippetIcon />
                             </ListItemIcon>
-                            <ListItemText primary={'Governance Map'} />
+                            <ListItemText primary={'Contract Map'} />
                         </ListItemButton>
                         <ListItemButton key={'Permissions'} component={NavLink} to={'balancer/permissions'}>
                             <ListItemIcon>
