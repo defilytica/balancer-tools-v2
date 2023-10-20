@@ -18,7 +18,7 @@ export default function GaugeMapper(){
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                minHeight: '100vh'
+                minHeight: decoratedGaugeData.length === 0 ? '100vh' : '0hv'
             }}
         >
             {decoratedGaugeData && decoratedGaugeData.length > 1 ?
@@ -27,10 +27,12 @@ export default function GaugeMapper(){
                         <Typography variant={'h5'}>Gauge Map</Typography>
                     </Grid>
                     <Grid item xs={11}>
-                        <Typography variant={'caption'}>Browse a list of Gauges across all Balancer Deployments</Typography>
+                        <Typography variant={'caption'}>Browse a list of Gauges across all Balancer deployments. Note: this list only contains gauges enabled for BAL rewards.</Typography>
                     </Grid>
                     <Grid item mt={2} xs={11}>
+                        <Box sx={{ maxWidth: '90%' }}>
                         <GovGaugeTable gaugeDatas={decoratedGaugeData} />
+                        </Box>
                     </Grid>
                 </Grid>
             :

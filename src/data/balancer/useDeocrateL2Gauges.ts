@@ -16,6 +16,9 @@ interface NetworkProviders {
     GNOSIS: string;
     POLYGON: string;
     ARBITRUM: string;
+    AVALANCHE: string;
+    BASE: string;
+    ZKEVM: string;
 }
 
 const NETWORK_PROVIDERS: NetworkProviders = {
@@ -23,6 +26,10 @@ const NETWORK_PROVIDERS: NetworkProviders = {
     GNOSIS: 'https://rpc.gnosischain.com',
     POLYGON: 'https://polygon-bor.publicnode.com',
     ARBITRUM: 'https://rpc.ankr.com/arbitrum',
+    AVALANCHE: 'https://rpc.ankr.com/avalanche',
+    BASE: 'https://base.publicnode.com',
+    ZKEVM: 'https://zkevm-rpc.com'
+
 };
 
 interface MulticallItem {

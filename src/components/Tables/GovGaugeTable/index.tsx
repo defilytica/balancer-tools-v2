@@ -25,6 +25,9 @@ import ArbitrumLogo from '../../../assets/svg/arbitrum.svg'
 import EtherLogo from '../../../assets/svg/ethereum.svg'
 import PolygonLogo from '../../../assets/svg/polygon.svg'
 import GnosisLogo from '../../../assets/svg/gnosis.svg'
+import AvalancheLogo from '../../../assets/svg/avalancheLogo.svg'
+import BaseLogo from '../../../assets/svg/base.svg'
+import ZkevmLogo from '../../../assets/svg/zkevm.svg'
 import {BalancerStakingGauges, SimplePoolData} from "../../../data/balancer/balancerTypes";
 import {formatNumber} from "../../../utils/numbers";
 import GaugeComposition from "../../GaugeComposition";
@@ -45,6 +48,7 @@ interface Data {
     poolId: string,
     poolType: string,
     symbol: string,
+    gaugeRelativeWeight: number,
 }
 
 function createData(
@@ -58,6 +62,7 @@ function createData(
     poolId: string,
     poolType: string,
     symbol: string,
+    gaugeRelativeWeight: number,
 ): Data {
     return {
         poolComposition,
@@ -70,6 +75,7 @@ function createData(
         poolId,
         poolType,
         symbol,
+        gaugeRelativeWeight,
     };
 }
 
@@ -162,6 +168,13 @@ const headCells: readonly HeadCell[] = [
         isMobileVisible: false,
     },
     {
+        id: 'gaugeRelativeWeight',
+        numeric: false,
+        disablePadding: false,
+        label: 'Weight',
+        isMobileVisible: false,
+    },
+    {
         id: 'isKilled',
         numeric: false,
         disablePadding: false,
@@ -237,7 +250,7 @@ export default function GovGaugeTable({gaugeDatas}: {
     });
 
     const originalRows = filteredPoolDatas.map(el =>
-        createData(el.address, el.network, el.isKilled, el.pool, el.pool.address, el.address, el.min_VeBAL, el.pool.id, el.pool.poolType, el.pool.symbol)
+        createData(el.address, el.network, el.isKilled, el.pool, el.pool.address, el.address, el.min_VeBAL, el.pool.id, el.pool.poolType, el.pool.symbol, el.gaugeRelativeWeight)
     )
     const [rows, setRows] = useState<Data[]>(originalRows);
     const [searched, setSearched] = useState<string>("");
@@ -305,7 +318,10 @@ export default function GovGaugeTable({gaugeDatas}: {
         OPTIMISM: OpLogo,
         POLYGON: PolygonLogo,
         GNOSIS: GnosisLogo,
-        ARBITRUM: ArbitrumLogo
+        ARBITRUM: ArbitrumLogo,
+        AVALANCHE: AvalancheLogo,
+        BASE: BaseLogo,
+        ZKEVM: ZkevmLogo,
     };
 
     const networkStringMap :NetworkLogoMap = {
@@ -313,7 +329,8 @@ export default function GovGaugeTable({gaugeDatas}: {
         OPTIMISM: "Optimism",
         POLYGON: "Polygon",
         GNOSIS: "Gnosis",
-        ARBITRUM: "Arbitrum"
+        ARBITRUM: "Arbitrum",
+        ZKEVM: 'Polygon zkEVM'
     };
 
 
@@ -323,7 +340,7 @@ export default function GovGaugeTable({gaugeDatas}: {
         <Box sx={{width: '100%'}}>
             <Paper
                 component="form"
-                sx={{ mb: '5px', p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+                sx={{ mb: '5px', p: '2px 4px', display: 'flex', alignItems: 'center', minWidth: 400, maxWidth: 800 }}
             >
                 <InputBase
                     sx={{ ml: 1, flex: 1 }}
@@ -338,9 +355,9 @@ export default function GovGaugeTable({gaugeDatas}: {
             </Paper>
             <Paper sx={{mb: 2, boxShadow: 3}}>
 
-                <TableContainer>
+                <TableContainer sx={{ maxWidth: '100%' }}>
                     <Table
-                        //sx={{ minWidth: 750 }}
+                        sx={{ maxWidth: '90%' }}
                         aria-labelledby="tableTitle"
                         size={dense ? 'small' : 'medium'}
                     >
@@ -390,6 +407,9 @@ export default function GovGaugeTable({gaugeDatas}: {
                                             </TableCell>
                                             <TableCell>
                                                 {row.poolId}
+                                            </TableCell>
+                                            <TableCell>
+                                                {row.gaugeRelativeWeight.toFixed(2)}
                                             </TableCell>
                                             <TableCell>
                                                 {row.isKilled ? 'Yes' : 'No'}

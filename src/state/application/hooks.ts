@@ -1,23 +1,27 @@
-import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
+import {ApolloClient, NormalizedCacheObject} from '@apollo/client'
 import {
   arbitrumBlockClient,
   arbitrumClient,
+  avalancheBlockClient,
+  avalancheClient, baseBlockClient,
+  baseClient,
   blockClient,
   client,
+  gnosisBlockClient,
+  gnosisClient,
+  optimismBlockClient,
+  optimismClient,
   polygonBlockClient,
   polygonClient,
-  gnosisBlockClient,
-  gnosisClient, polygonZKEVMClient, optimismClient, polygonZKEVMBlockClient, optimismBlockClient,
+  polygonZKEVMBlockClient,
+  polygonZKEVMClient
 } from '../../apollo/client'
-import { NetworkInfo, SupportedNetwork } from '../../constants/networks'
-import { useCallback } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useActiveWeb3React } from '../../hooks'
-import { AppState } from '../index'
-import {
-  updateActiveNetworkVersion,
-  updateSubgraphStatus,
-} from './actions'
+import {NetworkInfo, SupportedNetwork} from '../../constants/networks'
+import {useCallback} from 'react'
+import {useDispatch, useSelector} from 'react-redux'
+import {useActiveWeb3React} from '../../hooks'
+import {AppState} from '../index'
+import {updateActiveNetworkVersion, updateSubgraphStatus,} from './actions'
 
 export function useBlockNumber(): number | undefined {
   const { chainId } = useActiveWeb3React()
@@ -76,6 +80,10 @@ export function useDataClient(): ApolloClient<NormalizedCacheObject> {
         return gnosisClient
     case SupportedNetwork.OPTIMISM:
       return optimismClient;
+    case SupportedNetwork.AVALANCHE:
+      return avalancheClient;
+    case SupportedNetwork.BASE:
+      return baseClient;
     default:
       return client
   }
@@ -97,6 +105,10 @@ export function useBlockClient(): ApolloClient<NormalizedCacheObject> {
         return gnosisBlockClient
     case SupportedNetwork.OPTIMISM:
       return optimismBlockClient
+    case SupportedNetwork.AVALANCHE:
+      return avalancheBlockClient
+    case SupportedNetwork.BASE:
+      return baseBlockClient
     default:
       return blockClient
   }

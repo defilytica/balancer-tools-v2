@@ -17,6 +17,7 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import ListItemButton from '@mui/material/ListItemButton';
 import HandymanIcon from '@mui/icons-material/Handyman';
+import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import CoingeckoColor from '../../assets/svg/coingecko-color.svg'
@@ -30,6 +31,8 @@ import HowToVoteIcon from '@mui/icons-material/HowToVote';
 import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
+import KeyIcon from '@mui/icons-material/Key';
+import PostAddIcon from '@mui/icons-material/PostAdd';
 
 
 export type MenuDrawerProps = {
@@ -107,12 +110,6 @@ const MenuDrawer = ({
                     </ListItemIcon>
                     <ListItemText primary={'Incentive Simulator'} />
                 </ListItemButton>
-                <ListItemButton key={'Authorizations'} component={NavLink} to={networkPrefix(activeNetwork) + 'authorizations'}>
-                    <ListItemIcon>
-                        <SecurityIcon />
-                    </ListItemIcon>
-                    <ListItemText primary={'Authorizations'} />
-                </ListItemButton>
                 <ListItemButton onClick={handleGovClick}>
                     <ListItemIcon>
                         <HandymanIcon />
@@ -122,11 +119,29 @@ const MenuDrawer = ({
                 </ListItemButton>
                 <Collapse in={openGov} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
-                        <ListItemButton key={'Gauge Mapper'} component={NavLink} to={'balancer/gaugeMap'}>
+                        <ListItemButton key={'veBAL Gauge Map'} component={NavLink} to={'balancer/gaugeMap'}>
                             <ListItemIcon>
                                 <MapIcon />
                             </ListItemIcon>
-                            <ListItemText primary={'Gauge Mapper'} />
+                            <ListItemText primary={'veBAL Gauge Map'} />
+                        </ListItemButton>
+                        <ListItemButton key={'Contract Map'} component={NavLink} to={'balancer/governanceMap'}>
+                            <ListItemIcon>
+                                <TextSnippetIcon />
+                            </ListItemIcon>
+                            <ListItemText primary={'Contract Map'} />
+                        </ListItemButton>
+                        <ListItemButton key={'Permissions'} component={NavLink} to={'balancer/permissions'}>
+                            <ListItemIcon>
+                                <KeyIcon />
+                            </ListItemIcon>
+                            <ListItemText primary={'Permissions'} />
+                        </ListItemButton>
+                        <ListItemButton key={'Payload Builder'} component={NavLink} to={'balancer/payloadBuilder'}>
+                            <ListItemIcon>
+                                <PostAddIcon />
+                            </ListItemIcon>
+                            <ListItemText primary={'Payload Builder'} />
                         </ListItemButton>
                     </List>
                 </Collapse>

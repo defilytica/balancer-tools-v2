@@ -1,0 +1,4205 @@
+{
+    "contracts": [
+      {
+        "id": "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
+        "title": "Balancer V2 Vault",
+        "description": "The `Vault` is Balancer V2's core contract. A single instance of it exists for each network, and it is the entity used to interact with Pools by Liquidity Providers who join and exit them, traders who swap, and asset managers who withdraw and deposit tokens.",
+        "readMethods": [
+          {
+            "methodName": "WETH",
+            "methodDescription": "Returns address for the WETH token on the network",
+            "methodVariables": [
+            ]
+          },
+          {
+            "methodName": "getAuthorizer",
+            "methodDescription": "Returns the Vault's Authorizer.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getDomainSeperator",
+            "methodDescription": "Returns the EIP712 domain separator.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getInternalBalance",
+            "methodDescription": "Returns a user's internal balance of each quantity of specified tokens.",
+            "methodVariables": [
+              {
+                "name": "user",
+                "type": "address"
+              },
+              {
+                "name": "tokens",
+                "type": "address[]"
+              }
+            ]
+          },
+          {
+            "methodName": "getNextNonce",
+            "methodDescription": "Returns the next nonce for a specified user.",
+            "methodVariables": [
+              {
+                "name": "user",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "getPausedState",
+            "methodDescription": "Returns the current contract pause status, as well as the end times of the Pause Window and Buffer Period.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getPool",
+            "methodDescription": "Returns the pool address based on the pool id",
+            "methodVariables": [
+              {
+                "name": "poolId",
+                "type": "bytes32"
+              }
+            ]
+          },
+          {
+            "methodName": "getPoolTokenInfo",
+            "methodDescription": "Returns the token info within a specific pool.",
+            "methodVariables": [
+              {
+                "name": "poolId",
+                "type": "bytes32"
+              },
+              {
+                "name": "token",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "getPoolTokens",
+            "methodDescription": "Returns the tokens within a specific pool.",
+            "methodVariables": [
+              {
+                "name": "poolId",
+                "type": "bytes32"
+              }
+            ]
+          },
+          {
+            "methodName": "getProtocolFeesCollector",
+            "methodDescription": "Returns the protocol fees collector contract.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "hasApprovedRelayer",
+            "methodDescription": "Returns true or false is a user has approved the passed relayer contract",
+            "methodVariables": [
+              {
+                "name": "user",
+                "type": "address"
+              },
+              {
+                "name": "relayer",
+                "type": "address"
+              }
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "batchSwap",
+            "methodDescription": "Executes a batchswap across the vault based on the input data.",
+            "methodVariables": [
+              {
+                "name": "batchSwap",
+                "type": "payableAmount(ether)"
+              },
+              {
+                "name": "kind",
+                "type": "uint8"
+              },
+              {
+                "name": "assets",
+                "type": "address[]"
+              },
+              {
+                "name": "swaps",
+                "type": "tuple[]"
+              },
+              {
+                "name": "funds",
+                "type": "tuple"
+              },
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "fromInternalBalance",
+                "type": "bool"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "toInternalBalance",
+                "type": "bool"
+              },
+              {
+                "name": "limits",
+                "type": "int256[]"
+              },
+              {
+                "name": "deadline",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "deregisterTokens",
+            "methodDescription": "Deregisters `tokens` for the `poolId` Pool. Must be called by the Pool's contract. Only registered tokens (via `registerTokens`) can be deregistered. Additionally, they must have zero total balance. For Pools with the Two Token specialization, `tokens` must have a length of two, that is, both tokens must be deregistered in the same `deregisterTokens` call. A deregistered token can be re-registered later on, possibly with a different Asset Manager. Emits a `TokensDeregistered` event.",
+            "methodVariables": [
+              {
+                "name": "poolId",
+                "type": "bytes32"
+              },
+              {
+                "name": "tokens",
+                "type": "address[]"
+              }
+            ]
+          },
+          {
+            "methodName": "exitPool",
+            "methodDescription": "Exits pool for a user.",
+            "methodVariables": [
+              {
+                "name": "poolId",
+                "type": "bytes32"
+              },
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "request",
+                "type": "tuple"
+              },
+              {
+                "name": "assets",
+                "type": "address[]"
+              },
+              {
+                "name": "minAmountsOut",
+                "type": "uint256[]"
+              },
+              {
+                "name": "userData",
+                "type": "bytes"
+              },
+              {
+                "name": "toInternalBalance",
+                "type": "bool"
+              }
+            ]
+          },
+          {
+            "methodName": "flashLoan",
+            "methodDescription": "Performs a 'flash loan', sending tokens to `recipient`, executing the `receiveFlashLoan` hook on it, and then reverting unless the tokens plus a proportional protocol fee have been returned. The `tokens` and `amounts` arrays must have the same length, and each entry in these indicates the loan amount for each token contract. `tokens` must be sorted in ascending order. The 'userData' field is ignored by the Vault, and forwarded as-is to `recipient` as part of the `receiveFlashLoan` call. Emits `FlashLoan` events.",
+            "methodVariables": [
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "tokens",
+                "type": "address[]"
+              },
+              {
+                "name": "amounts",
+                "type": "uint256[]"
+              },
+              {
+                "name": "userData",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "methodName": "queryBatchSwap",
+            "methodDescription": "Queries the swaps a user is interested in.",
+            "methodVariables": [
+              {
+                "name": "kind",
+                "type": "uint8"
+              },
+              {
+                "name": "swaps",
+                "type": "tuple"
+              },
+              {
+                "name": "assets",
+                "type": "address[]"
+              },
+              {
+                "name": "funds",
+                "type": "tuple"
+              },
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "fromInternalBalance",
+                "type": "bool"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "toInternalBalance",
+                "type": "bool"
+              }
+            ]
+          },
+          {
+            "methodName": "registerPool",
+            "methodDescription": "Registers the caller account as a Pool with a given specialization setting. Returns the Pool's ID, which is used in all Pool-related functions. Pools cannot be deregistered, nor can the Pool's specialization be changed. The caller is expected to be a smart contract that implements either `IGeneralPool` or `IMinimalSwapInfoPool`, depending on the chosen specialization setting. This contract is known as the Pool's contract. Note that the same contract may register itself as multiple Pools with unique Pool IDs, or in other words, multiple Pools may share the same contract. Emits a `PoolRegistered` event.",
+            "methodVariables": [
+              {
+                "name": "specialization",
+                "type": "uint8"
+              }
+            ]
+          },
+          {
+            "methodName": "registerTokens",
+            "methodDescription": "Registers `tokens` for the `poolId` Pool. Must be called by the Pool's contract. Pools can only interact with tokens they have registered. Users join a Pool by transferring registered tokens, exit by receiving registered tokens, and can only swap registered tokens. Each token can only be registered once. For Pools with the Two Token specialization, `tokens` must have a length of two, that is, both tokens must be registered in the same `registerTokens` call, and they must be sorted in ascending order. The `tokens` and `assetManagers` arrays must have the same length, and each entry in these indicates the Asset Manager for the corresponding token. Asset Managers can manage a Pool's tokens via `managePoolBalance`, depositing and withdrawing them directly, and can even set their balance to arbitrary amounts. They are therefore expected to be highly secured smart contracts with sound design principles, and the decision to register an Asset Manager should not be made lightly. Pools can choose not to assign an Asset Manager to a given token by passing in the zero address. Once an Asset Manager is set, it cannot be changed except by deregistering the associated token and registering again with a different Asset Manager. Emits a `TokensRegistered` event.",
+            "methodVariables": [
+              {
+                "name": "poolId",
+                "type": "bytes32"
+              },
+              {
+                "name": "tokens",
+                "type": "address[]"
+              },
+              {
+                "name": "assetManagers",
+                "type": "address[]"
+              }
+            ]
+          },
+          {
+            "methodName": "registerTokens",
+            "methodDescription": "Sets a new Authorizer for the Vault. The caller must be allowed by the current Authorizer to do this. Emits an `AuthorizerChanged` event.",
+            "methodVariables": [
+              {
+                "name": "newAuthorizer",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "setPaused",
+            "methodDescription": "Safety mechanism to pause most Vault operations in the event of an emergency - typically detection of an error in some part of the system. The Vault can only be paused during an initial time period, after which pausing is forever disabled. While the contract is paused, the following features are disabled: - depositing and transferring internal balance - transferring external balance (using the Vault's allowance) - swaps - joining Pools - Asset Manager interactions Internal Balance can still be withdrawn, and Pools exited.",
+            "methodVariables": [
+              {
+                "name": "paused",
+                "type": "bool"
+              }
+            ]
+          },
+          {
+            "methodName": "setRelayerApproval",
+            "methodDescription": "Allows `relayer` to act as a relayer for `sender` if `approved` is true, and disallows it otherwise. Emits a `RelayerApprovalChanged` event.",
+            "methodVariables": [
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "relayer",
+                "type": "address"
+              },
+              {
+                "name": "approved",
+                "type": "bool"
+              }
+            ]
+          },
+          {
+            "methodName": "swap",
+            "methodDescription": "Executes a swap across the vault based on the input data.",
+            "methodVariables": [
+              {
+                "name": "swap",
+                "type": "payableAmount(ether)"
+              },
+              {
+                "name": "singleSwap",
+                "type": "tuple"
+              },
+              {
+                "name": "poolId",
+                "type": "bytes32"
+              },
+              {
+                "name": "kind",
+                "type": "uint8"
+              },
+              {
+                "name": "assetIn",
+                "type": "address"
+              },
+              {
+                "name": "asseOut",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "name": "userData",
+                "type": "bytes"
+              },
+              {
+                "name": "funds",
+                "type": "tuple"
+              },
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "fromInternalBalance",
+                "type": "bool"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "toInternalBalance",
+                "type": "bool"
+              },
+              {
+                "name": "limits",
+                "type": "int256[]"
+              },
+              {
+                "name": "deadline",
+                "type": "uint256"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0x8df317a729fcaA260306d7de28888932cb579b88",
+        "title": "AuthorizerWithAdaptorValidation",
+        "description": "The AuthorizerWithAdaptorValidation is an upgrade that fixes an issue in the AuthorizerAdaptor and allows usage of the AuthorizerAdaptorEntrypoint for contract interactions. The primary Authorizer is the one that keeps track of permissions. This is the placeholder for a TimelockAuthorizer, which has yet to developed.",
+        "readMethods": [
+          {
+            "methodName": "canPerform ",
+            "methodDescription": "Checks if an address is able to perform an action.",
+            "methodVariables": [
+              {
+                "name": "actionId",
+                "type": "bytes32"
+              },
+              {
+                "name": "account",
+                "type": "address"
+              },
+              {
+                "name": "where",
+                "type": "address"
+              }
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "",
+            "methodDescription": "",
+            "methodVariables":[
+              {
+                "name": "",
+                "type": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0xA331D84eC860Bf466b4CdCcFb4aC09a1B43F3aE6",
+        "title": "Authorizer",
+        "description": "The Authorizer manages, grants, and revokes, permissions to allow interactions with the infrastructure contracts of Balancer. The Authorizer keeps track of what contracts (primarily multisigs) are allowed to perform actions if they have the role with the same, single action identifier.",
+        "readMethods": [
+          {
+            "methodName": "canPerform ",
+            "methodDescription": "Checks if an address is able to perform an action.",
+            "methodVariables": [
+              {
+                "name": "actionId",
+                "type": "bytes32"
+              },
+              {
+                "name": "account",
+                "type": "address"
+              },
+              {
+                "name": "input",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "getRoleAdmin",
+            "methodDescription": "Checks the contract which corresponds to a role.",
+            "methodVariables": [
+              {
+                "name": "role",
+                "type": "bytes32"
+              }
+            ]
+          },
+          {
+            "methodName": "getRoleMember",
+            "methodDescription": "Checks the role and position number it was granted to return an address.",
+            "methodVariables": [
+              {
+                "name": "role",
+                "type": "bytes32"
+              },
+              {
+                "name": "index",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "getRoleMemberCount",
+            "methodDescription": "Checks the amount of contracts have a specific role.",
+            "methodVariables": [
+              {
+                "name": "role",
+                "type": "bytes32"
+              }
+            ]
+          },
+          {
+            "methodName": "hasRole",
+            "methodDescription": "Checks is and address has specific role, returns true or false.",
+            "methodVariables": [
+              {
+                "name": "role",
+                "type": "bytes32"
+              },
+              {
+                "name": "account",
+                "type": "address"
+              }
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "grantRole",
+            "methodDescription": "Grants a single role to a single address",
+            "methodVariables": [
+              {
+                "name": "role",
+                "type": "bytes32"
+              },
+              {
+                "name": "account",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "grantRoles",
+            "methodDescription": "Grants multiple roles to a single address",
+            "methodVariables": [
+              {
+                "name": "roles",
+                "type": "bytes32[]"
+              },
+              {
+                "name": "account",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "grantRolesToMany",
+            "methodDescription": "Grants multiple roles to a multiple addresses",
+            "methodVariables": [
+              {
+                "name": "roles",
+                "type": "bytes32[]"
+              },
+              {
+                "name": "accounts",
+                "type": "address[]"
+              }
+            ]
+          },
+          {
+            "methodName": "renounceRole",
+            "methodDescription": "Revokes a single role from a single address, caller is the address itself.",
+            "methodVariables": [
+              {
+                "name": "role",
+                "type": "bytes32"
+              },
+              {
+                "name": "account",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "revokeRole",
+            "methodDescription": "Revokes a single role from a single address",
+            "methodVariables": [
+              {
+                "name": "role",
+                "type": "bytes32"
+              },
+              {
+                "name": "account",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "revokeRoles",
+            "methodDescription": "Revokes multiple roles from a single address",
+            "methodVariables": [
+              {
+                "name": "roles",
+                "type": "bytes32[]"
+              },
+              {
+                "name": "account",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "revokeRolesToMany",
+            "methodDescription": "Revokes multiple roles from multiple addresses",
+            "methodVariables": [
+              {
+                "name": "roles",
+                "type": "bytes32[]"
+              },
+              {
+                "name": "accounts",
+                "type": "address[]"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0xdcdbf71A870cc60C6F9B621E28a7D3Ffd6Dd4965",
+        "title": "AuthorizerAdaptor",
+        "description": "This contract is intended to act as an adaptor between systems which expect a single admin address and the Balancer Authorizer such that the Authorizer may grant/revoke admin powers to unlimited addresses. The permissions the Authorizer can grant are granular such they may be global or specific to a particular contract. When calculating the actionId to call a function on a target contract, it must be calculated as if it were to be called on this adaptor. This can be done by passing the function selector to the `getActionId` function.",
+        "readMethods": [
+          {
+            "methodName": "getActionId",
+            "methodDescription": "Passes a action id to return the authorizer bytes32",
+            "methodVariables": [
+              {
+                "name": "selector",
+                "type": "bytes4"
+              }
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "performAction",
+            "methodDescription": "Performs an action in the system",
+            "methodVariables": [
+              {
+                "name": "performAction",
+                "type": "payableAmount"
+              },
+              {
+                "name": "target",
+                "type": "address"
+              },
+              {
+                "name": "data",
+                "type": "bytes"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0xb9aD3466cdd42015cc05d4804DC68D562b6a2065",
+        "title": "AuthorizerAdaptorEntrypoint",
+        "description": "This contract exists as a fix for a critical bug in the `AuthorizerAdaptor` that could lead to escalation of privileges. The Entrypoint contract addresses this by working in combination with `TimelockAuthorizer` so that all Adaptor calls that are not made via the Entrypoint fail, while those that do happen through the Entrypoint check for permissions correctly. ",
+        "readMethods": [
+          {
+            "methodName": "canPerform",
+            "methodDescription": "Checks if an address is able to perform an action.",
+            "methodVariables": [
+              {
+                "name": "actionId",
+                "type": "bytes32"
+              },
+              {
+                "name": "account",
+                "type": "address"
+              },
+              {
+                "name": "input",
+                "type": "address"
+              }
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "performAction",
+            "methodDescription": "Performs an action in the system",
+            "methodVariables": [
+              {
+                "name": "performAction",
+                "type": "payableAmount"
+              },
+              {
+                "name": "target",
+                "type": "address"
+              },
+              {
+                "name": "data",
+                "type": "bytes"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0x1802953277FD955f9a254B80Aa0582f193cF1d77",
+        "title": "ProtocolFeePercentagesProvider",
+        "description": "The Protocol Fee Percentage Provider has two critical write functions. The purpose is to add new protocol fee types to the Balancer system, and to adjust protocol fees on each type. There are four current types of protocol fees, swap, flash loan, yield, and asset under management.",
+        "readMethods": [
+          {
+            "methodName": "getFeeTypeMaximumPercentage",
+            "methodDescription": "Gets the maximum allowable percentage allowed for a specific protocol fee type.",
+            "methodVariables": [
+              {
+                "name": "feeType",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "getFeeTypeName",
+            "methodDescription": "Returns the name for a correspond protocol fee type.",
+            "methodVariables": [
+              {
+                "name": "feeType",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "getFeeTypePercentage",
+            "methodDescription": "Returns the current percentage for a correspond protocol fee type.",
+            "methodVariables": [
+              {
+                "name": "feeType",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "isValidFeeType",
+            "methodDescription": "Returns true or false for if a fee type exists.",
+            "methodVariables": [
+              {
+                "name": "feeType",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "isValidFeeTypePercentage",
+            "methodDescription": "Returns true or false for if a specific protcol fee type can be a specific value.",
+            "methodVariables": [
+              {
+                "name": "feeType",
+                "type": "uint256"
+              },
+              {
+                "name": "value",
+                "type": "uint256"
+              }
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "registerFeeType",
+            "methodDescription": "Registers a new protcol fee type in the system",
+            "methodVariables": [
+              {
+                "name": "feeType",
+                "type": "uint256"
+              },
+              {
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "name": "maximumValue",
+                "type": "uint256"
+              },
+              {
+                "name": "initialValue",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "setFeeTypePercentage",
+            "methodDescription": "Set a specific protcol fee type percentage in the system",
+            "methodVariables": [
+              {
+                "name": "feeType",
+                "type": "uint256"
+              },
+              {
+                "name": "newValue",
+                "type": "uint256"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0xce88686553686DA562CE7Cea497CE749DA109f9F",
+        "title": "ProtocolFeeCollector",
+        "description": "The Protocol Fee Collector is an auxiliary contract to the Vault, deployed by it during construction. It offloads some of the tasks the Vault performs to reduce its overall bytecode size. The current values for all protocol fee percentages are stored here, and any tokens charged as protocol fees are sent to this contract, where they may be withdrawn by authorized entities. All authorization tasks are delegated to the Vault's own Authorizer.",
+        "readMethods": [
+          {
+            "methodName": "getCollectedFeeAmounts",
+            "methodDescription": "Returns and array of amounts collected for each token specificed.",
+            "methodVariables": [
+              {
+                "name": "tokens",
+                "type": "address[]"
+              }
+            ]
+          },
+          {
+            "methodName": "getFlashLoanPercentage",
+            "methodDescription": "Returns protocol fee on flash loans.",
+            "methodVariables": [
+              {
+                "name": "",
+                "type": ""
+              }
+            ]
+          },
+          {
+            "methodName": "getSwapFeePercentage",
+            "methodDescription": "Returns protocol fee on swaps.",
+            "methodVariables": [
+              {
+                "name": "",
+                "type": ""
+              }
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "setFlashLoanFeePercentage",
+            "methodDescription": "Sets flash loan protocol fee percentage. It is reccomended not to use this.",
+            "methodVariables": [
+              {
+                "name": "newFlashLoanFeePercentage",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "setSwapFeePercentage",
+            "methodDescription": "Sets swap protocol fee percentage. It is reccomended not to use this.",
+            "methodVariables": [
+              {
+                "name": "newSwapFeePercentage",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "withdrawCollectedFees",
+            "methodDescription": "Withdraws specific amounts of specific tokens and sends to them to a recipient.",
+            "methodVariables": [
+              {
+                "name": "tokens",
+                "type": "address[]"
+              },
+              {
+                "name": "amounts",
+                "type": "uint256[]"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0x230a59F4d9ADc147480f03B0D3fFfeCd56c3289a",
+        "title": "ProtocolFeeWithdrawer",
+        "description": "The Protocol Fees Withdrawer is a safety layer around the Protocol Fees Collector which allows withdrawals of specific tokens to be blocked. This is useful for the case in which tokens which shouldn't be distributed are unexpectedly paid into the Protocol Fees Collector.",
+        "readMethods": [
+          {
+            "methodName": "getDenyListedToken",
+            "methodDescription": "Returns a denylisted token address based on position in the denylists index.",
+            "methodVariables": [
+              {
+                "name": "index",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "getDenyListTokenLength",
+            "methodDescription": "Returns the length of the denylist. ",
+            "methodVariables": [
+              {
+                "name": "",
+                "type": ""
+              }
+            ]
+          },
+          {
+            "methodName": "isWithdrawableToken",
+            "methodDescription": "Returns true or false if a token is denylisted.",
+            "methodVariables": [
+              {
+                "name": "token",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "isWithdrawableTokens",
+            "methodDescription": "Returns true or false if a single token in an array of tokens is denylisted.",
+            "methodVariables": [
+              {
+                "name": "token",
+                "type": "address[]"
+              }
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "allowlistToken",
+            "methodDescription": "Marks the provided token as eligible for withdrawal from the Protocol Fee Collector",
+            "methodVariables": [
+              {
+                "name": "token",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "denylistToken",
+            "methodDescription": "Marks the provided token as ineligible for withdrawal from the Protocol Fee Collector",
+            "methodVariables": [
+              {
+                "name": "token",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "withdrawCollectedFees",
+            "methodDescription": "Withdraws fees from the Protocol Fee Collector.",
+            "methodVariables": [
+              {
+                "name": "tokens",
+                "type": "address[]"
+              },
+              {
+                "name": "amounts",
+                "type": "uint256[]"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": " 0xB59Ab49CA8d064E645Bf2c546d9FE6d1d4147a09",
+        "title": "Mimic SmartVault - DNE",
+        "description": "This smart vault from Mimic automates the withdrawing of protocol fees through the protocol fee withdrawer, from the protocol fee collector. Then sells non-BAL tokens for USDC and bridges them to mainnet, where core pool and veBAL distributions are executed..",
+        "readMethods": [
+          {
+            "methodName": "",
+            "methodDescription": "",
+            "methodVariables":[
+              {
+                "name": "",
+                "type": ""
+              }
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "",
+            "methodDescription": "",
+            "methodVariables":[
+              {
+                "name": "",
+                "type": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0xB59Ab49CA8d064E645Bf2c546d9FE6d1d4147a09",
+        "title": "Protocol Fee Multisig",
+        "description": "The protocol fee multisigs core purpose is to take protocol fees and distribute them to the treasury, veBAL holders, and core pool incentives.",
+        "readMethods": [
+          {
+            "methodName": "",
+            "methodDescription": "",
+            "methodVariables":[
+              {
+                "name": "",
+                "type": ""
+              }
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "",
+            "methodDescription": "",
+            "methodVariables":[
+              {
+                "name": "",
+                "type": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0xc7E5ED1054A24Ef31D827E6F86caA58B3Bc168d7",
+        "title": "VotingEscrowDelegationProxy",
+        "description": " The VotingEscrowDelegationProxy handles the delegation of veBAL between addresses. This permits the system to move to a new delegation mechanism if needed.",
+        "readMethods": [
+          {
+            "methodName": "adjustedBalanceOf",
+            "methodDescription": "Gets a users adjusted balance of veBAL including delegations,",
+            "methodVariables": [
+              {
+                "name": "user",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "adjusted balance of",
+            "methodDescription": "Gets a users adjusted balance of veBAL including delegations,",
+            "methodVariables": [
+              {
+                "name": "user",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "getDelegationImplementation",
+            "methodDescription": "Returns the current delegation implementation contract.",
+            "methodVariables": [
+              {
+                "name": "",
+                "type": ""
+              }
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "killDelegation",
+            "methodDescription": "Kills the current delegation implementation. For emergency use, and updating the system if need be.",
+            "methodVariables": [
+              {
+                "name": "",
+                "type": ""
+              }
+            ]
+          },
+          {
+            "methodName": "setDelegation",
+            "methodDescription": "Sets a new delegation implementation address",
+            "methodVariables": [
+              {
+                "name": "delegation",
+                "type": "address"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0xE39B5e3B6D74016b2F6A9673D7d7493B6DF549d5",
+        "title": "veBoost - Boost Delegation v2",
+        "description": "The veBoost contract handles the boosting of user rewards when staking their liquidity positions in gauges to receive emissions. This contract also handles the delegations of boost between contracts.",
+        "readMethods": [
+          {
+            "methodName": "balanceOf",
+            "methodDescription": "Gets a users balance of veBAL",
+            "methodVariables": [
+              {
+                "name": "user",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "adjusted balance of",
+            "methodDescription": "Gets a users adjusted balance of veBAL including delegations",
+            "methodVariables": [
+              {
+                "name": "user",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "totalSupply",
+            "methodDescription": "Returns the current total supply of veBAL",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "delegated balance",
+            "methodDescription": "Returns the amount of veBAL a user has delegated to others.",
+            "methodVariables": [
+              {
+                "name": "user",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "recevied balance",
+            "methodDescription": "Returns the amount of veBAL a user has delegated to them from others.",
+            "methodVariables": [
+              {
+                "name": "user",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "delegable balance",
+            "methodDescription": "Returns the amount of veBAL a user can delegate to others.",
+            "methodVariables": [
+              {
+                "name": "user",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "migrated",
+            "methodDescription": "Returns true or false if a delegation code has been migrated from v1 to this contract, v2.",
+            "methodVariables": [
+              {
+                "name": "arg",
+                "type": "uint256"
+              }
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "boost",
+            "methodDescription": "Delegates veBAL from the writing address to a designated address.",
+            "methodVariables": [
+              {
+                "name": "to",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "name": "endtime",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "boost",
+            "methodDescription": "Delegates veBAL from the writing address to a designated address.",
+            "methodVariables": [
+              {
+                "name": "to",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "name": "endtime",
+                "type": "uint256"
+              },
+              {
+                "name": "from",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "migrate",
+            "methodDescription": "Migrates a delegation from v1 veBoost to this contract, v2. ",
+            "methodVariables": [
+              {
+                "name": "token id",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "migrate many",
+            "methodDescription": "Migrates multiple delegation from v1 veBoost to this contract, v2. ",
+            "methodVariables": [
+              {
+                "name": "token id",
+                "type": "uint256[]"
+              }
+            ]
+          },
+          {
+            "methodName": "checkpointuser",
+            "methodDescription": "Checkpoints a user to ensure their veBAL delegation is properly counted in the system.",
+            "methodVariables": [
+              {
+                "name": "user",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "approve",
+            "methodDescription": "Approves another contract address to spend, or utilize the write addresses veBAL.",
+            "methodVariables": [
+              {
+                "name": "spender",
+                "type": "address"
+              },
+              {
+                "name": "value",
+                "type": "uint256"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0x2f237e7643a3bF6Ef265dd6FCBcd26a7Cc38dbAa",
+        "title": "Balancer DAO Multisig",
+        "description": "The DAO Multisig consists of several highly trusted stakeholders in the Balancer ecosystem, this multisig holds the DAO Treasury, kills gauges, and is used for critical infrastructure permssions & changes only when approved by governance.",
+        "readMethods": [
+  
+        ],
+        "writeMethods": [
+  
+        ]
+      },
+      {
+        "id": "0xB59Ab49CA8d064E645Bf2c546d9FE6d1d4147a09",
+        "title": "Balancer Liquidity Mining Multisig",
+        "description": "The Liquidity Mining (LM) Multisig consists of the Balancer Maxis, a group of community members. This multisigs purpose is adding gauges and managing pool parameters. ",
+        "readMethods": [
+  
+        ],
+        "writeMethods": [
+  
+        ]
+      },
+      {
+        "id": "0x120ef59b80774f02211563834d8e3b72cb1649d6",
+        "title": "BalancerGovernanceToken",
+        "description": "This contract is the ERC20 BAL Token on mainnet.",
+        "readMethods": [
+          {
+            "methodName": "allownace",
+            "methodDescription": "Returns allowable amount of BAL tokens a spender can utilize on behalf of the token owner.",
+            "methodVariables": [
+              {
+                "name": "owner",
+                "type": "address"
+              },
+              {
+                "name": "spender",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "balanceOf",
+            "methodDescription": "Returns the balance of BAL tokens an account has.",
+            "methodVariables": [
+              {
+                "name": "account",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "l1Address",
+            "methodDescription": "Returns the address of BAL on Ethereum",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "l2Gateway",
+            "methodDescription": "Returns the address of the bridging gateway between Mainnet and Arbitrum for BAL.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "hasRole",
+            "methodDescription": "Returns true or false if the specified account, has the specified role.",
+            "methodVariables": [
+              {
+                "name": "role",
+                "type": "bytes32"
+              },
+              {
+                "name": "account",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "totalSupply",
+            "methodDescription": "Returns the total supply of BAL tokens",
+            "methodVariables": [
+  
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "approve",
+            "methodDescription": "Approves another address the ability to spend the senders BAL upon signing a transaction.",
+            "methodVariables": [
+              {
+                "name": "_spender",
+                "type": "address"
+              },
+              {
+                "name": "_value",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "bridgeBurn",
+            "methodDescription": "Burns a designated amount of the BAL token, removing it from circulation.",
+            "methodVariables": [
+              {
+                "name": "account",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "bridgeInit",
+            "methodDescription": "Bridges BAL to an L1 address",
+            "methodVariables": [
+              {
+                "name": "_l1Address",
+                "type": "address"
+              },
+              {
+                "name": "_data",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "methodName": "bridgeMint",
+            "methodDescription": "Mints a designated amount of the BAL token, adding it to circulation.",
+            "methodVariables": [
+              {
+                "name": "account",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "decreaseAllowance",
+            "methodDescription": "Atomically decreases the allowance granted to `spender` by the caller. * This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}.",
+            "methodVariables": [
+              {
+                "name": "spender",
+                "type": "address"
+              },
+              {
+                "name": "subtractedValue",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "increaseAllowance",
+            "methodDescription": "Atomically increases the allowance granted to `spender` by the caller. * This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}.",
+            "methodVariables": [
+              {
+                "name": "spender",
+                "type": "address"
+              },
+              {
+                "name": "addedValue",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "transfer",
+            "methodDescription": "See {IERC20-transfer}. * Requirements: * - `recipient` cannot be the zero address. - the caller must have a balance of at least `amount`.",
+            "methodVariables": [
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "transferFrom",
+            "methodDescription": "See {IERC20-transferFrom}. * Emits an {Approval} event indicating the updated allowance. This is not required by the EIP. See the note at the beginning of {ERC20}; * Requirements: - `sender` and `recipient` cannot be the zero address. - `sender` must have a balance of at least `amount`. - the caller must have allowance for ``sender``'s tokens of at least `amount`.",
+            "methodVariables": [
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0x475D18169BE8a89357A9ee3Ab00ca386d20fA229",
+        "title": "L2BalancerPseudoMinter",
+        "description": "This contract is in charge of minting BAL according to the liquidity gauge scheduling supplied by the gauge controller.",
+        "readMethods": [
+          {
+            "methodName": "allowed_to_mint_for",
+            "methodDescription": "Returns true or false if a different address has been designated as a minter for a user's address.",
+            "methodVariables": [
+              {
+                "name": "minter",
+                "type": "address"
+              },
+              {
+                "name": "user",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "getBalancerToken",
+            "methodDescription": "Returns the BAL token address",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getBalancerAdmin",
+            "methodDescription": "Returns the Balancer Token Admin address",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getMinterApporval",
+            "methodDescription": "Returns true or false, if the minter address is approved for the user specified.",
+            "methodVariables": [
+              {
+                "name": "minter",
+                "type": "address"
+              },
+              {
+                "name": "user",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "isValidGaugeFactory",
+            "methodDescription": "Returns true or false, if the gauge factory address is correct for the pseudo minter.",
+            "methodVariables": [
+              {
+                "name": "factory",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "minted",
+            "methodDescription": "Returns the amount minted by a user from a specific gauge.",
+            "methodVariables": [
+              {
+                "name": "user",
+                "type": "gauge"
+              },
+              {
+                "name": "gauge",
+                "type": "address"
+              }
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "addGaugeFactory",
+            "methodDescription": "Adds a gauge factory to the Pseduo Minter as an approved creator of gauge addresses for BAL to stream to.",
+            "methodVariables": [
+              {
+                "name": "factory",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "mint",
+            "methodDescription": "Mint everything which belongs to `msg.sender` and send to them.",
+            "methodVariables": [
+              {
+                "name": "gauge",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "mintFor",
+            "methodDescription": "Mint tokens for `user`, Only possible when `msg.sender` has been approved by `user` to mint on their behalf",
+            "methodVariables": [
+              {
+                "name": "gauge",
+                "type": "address"
+              },
+              {
+                "name": "user",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "mintMany",
+            "methodDescription": "Mint everything which belongs to `msg.sender` across multiple gauges.",
+            "methodVariables": [
+              {
+                "name": "gauges",
+                "type": "address[]"
+              }
+            ]
+          },
+          {
+            "methodName": "mintManyFor",
+            "methodDescription": "Mint tokens for `user` across multiple gauges Only possible when `msg.sender` has been approved by `user` to mint on their behalf.",
+            "methodVariables": [
+              {
+                "name": "gauges",
+                "type": "address[]"
+              },
+              {
+                "name": "user",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "mint_for",
+            "methodDescription": "Mint tokens for user, only possible if msg.sender has been approved by user.",
+            "methodVariables": [
+              {
+                "name": "gauge",
+                "type": "address"
+              },
+              {
+                "name": "user",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "mint_many",
+            "methodDescription": "Mint everything which belongs to `msg.sender` across multiple gauges. This function is not recommended as `mintMany()` is more flexible and gas efficient",
+            "methodVariables": [
+              {
+                "name": "gauges",
+                "type": "address[]"
+              }
+            ]
+          },
+          {
+            "methodName": "setMinterApporval",
+            "methodDescription": "Set whether `minter` is approved to mint tokens on your behalf.",
+            "methodVariables": [
+              {
+                "name": "minter",
+                "type": "address"
+              },
+              {
+                "name": "apporval",
+                "type": "bool"
+              }
+            ]
+          },
+          {
+            "methodName": "setMinterApporvalWithSignature",
+            "methodDescription": "Set whether `minter` is approved to mint tokens on behalf of `user`, who has signed a message authorizing them.",
+            "methodVariables": [
+              {
+                "name": "minter",
+                "type": "address"
+              },
+              {
+                "name": "approval",
+                "type": "bool"
+              },
+              {
+                "name": "user",
+                "type": "address"
+              },
+              {
+                "name": "deadline",
+                "type": "uint256"
+              },
+              {
+                "name": "v",
+                "type": "uint8"
+              },
+              {
+                "name": "r",
+                "type": "bytes32"
+              },
+              {
+                "name": "s",
+                "type": "bytes32"
+              }
+            ]
+          },
+          {
+            "methodName": "toggle_approve_mint",
+            "methodDescription": "Toggle whether `minter` is approved to mint tokens for `user`",
+            "methodVariables": [
+              {
+                "name": "minter",
+                "type": "address"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0x48799A2B0b9ec11E4fa158c781AD8bFAbB892D58",
+        "title": "ZKevmRootGauge",
+        "description": "Root gauges correspond to mainnet guage added to the gauge controller for L2 child gauges. The root gauge has a recipient gauge on each L2 to sent BAL to via a respective bridge.",
+        "readMethods": [
+          {
+            "methodName": "MAX_RELATIVE_WEIGHT_CAP",
+            "methodDescription": "Returns the max relative weight cap possible for a gauge. This is 100% or 10e18",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getCappedRelativeWeight",
+            "methodDescription": "Returns the relative weight cap of the gauge at a specified time stamp.",
+            "methodVariables": [
+              {
+                "name": "time",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "getRecipient",
+            "methodDescription": "Returns the corresponding network child chain gauge address corresponding to this root gauge.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getRelativeWeightCap",
+            "methodDescription": "Gets the relative weight cap for the gauge.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getTotalBridgeCost",
+            "methodDescription": "Returns the bridge cost in wei as a uint256",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getRelativeWeightCap",
+            "methodDescription": "Returns gauges relative weight cap, at a specific time.",
+            "methodVariables": [
+              {
+                "name": "time",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "isKilled",
+            "methodDescription": "Returns true if gauge is killed; false otherwise.",
+            "methodVariables": [
+  
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "checkpoint",
+            "methodDescription": "Checkpoints the gauge to update it in the system as weights, total veBAL, and the overall system changes.",
+            "methodVariables": [
+              {
+                "name": "checkpoint",
+                "type": "payableAmount(ether)"
+              }
+            ]
+          },
+          {
+            "methodName": "initialize",
+            "methodDescription": "Initializes the gauge with a specific recipient and relativeWeightCap",
+            "methodVariables": [
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "relativeWeightCap",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "killGauge",
+            "methodDescription": "Kills the gauge so it cannot mint BAL.",
+            "methodVariables": [
+              
+            ]
+          },
+          {
+            "methodName": "setRelativeWeightCap",
+            "methodDescription": "Sets a new relative weight cap for the gauge. The value shall be normalized to 1e18, and not greater than MAX_RELATIVE_WEIGHT_CAP.",
+            "methodVariables": [
+              {
+                "name": "relativeWeightCap",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "unkillGauge",
+            "methodDescription": "Unkills the gauge so it can mint BAL again.",
+            "methodVariables": [
+  
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0x9bF951848288cCD87d06FaC426150262cD3447De",
+        "title": "Root Gauge Factories",
+        "description": "Root gauge factories create the mainnet gauges for each layer 2 network. A unique factory exists for each network. Arbitrum: 0x1c99324EDC771c82A0DCCB780CC7DDA0045E50e7 Polygon: 0xa98Bce70c92aD2ef3288dbcd659bC0d6b62f8F13  Optimism: 0x866D4B65694c66fbFD15Dd6fa933D0A6b3940A36 Gnosis Chain: 0x2a18B396829bc29F66a1E59fAdd7a0269A6605E8 Polygon zkEVM: 0x9bF951848288cCD87d06FaC426150262cD3447De Avalanche: 0x22625eEDd92c81a219A83e1dc48f88d54786B017 Base: 0x8e3B64b3737097F283E965869e3503AA20F31E4D (https://forum.balancer.fi/t/instructions-overview/2674)",
+        "readMethods": [
+          {
+            "methodName": "getNetworkFees",
+            "methodDescription": "Returns the fees for the Layer 2 Network's side of the bridging transaction",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getGaugeImplementation",
+            "methodDescription": "Returns the address of the implementation used for gauge deployments.",
+            "methodVariables": [
+              {
+                "name": "gaugeType",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "methodName": "isGaugeFromFactory",
+            "methodDescription": "Returns true or false if the gauge address is from this factory.",
+            "methodVariables": [
+              {
+                "name": "gauge",
+                "type": "address"
+              }
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "create",
+            "methodDescription": "Deploys a new gauge which bridges all of its BAL allowance to a single recipient on Arbitrum.",
+            "methodVariables": [
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "relativeWeightCap",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "setNetworkFees",
+            "methodDescription": "Set the fees for the Layer 2 Network's side of the bridging transaction",
+            "methodVariables": [
+              {
+                "name": "gasLimit",
+                "type": "uint64"
+              },
+              {
+                "name": "gasPrice",
+                "type": "uint64"
+              },
+              {
+                "name": "maxSubmissionCost",
+                "type": "uint64"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0x03F3Fb107e74F2EAC9358862E91ad3c692712054",
+        "title": "Weighted Pool Factory",
+        "description": "The weighted pool factory uses the Balancer invariant similar to x * y = k but for varying weights and can hold up to eight tokens.",
+        "readMethods": [
+          {
+            "methodName": "getPoolVersion",
+            "methodDescription": "Returns a JSON representation of the deployed pool version containing name, version number and task ID.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getProtocolFeePercentageProvider",
+            "methodDescription": "Returns the Protocol Fee Percentage Provider contract",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "isDisabled",
+            "methodDescription": "Returns true or false, depending on if thep ool factory is disabled.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "isPoolFromFactory",
+            "methodDescription": "Returns true or false, is the pool address input is from this specific factory.",
+            "methodVariables": [
+              {
+                "name": "pool",
+                "type": "address"
+              }
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "create",
+            "methodDescription": "Creates a new weighted pool. Please note, the pool will need to have init join performed on it before general users can interact with it.",
+            "methodVariables": [
+              {
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "name": "symbol",
+                "type": "string"
+              },
+              {
+                "name": "tokens",
+                "type": "address[]"
+              },
+              {
+                "name": "normalizedWeights",
+                "type": "uint256[]"
+              },
+              {
+                "name": "rateProviders",
+                "type": "address[]"
+              },
+              {
+                "name": "swapFeePercentage",
+                "type": "uint256"
+              },
+              {
+                "name": "owner",
+                "type": "address"
+              },
+              {
+                "name": "salt",
+                "type": "bytes32"
+              }
+            ]
+          },
+          {
+            "methodName": "disable",
+            "methodDescription": "Disable the factory, preventing the creation of more pools. Already existing pools are unaffected. Once a factory is disabled, it cannot be re-enabled.",
+            "methodVariables": [
+  
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0x956CCab09898C0AF2aCa5e6C229c3aD4E93d9288",
+        "title": "Composable Stable Pool Factory",
+        "description": "The composable stable pool factory uses the StableSwap invariant similar to Curve v1, but has the ability to consider rate providers, which maintain the invariant in relation to diverging assets, such as wstETH and ETH.",
+        "readMethods": [
+          {
+            "methodName": "getPoolVersion",
+            "methodDescription": "Returns a JSON representation of the deployed pool version containing name, version number and task ID.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getProtocolFeePercentageProvider",
+            "methodDescription": "Returns the Protocol Fee Percentage Provider contract",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "isDisabled",
+            "methodDescription": "Returns true or false, depending on if thep ool factory is disabled.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "isPoolFromFactory",
+            "methodDescription": "Returns true or false, is the pool address input is from this specific factory.",
+            "methodVariables": [
+              {
+                "name": "pool",
+                "type": "address"
+              }
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "create",
+            "methodDescription": "Creates a new composable stable pool. Please note, the pool will need to have init join performed on it before general users can interact with it.",
+            "methodVariables": [
+              {
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "name": "symbol",
+                "type": "string"
+              },
+              {
+                "name": "tokens",
+                "type": "address[]"
+              },
+              {
+                "name": "amplificationParameter",
+                "type": "uint256"
+              },
+              {
+                "name": "rateProviders",
+                "type": "address[]"
+              },
+  
+              {
+                "name": "tokenRateCacheDureations",
+                "type": "uint256[]"
+              },
+              {
+                "name": "exemptFromYieldProtocolFeeFlag",
+                "type": "bool"
+              },
+              {
+                "name": "swapFeePercentage",
+                "type": "uint256"
+              },
+              {
+                "name": "owner",
+                "type": "address"
+              },
+              {
+                "name": "salt",
+                "type": "bytes32"
+              }
+            ]
+          },
+          {
+            "methodName": "disable",
+            "methodDescription": "Disable the factory, preventing the creation of more pools. Already existing pools are unaffected. Once a factory is disabled, it cannot be re-enabled.",
+            "methodVariables": [
+  
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0x79b131498355daa2cC740936fcb9A7dF76A86223",
+        "title": "Emergency SubDAO Multisig",
+        "description": "The Emergency Multisig is meant to act in the case a security event related to Balancer. The Multisig holds the ability to kill gauges, denylist tokens on the protocol fee withdrawer, disable pool factories, and enable recovery mode on pools. This essentially will create guard rails on the protocol in the case of a bug or exploit. Only vetted community members and contributors are on the multisig.",
+        "readMethods": [
+          {
+            "methodName": "",
+            "methodDescription": "",
+            "methodVariables":[
+              {
+                "name": "",
+                "type": ""
+              }
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "",
+            "methodDescription": "",
+            "methodVariables":[
+              {
+                "name": "",
+                "type": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0x7682e108Cd89d86303625c8478c21Ff86f401166",
+        "title": "Composable Stable Pool",
+        "description": "A composable stable pool contract has come from the proper factory. The main changes that can be made are the swap fee, amplification parameter, and token cache rate durations.",
+        "readMethods": [
+          {
+            "methodName": "balanceOf",
+            "methodDescription": "Returns the balance an account address has of the pool token.",
+            "methodVariables": [
+              {
+                "name": "account",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "getActualSupply",
+            "methodDescription": "Returns supply of pool tokens held by indidivudal users. This is different than totalSupply because composable pools have all BPT minted upon creation to the vault.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getAmplificationParameter",
+            "methodDescription": "Returns the amplification factor the pool has, with precision of 1000. ",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getLactJoinExitData",
+            "methodDescription": "Return the amplification factor and invariant as of the most recent join or exit (including BPT swaps)",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getMinimumBPT",
+            "methodDescription": "Return the minimum BPT balance, required to avoid minimum token balances.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getOwner",
+            "methodDescription": "Return the owner, who can change the mutable parameters of the pool. Usually the BAL vanity address 0xBA1BA1...",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getPauseStated",
+            "methodDescription": "Returns the current contract pause status, as well as the end times of the Pause Window and Buffer Period.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getPoolId",
+            "methodDescription": "Return the pool id.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getProtocolFeePercentageCache",
+            "methodDescription": "Returns the protocol fee for a given feeType",
+            "methodVariables": [
+              {
+                "name": "feeType",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "getProtocolSwapFeeDelegation",
+            "methodDescription": "Returns whether this Pool tracks protocol swap fee changes in the IProtocolFeePercentagesProvider.",
+            "methodVariables": [
+              {
+                "name": "feeType",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "getRate",
+            "methodDescription": "This function returns the appreciation of BPT relative to the underlying tokens, as an 18 decimal fixed point number. It is simply the ratio of the invariant to the BPT supply.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getRateProviders",
+            "methodDescription": "Returns the rate providers configured for each token (in the same order as registered).",
+            "methodVariables": [
+              {
+                "name": "feeType",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "getScalingFactors",
+            "methodDescription": "Returns the scaling factors of each of the Pool's tokens. This is an implementation detail that is typically not relevant for outside parties, but which might be useful for some types of Pools. These are sourced from the rate providers.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getSwapFeePercentage",
+            "methodDescription": "Return the current value of the swap fee percentage.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getTokenRate",
+            "methodDescription": "Returns the rate multiplier for a specific token.",
+            "methodVariables": [
+              {
+                "name": "token",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "getTokenCacheRate",
+            "methodDescription": "Returns the token cache rate for a specific token. This value is equal for all tokens.",
+            "methodVariables": [
+              {
+                "name": "token",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "inRecoveryMode",
+            "methodDescription": "Returns whether the pool is in Recovery Mode.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "isExemptFromYieldProtocolFee",
+            "methodDescription": "Return true if all tokens are exempt from yield fees. There is no longer an option for individual tokens to be exempt.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "name",
+            "methodDescription": "Returns the name of the token.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "symbol",
+            "methodDescription": "Returns the symbol of the token, usually a shorter version of the name.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "totalSupply",
+            "methodDescription": "See {IERC20-totalSupply}. The total supply should only be read using this function Can be overridden by derived contracts to store the total supply in a different way (e.g. packed with other storage values).",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "version",
+            "methodDescription": "Returns a JSON representation of the contract version containing name, version number and task ID.",
+            "methodVariables": [
+  
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "approve",
+            "methodDescription": "Approves a spender address and amount on behalf of the sender",
+            "methodVariables": [
+              {
+                "name": "spender",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "decreaseAllowance",
+            "methodDescription": "Atomically decreases the allowance granted to `spender` by the caller. * This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}.",
+            "methodVariables": [
+              {
+                "name": "spender",
+                "type": "address"
+              },
+              {
+                "name": "subtractedValue",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "disableRecoveryMode",
+            "methodDescription": "Disables recovery mode in the case the pool can return to normal after recovery mode is enabled.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "enableRecoveryMode",
+            "methodDescription": "Enables recovery mode to make the pool only accept propotional withdraws. This is a safety mechanism for bugs and exploits.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "increaseAllowance",
+            "methodDescription": "Atomically increases the allowance granted to `spender` by the caller. * This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}.",
+            "methodVariables": [
+              {
+                "name": "spender",
+                "type": "address"
+              },
+              {
+                "name": "addedValue",
+                "type": "uint256"
+              }
+  
+            ]
+          },
+          {
+            "methodName": "onExitPool",
+            "methodDescription": "Passed for a pool exit.",
+            "methodVariables": [
+              {
+                "name": "poolId",
+                "type": "bytes32"
+              },
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "balances",
+                "type": "uint256[]"
+              },
+              {
+                "name": "lastChangeBlock",
+                "type": "uint256"
+              },
+              {
+                "name": "protocolSwapFeePercentage",
+                "type": "uint256"
+              },
+              {
+                "name": "userData",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "methodName": "onJoinPool",
+            "methodDescription": "Passed for a pool join.",
+            "methodVariables": [
+              {
+                "name": "poolId",
+                "type": "bytes32"
+              },
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "balances",
+                "type": "uint256[]"
+              },
+              {
+                "name": "lastChangeBlock",
+                "type": "uint256"
+              },
+              {
+                "name": "protocolSwapFeePercentage",
+                "type": "uint256"
+              },
+              {
+                "name": "userData",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "methodName": "onSwap",
+            "methodDescription": "Passed for a swap across the pool.",
+            "methodVariables": [
+              {
+                "name": "kind",
+                "type": "uint8"
+              },
+              {
+                "name": "tokenIn",
+                "type": "address"
+              },
+              {
+                "name": "tokenOut",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "name": "poolId",
+                "type": "bytes32"
+              },
+              {
+                "name": "lastChangeBlock",
+                "type": "uint256"
+              },
+              {
+                "name": "from",
+                "type": "address"
+              },
+              {
+                "name": "to",
+                "type": "address"
+              },
+              {
+                "name": "userData",
+                "type": "bytes"
+              },
+              {
+                "name": "balances",
+                "type": "uint256[]"
+              },
+              {
+                "name": "indexIn",
+                "type": "uint256"
+              },
+              {
+                "name": "indexOut",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "pause",
+            "methodDescription": "Pauses the pool.",
+            "methodVariables": [
+              {
+                "name": "token",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "pause",
+            "methodDescription": "Pauses the pool.",
+            "methodVariables": [
+              {
+                "name": "token",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "queryExit",
+            "methodDescription": "Passed to query a pool exit.",
+            "methodVariables": [
+              {
+                "name": "poolId",
+                "type": "bytes32"
+              },
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "balances",
+                "type": "uint256[]"
+              },
+              {
+                "name": "lastChangeBlock",
+                "type": "uint256"
+              },
+              {
+                "name": "protocolSwapFeePercentage",
+                "type": "uint256"
+              },
+              {
+                "name": "userData",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "methodName": "queryJoin",
+            "methodDescription": "Passed to query a pool join.",
+            "methodVariables": [
+              {
+                "name": "poolId",
+                "type": "bytes32"
+              },
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "balances",
+                "type": "uint256[]"
+              },
+              {
+                "name": "lastChangeBlock",
+                "type": "uint256"
+              },
+              {
+                "name": "protocolSwapFeePercentage",
+                "type": "uint256"
+              },
+              {
+                "name": "userData",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "methodName": "setSwapFeePerentage",
+            "methodDescription": "Sets a new swap fee percentage on the pool",
+            "methodVariables": [
+              {
+                "name": "swapFeePercentage",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "setTokenRateCacheDuration",
+            "methodDescription": "Sets a new token rate cache duration, in seconds",
+            "methodVariables": [
+              {
+                "name": "token",
+                "type": "address"
+              },
+              {
+                "name": "duration",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "startAmplificationParameterUpdate",
+            "methodDescription": "Starts an amplification paramter update, can not be more than a double or halving in 48 hours.",
+            "methodVariables": [
+              {
+                "name": "rawEndValue",
+                "type": "uint256"
+              },
+              {
+                "name": "endTime",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "stopAmplificationParameterUpdate",
+            "methodDescription": "Stops an amplification paramter update.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "transfer",
+            "methodDescription": "Transfers pool tokens from the connected address to a recipient address.",
+            "methodVariables": [
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "transferFrom",
+            "methodDescription": "Transfers pool tokens from a different sender to a recipient address.",
+            "methodVariables": [
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "unpause",
+            "methodDescription": "Unpauses the pool.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "updateProtocolFeePercentageCache",
+            "methodDescription": "Updates tthe protcol fee percentage cache manually.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "updateTokenRateCache",
+            "methodDescription": "Updates token rate cache of a token manually.",
+            "methodVariables": [
+              {
+                "name": "token",
+                "type": "address"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0xA702C2945a4fB45e3685C8E47234316457fcf2C9",
+        "title": "Weighted Pool",
+        "description": "A weighted pool contract has come from the proper factory. The main changes that can be made are the swap fee and token cache rate durations.",
+        "readMethods": [
+          {
+            "methodName": "balanceOf",
+            "methodDescription": "Returns the balance an account address has of the pool token.",
+            "methodVariables": [
+              {
+                "name": "account",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "getATHRateProduct",
+            "methodDescription": "Returns the all time high value for the weighted product of the Pool's tokens' rates.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getActualSupply",
+            "methodDescription": "Returns supply of pool tokens held by indidivudal users. This is different than totalSupply because composable pools have all BPT minted upon creation to the vault.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getInvariant",
+            "methodDescription": "Returns the current value of the invariant.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getLactJoinExitInvariant",
+            "methodDescription": "Returns the value of the invariant after the last join or exit operation.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getNormalizedWeights",
+            "methodDescription": "Return the weighting of each token in the pool, in order of their index.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getOwner",
+            "methodDescription": "Return the owner, who can change the mutable parameters of the pool. Usually the BAL vanity address 0xBA1BA1...",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getPauseStated",
+            "methodDescription": "Returns the current contract pause status, as well as the end times of the Pause Window and Buffer Period.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getPoolId",
+            "methodDescription": "Return the pool id.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getProtocolFeePercentageCache",
+            "methodDescription": "Returns the protocol fee for a given feeType",
+            "methodVariables": [
+              {
+                "name": "feeType",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "getProtocolFeesCollector",
+            "methodDescription": "Return the ProtocolFeesCollector contract. This is immutable, and retrieved from the Vault on construction. (It is also immutable in the Vault.)",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getProtocolSwapFeeDelegation",
+            "methodDescription": "Returns whether this Pool tracks protocol swap fee changes in the IProtocolFeePercentagesProvider.",
+            "methodVariables": [
+              {
+                "name": "feeType",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "getRateProviders",
+            "methodDescription": "Returns the rate providers configured for each token (in the same order as registered).",
+            "methodVariables": [
+              {
+                "name": "feeType",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "getScalingFactors",
+            "methodDescription": "Returns the scaling factors of each of the Pool's tokens. This is an implementation detail that is typically not relevant for outside parties, but which might be useful for some types of Pools. These are sourced from the rate providers.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getSwapFeePercentage",
+            "methodDescription": "Return the current value of the swap fee percentage.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "inRecoveryMode",
+            "methodDescription": "Returns whether the pool is in Recovery Mode.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "name",
+            "methodDescription": "Returns the name of the token.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "symbol",
+            "methodDescription": "Returns the symbol of the token, usually a shorter version of the name.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "totalSupply",
+            "methodDescription": "See {IERC20-totalSupply}. The total supply should only be read using this function Can be overridden by derived contracts to store the total supply in a different way (e.g. packed with other storage values).",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "version",
+            "methodDescription": "Returns a JSON representation of the contract version containing name, version number and task ID.",
+            "methodVariables": [
+  
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "approve",
+            "methodDescription": "Approves a spender address and amount on behalf of the sender",
+            "methodVariables": [
+              {
+                "name": "spender",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "decreaseAllowance",
+            "methodDescription": "Atomically decreases the allowance granted to `spender` by the caller. * This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}.",
+            "methodVariables": [
+              {
+                "name": "spender",
+                "type": "address"
+              },
+              {
+                "name": "subtractedValue",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "disableRecoveryMode",
+            "methodDescription": "Disables recovery mode in the case the pool can return to normal after recovery mode is enabled.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "enableRecoveryMode",
+            "methodDescription": "Enables recovery mode to make the pool only accept propotional withdraws. This is a safety mechanism for bugs and exploits.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "increaseAllowance",
+            "methodDescription": "Atomically increases the allowance granted to `spender` by the caller. * This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}.",
+            "methodVariables": [
+              {
+                "name": "spender",
+                "type": "address"
+              },
+              {
+                "name": "addedValue",
+                "type": "uint256"
+              }
+  
+            ]
+          },
+          {
+            "methodName": "onExitPool",
+            "methodDescription": "Passed for a pool exit.",
+            "methodVariables": [
+              {
+                "name": "poolId",
+                "type": "bytes32"
+              },
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "balances",
+                "type": "uint256[]"
+              },
+              {
+                "name": "lastChangeBlock",
+                "type": "uint256"
+              },
+              {
+                "name": "protocolSwapFeePercentage",
+                "type": "uint256"
+              },
+              {
+                "name": "userData",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "methodName": "onJoinPool",
+            "methodDescription": "Passed for a pool join.",
+            "methodVariables": [
+              {
+                "name": "poolId",
+                "type": "bytes32"
+              },
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "balances",
+                "type": "uint256[]"
+              },
+              {
+                "name": "lastChangeBlock",
+                "type": "uint256"
+              },
+              {
+                "name": "protocolSwapFeePercentage",
+                "type": "uint256"
+              },
+              {
+                "name": "userData",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "methodName": "onSwap",
+            "methodDescription": "Passed for a swap across the pool.",
+            "methodVariables": [
+              {
+                "name": "kind",
+                "type": "uint8"
+              },
+              {
+                "name": "tokenIn",
+                "type": "address"
+              },
+              {
+                "name": "tokenOut",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "name": "poolId",
+                "type": "bytes32"
+              },
+              {
+                "name": "lastChangeBlock",
+                "type": "uint256"
+              },
+              {
+                "name": "from",
+                "type": "address"
+              },
+              {
+                "name": "to",
+                "type": "address"
+              },
+              {
+                "name": "userData",
+                "type": "bytes"
+              },
+              {
+                "name": "balances",
+                "type": "uint256[]"
+              },
+              {
+                "name": "indexIn",
+                "type": "uint256"
+              },
+              {
+                "name": "indexOut",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "pause",
+            "methodDescription": "Pauses the pool.",
+            "methodVariables": [
+              {
+                "name": "token",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "pause",
+            "methodDescription": "Pauses the pool.",
+            "methodVariables": [
+              {
+                "name": "token",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "queryExit",
+            "methodDescription": "Passed to query a pool exit.",
+            "methodVariables": [
+              {
+                "name": "poolId",
+                "type": "bytes32"
+              },
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "balances",
+                "type": "uint256[]"
+              },
+              {
+                "name": "lastChangeBlock",
+                "type": "uint256"
+              },
+              {
+                "name": "protocolSwapFeePercentage",
+                "type": "uint256"
+              },
+              {
+                "name": "userData",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "methodName": "queryJoin",
+            "methodDescription": "Passed to query a pool join.",
+            "methodVariables": [
+              {
+                "name": "poolId",
+                "type": "bytes32"
+              },
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "balances",
+                "type": "uint256[]"
+              },
+              {
+                "name": "lastChangeBlock",
+                "type": "uint256"
+              },
+              {
+                "name": "protocolSwapFeePercentage",
+                "type": "uint256"
+              },
+              {
+                "name": "userData",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "methodName": "setSwapFeePerentage",
+            "methodDescription": "Sets a new swap fee percentage on the pool",
+            "methodVariables": [
+              {
+                "name": "swapFeePercentage",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "transfer",
+            "methodDescription": "Transfers pool tokens from the connected address to a recipient address.",
+            "methodVariables": [
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "transferFrom",
+            "methodDescription": "Transfers pool tokens from a different sender to a recipient address.",
+            "methodVariables": [
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "unpause",
+            "methodDescription": "Unpauses the pool.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "updateProtocolFeePercentageCache",
+            "methodDescription": "Updates tthe protcol fee percentage cache manually.",
+            "methodVariables": [
+  
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0x0C8f71D19f87c0bD1b9baD2484EcC3388D5DbB98",
+        "title": "StakelessGaugeCheckpointer-v2-Mainnet",
+        "description": "Manages checkpoints for L2 and mainnet stakeless root gauges, allowing to perform mutiple checkpoints in a single call. Supports gauge types registered in `GaugeAdder`. Gauges to be checkpointed need to be added to the controller beforehand.",
+        "readMethods": [
+          {
+            "methodName": "getGaugeAdder",
+            "methodDescription": "Returns `GaugeAdder` contract.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getGaugeAtIndex",
+            "methodDescription": "Returns a gauge address based on type and index number.",
+            "methodVariables": [
+              {
+                "name": "gaugeType",
+                "type": "string"
+              },
+              {
+                "name": "index",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "getGaugeTypes",
+            "methodDescription": "Returns gauge types available in the checkpointer. ",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "isValidGaugeType",
+            "methodDescription": "Returns true or false, if gauge type exists on the checkpointer.",
+            "methodVariables": [
+              {
+                "name": "gaugeType",
+                "type": "string"
+              }
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "addGauges",
+            "methodDescription": "Adds an array of gauges from the given type. Gauges added will be considered when performing checkpoints. The gauges to add should meet the following preconditions: - They must have been created in a valid `GaugeFactory`, according to `GaugeAdder#isGaugeFromValidFactory`. - They must exist in the `GaugeController`, according to `GaugeController#gauge_exists`. - They must not be killed. - They must not have been previously added to the checkpointer.",
+            "methodVariables": [
+              {
+                "name": "gaugeType",
+                "type": "string"
+              },
+              {
+                "name": "gauges",
+                "type": "address[]"
+              }
+            ]
+          },
+          {
+            "methodName": "addGaugesWithVerifiedType",
+            "methodDescription": "Adds an array of gauges from the given type. This is a permissioned function. Gauges added will be considered when performing checkpoints. The gauges to add should meet the following preconditions: - They must exist in the GaugeController, according to GaugeController#gauge_exists. - They must not be killed. - They must not have been previously added to the checkpointer. Unlike `addGauges`, this function can add gauges that were created by factories registered in a deprecated `GaugeAdder`, and therefore cannot be validated by the current `GaugeAdder`.",
+            "methodVariables": [
+              {
+                "name": "gaugeType",
+                "type": "string"
+              },
+              {
+                "name": "gauges",
+                "type": "address[]"
+              }
+            ]
+          },
+          {
+            "methodName": "checkpointAllGaugesAboveRelativeWeight",
+            "methodDescription": "Performs a checkpoint for all added gauges above the given relative weight threshold. Reverts if the ETH sent in the call is not enough to cover bridge costs. Use `getTotalBridgeCost` to determine the required amount of ETH for the execution to succeed.",
+            "methodVariables": [
+              {
+                "name": "checkpointAllGaugesAboveRelativeWeight",
+                "type": "payableAmount(ether)"
+              },
+              {
+                "name": "minRelativeWeight",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "checkpointGaugesOfTypesAboveRelativeWeight",
+            "methodDescription": "Performs a checkpoint for all added gauges above the given relative weight threshold for the given types. Reverts if the ETH sent in the call is not enough to cover bridge costs. Use `getGaugeTypesBridgeCost` to determine the required amount of ETH for the execution to succeed. Reverts if invalid gauge types are given.",
+            "methodVariables": [
+              {
+                "name": "checkpointGaugesOfTypesAboveRelativeWeight",
+                "type": "payableAmount(ether)"
+              },
+              {
+                "name": "gaugeTypes",
+                "type": "string"
+              },
+              {
+                "name": "minRelativeWeight",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "checkpointMultipleGauges",
+            "methodDescription": "Performs a checkpoint for a multiple added gauges of the given types. Reverts if the ETH sent in the call is not enough to cover bridge costs. Reverts if the gauges were not added to the checkpointer beforehand, or if invalid gauge types are given. Reverts if the types array does not have the same length as the gauges array.",
+            "methodVariables": [
+              {
+                "name": "checkpointMultipleGauges",
+                "type": "payableAmount(ether)"
+              },
+              {
+                "name": "gaugeTypes",
+                "type": "string[]"
+              },
+              {
+                "name": "gauges",
+                "type": "address[]"
+              }
+            ]
+          },
+          {
+            "methodName": "checkpointMultipleGaugesOfMatchingTypes",
+            "methodDescription": "Performs a checkpoint for a multiple added gauges of the given types. Reverts if the ETH sent in the call is not enough to cover bridge costs. Reverts if the gauges were not added to the checkpointer beforehand, or if an invalid gauge type is given.",
+            "methodVariables": [
+              {
+                "name": "checkpointMultipleGaugesOfMatchingType",
+                "type": "payableAmount(ether)"
+              },
+              {
+                "name": "gaugeType",
+                "type": "string"
+              },
+              {
+                "name": "gauges",
+                "type": "address[]"
+              }
+            ]
+          },
+          {
+            "methodName": "checkpointSingleGauge",
+            "methodDescription": "Performs a checkpoint for a single added gauge of a given type. Reverts if the ETH sent in the call is not enough to cover bridge costs. Use `getSingleBridgeCost` to determine the required amount of ETH for the execution to succeed. Reverts if the gauge was not added to the checkpointer beforehand.",
+            "methodVariables": [
+              {
+                "name": "checkpointSingleGauge",
+                "type": "payableAmount(ether)"
+              },
+              {
+                "name": "gaugeType",
+                "type": "string"
+              },
+              {
+                "name": "gauge",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "removeGauges",
+            "methodDescription": "Removes an array of gauges from the given type. Removed gauges will not be considered when performing checkpoints. To remove gauges: - They must be killed. - They must have been previously added to the checkpointer.",
+            "methodVariables": [
+              {
+                "name": "gaugeType",
+                "type": "string"
+              },
+              {
+                "name": "gauges",
+                "type": "address[]"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0x2498A2B0d6462d2260EAC50aE1C3e03F4829BA95",
+        "title": "ChildChainGaugeFactory",
+        "description": "ChildChainGaugeFactories require only the pool address on the L2 network to be passed to it, to create a child gauge. The child gauges are used on mainnet to be set as recipients from root gauges. Pseudominter contracts on each network are used to stream the bridged BAL to each child gauge. All child gauge factories can be seen here. https://forum.balancer.fi/t/instructions-overview/2674",
+        "readMethods": [
+          {
+            "methodName": "getGaugeImplementation",
+            "methodDescription": "Returns an implementation of the child chain gauge",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getProductVersion",
+            "methodDescription": "Returns the child chain gauge version",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "isGaugeFromFactory",
+            "methodDescription": "Returns true or false if the address is a gauge from the factory.",
+            "methodVariables": [
+              {
+                "name": "gauge",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "version",
+            "methodDescription": "Returns the child chain gauge version",
+            "methodVariables": [
+  
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "create",
+            "methodDescription": "Creates a new child chain gauge for a specific pool address",
+            "methodVariables": [
+              {
+                "name": "pool",
+                "type": "address"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0x59562f93c447656F6E4799fC1FC7c3d977C3324F",
+        "title": "ChildLiquidityGauge",
+        "description": "Child liquidity gauges correspond to a specific pool on their respective network. Their address is on the network speficic root gauge factory on Ethereum in order to link the BAL minter to each gauge, bridge BAL and distribute BAL to the proper pools. ",
+        "readMethods": [
+          {
+            "methodName": "claimed_reward",
+            "methodDescription": "Returns the amount of a reward token an address has claimed from this gauge.",
+            "methodVariables": [
+              {
+                "name": "_addr",
+                "type": "address"
+              },
+              {
+                "name": "_token",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "claimeable_reward",
+            "methodDescription": "Returns the amount of a reward token an address is able to currently claim from this gauge.",
+            "methodVariables": [
+              {
+                "name": "_addr",
+                "type": "address"
+              },
+              {
+                "name": "_reward_token",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "allowance",
+            "methodDescription": "The child chain gauge is a balance in a user's wallet. This function returns the number of those tokens a spender is approved to use on behalf of an owner.",
+            "methodVariables": [
+              {
+                "name": "owner",
+                "type": "address"
+              },
+              {
+                "name": "spender",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "bal_token",
+            "methodDescription": "Returns the BAL token address on the respective network.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "bal_pseudo_minter",
+            "methodDescription": "Returns the BAL pseudominter address on the respective network.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "voting_escrow_delegation_proxy",
+            "methodDescription": "Returns the BAL VotingEscrowDelegationProxy address on the respective network.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "authorizer_adaptor",
+            "methodDescription": "Returns the AuthorizerAdaptor address on the respective network.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "name",
+            "methodDescription": "Returns the name of the child chain gauge, normally the pool token name followed by `Gauge Deposit`.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "symbol",
+            "methodDescription": "Returns the symbol of the child chain gauge, normally the pool token symbol followed by `-gauge`.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "balanceOf",
+            "methodDescription": "Returns the balance of gauge tokens held by an address.",
+            "methodVariables": [
+              {
+                "name": "arg0",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "totalSupply",
+            "methodDescription": "Returns the total supply of staked gauge LP tokens.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "lp_token",
+            "methodDescription": "Returns the address of the corresponding liquidity pool token.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "factory",
+            "methodDescription": "Returns the address of the child chain gauge factory.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "working_balances",
+            "methodDescription": "Returns the user's working balance in the gauge. This is related to their rewards boosting, based on their veBAL holdings.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "working_supply",
+            "methodDescription": "Returns the working supply in the gauge. Sum of all user's working balances. This is crucial in determing rewards boosting for each staked liquidity provider.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "reward_tokens",
+            "methodDescription": "Returns the address of the reward tokens based on an index of when they were added. This only appleis to non-BAL reward tokens.",
+            "methodVariables": [
+              {
+                "name": "arg0",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "is_killed",
+            "methodDescription": "Returns if the gauge is killed or not. This means it can not have rewards streamed to it.",
+            "methodVariables": [
+  
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "deposit",
+            "methodDescription": "Deposits pool tokens into the gauge, staking them.",
+            "methodVariables": [
+              {
+                "name": "_value",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "deposit",
+            "methodDescription": "Deposits pool tokens into the gauge, staking them. This is used for another user, assuming the spender is approved.",
+            "methodVariables": [
+              {
+                "name": "_value",
+                "type": "uint256"
+              },
+              {
+                "name": "_addr",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "deposit",
+            "methodDescription": "Deposits pool tokens into the gauge, staking them. This is used for another user, assuming the spender is approved. This also claims rewards if desired.",
+            "methodVariables": [
+              {
+                "name": "_value",
+                "type": "uint256"
+              },
+              {
+                "name": "_addr",
+                "type": "address"
+              },
+              {
+                "name": "_claim_rewards",
+                "type": "bool"
+              }
+            ]
+          },
+          {
+            "methodName": "claim_rewards",
+            "methodDescription": "Claims rewards for the specified address, and sends them to that address.",
+            "methodVariables": [
+              {
+                "name": "_addr",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "claim_rewards",
+            "methodDescription": "Claims rewards for the specified address, and sends them to a different address.",
+            "methodVariables": [
+              {
+                "name": "_addr",
+                "type": "address"
+              },
+              {
+                "name": "_receiver",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "transferFrom",
+            "methodDescription": "Transfers the staked LP token, remaining staked, from one address to another.",
+            "methodVariables": [
+              {
+                "name": "_from",
+                "type": "address"
+              },
+              {
+                "name": "_to",
+                "type": "address"
+              },
+              {
+                "name": "_value",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "transfer",
+            "methodDescription": "Transfers the staked LP token, remaining staked, from your address to another.",
+            "methodVariables": [
+              {
+                "name": "_to",
+                "type": "address"
+              },
+              {
+                "name": "_value",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "approve",
+            "methodDescription": "Approves another address the ability to spend the senders BAL upon signing a transaction.",
+            "methodVariables": [
+              {
+                "name": "_spender",
+                "type": "address"
+              },
+              {
+                "name": "_value",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "increaseAllowance",
+            "methodDescription": "Atomically increases the allowance granted to `spender` by the caller. * This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}.",
+            "methodVariables": [
+              {
+                "name": "spender",
+                "type": "address"
+              },
+              {
+                "name": "addedValue",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "decreaseAllowance",
+            "methodDescription": "Atomically decreases the allowance granted to `spender` by the caller. * This is an alternative to {approve} that can be used as a mitigation for problems described in {IERC20-approve}.",
+            "methodVariables": [
+              {
+                "name": "spender",
+                "type": "address"
+              },
+              {
+                "name": "subtractedValue",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "user_checkpoint",
+            "methodDescription": "Checkpoints a user's place in the gauge. This updates their working balances, and their boost based on their current veBAL holdings.",
+            "methodVariables": [
+              {
+                "name": "addr",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "set_rewards_receiver",
+            "methodDescription": "Sets an addres to receive gauge rewards on behalf of the sender.",
+            "methodVariables": [
+              {
+                "name": "addr",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "deposit_reward_token",
+            "methodDescription": "Deposits reward tokens into the gauge to be distributed throughout the current epoch.",
+            "methodVariables": [
+              {
+                "name": "_reward_token",
+                "type": "address"
+              },
+              {
+                "name": "_amount",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "add_reward",
+            "methodDescription": "Adds a new reward token as eligible to be sent to the gauge, and the address which is must come from.",
+            "methodVariables": [
+              {
+                "name": "_reward_token",
+                "type": "address"
+              },
+              {
+                "name": "_distributor",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "set_reward_dsitributor",
+            "methodDescription": "Sets a new distributor contract for a specific reward token.",
+            "methodVariables": [
+              {
+                "name": "_reward_token",
+                "type": "address"
+              },
+              {
+                "name": "_distributor",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "killGauge",
+            "methodDescription": "Kills the gauge, meaning it can no longer receive rewards from the veBAL system.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "unkillGauge",
+            "methodDescription": "Unkills the gauge, meaning it can receive rewards from the veBAL system.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "setRelativeWeightCap",
+            "methodDescription": "Updates the relative weight cap a gauge is able to have. Often 2%, 10%, or 100% of total emmissions.",
+            "methodVariables": [
+              {
+                "name": "relative_weight_cap",
+                "type": "uint256"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0x54f8F9d28e26Fa5864cfA80f50A5Df95fD85f46a",
+        "title": "BatchRelayerLibrary",
+        "description": "This contract is not a relayer by itself and calls into it directly will fail. The associated relayer can be found by calling `getEntrypoint` on this contract.",
+        "readMethods": [
+          {
+            "methodName": "getEntrypoint",
+            "methodDescription": "Returns the Batch Relayer contract that can be called by other contracts.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getVault",
+            "methodDescription": "Returns the Balancer Vault address",
+            "methodVariables": [
+  
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "apporveVault",
+            "methodDescription": "Approves the Vault to use tokens held in the relayer. This is needed to avoid having to send intermediate tokens back to the user",
+            "methodVariables": [
+              {
+                "name": "approveVault",
+                "type": "payableAmount(ether)"
+              },
+              {
+                "name": "token",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "batchSwap",
+            "methodDescription": "Executes a batchswap across the vault based on the input data.",
+            "methodVariables": [
+              {
+                "name": "batchSwap",
+                "type": "payableAmount(ether)"
+              },
+              {
+                "name": "kind",
+                "type": "uint8"
+              },
+              {
+                "name": "swaps",
+                "type": "tuple[]"
+              },
+              {
+                "name": "funds",
+                "type": "tuple"
+              },
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "fromInternalBalance",
+                "type": "bool"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "toInternalBalance",
+                "type": "bool"
+              },
+              {
+                "name": "limits",
+                "type": "int256[]"
+              },
+              {
+                "name": "deadline",
+                "type": "uint256"
+              },
+              {
+                "name": "value",
+                "type": "uint256"
+              },
+              {
+                "name": "outputReferences",
+                "type": "tuple[]"
+              }
+            ]
+          },
+          {
+            "methodName": "exitPool",
+            "methodDescription": "Exits pool for a user.",
+            "methodVariables": [
+              {
+                "name": "exitPool",
+                "type": "payableAmount(ether)"
+              },
+              {
+                "name": "poolId",
+                "type": "bytes32"
+              },
+              {
+                "name": "kind",
+                "type": "uint8"
+              },
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "request",
+                "type": "tuple"
+              },
+              {
+                "name": "assets",
+                "type": "address[]"
+              },
+              {
+                "name": "minAmountsOut",
+                "type": "uint256[]"
+              },
+              {
+                "name": "userData",
+                "type": "bytes"
+              },
+              {
+                "name": "toInternalBalance",
+                "type": "bool"
+              },
+              {
+                "name": "outputReferences",
+                "type": "tuple[]"
+              }
+            ]
+          },
+          {
+            "methodName": "gaugeClaimRewards",
+            "methodDescription": "Claims gauge rewards for a user.",
+            "methodVariables": [
+              {
+                "name": "gaugeClaimRewards",
+                "type": "payableAmount(ether)"
+              },
+              {
+                "name": "gauges",
+                "type": "address[]"
+              }
+            ]
+          },
+          {
+            "methodName": "gaugeDeposit",
+            "methodDescription": "Deposits pool tokens into a gauge for a user.",
+            "methodVariables": [
+              {
+                "name": "gaugeDeposit",
+                "type": "payableAmount(ether)"
+              },
+              {
+                "name": "gauge",
+                "type": "address"
+              },
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "gaugeMint",
+            "methodDescription": "Mints tokens from a particular gauge, typically in the case of being used for bridging to L2s.",
+            "methodVariables": [
+              {
+                "name": "gaugeMint",
+                "type": "payableAmount(ether)"
+              },
+              {
+                "name": "gauges",
+                "type": "address[]"
+              },
+              {
+                "name": "outputReference",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "gaugeWithdraw",
+            "methodDescription": "Withdraws pool tokens from a gauge for a user.",
+            "methodVariables": [
+              {
+                "name": "gaugeWithdraw",
+                "type": "payableAmount(ether)"
+              },
+              {
+                "name": "gauge",
+                "type": "address"
+              },
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "joinPool",
+            "methodDescription": "Joins pool for a user.",
+            "methodVariables": [
+              {
+                "name": "joinPool",
+                "type": "payableAmount(ether)"
+              },
+              {
+                "name": "poolId",
+                "type": "bytes32"
+              },
+              {
+                "name": "kind",
+                "type": "uint8"
+              },
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "request",
+                "type": "tuple"
+              },
+              {
+                "name": "assets",
+                "type": "address[]"
+              },
+              {
+                "name": "maxAmounntsIn",
+                "type": "uint256[]"
+              },
+              {
+                "name": "userData",
+                "type": "bytes"
+              },
+              {
+                "name": "fromInternalBalance",
+                "type": "bool"
+              },
+              {
+                "name": "value",
+                "type": "uint256"
+              },
+              {
+                "name": "outputReferences",
+                "type": "tuple[]"
+              }
+            ]
+          },
+          {
+            "methodName": "setRelayerApproval",
+            "methodDescription": "Sets whether a particular relayer is authorised to act on behalf of the user.",
+            "methodVariables": [
+              {
+                "name": "setRelayerApproval",
+                "type": "payableAmount(ether)"
+              },
+              {
+                "name": "relayer",
+                "type": "address"
+              },
+              {
+                "name": "approved",
+                "type": "bool"
+              },
+              {
+                "name": "authorisation",
+                "type": "bytes"
+              }
+            ]
+          },
+          {
+            "methodName": "stakeETH",
+            "methodDescription": "Stakes ETH into Lido to receive stETH on behalf of the user.",
+            "methodVariables": [
+              {
+                "name": "stakeETH",
+                "type": "payableAmount(ether)"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "name": "outputReference",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "stakeETHAndWrap",
+            "methodDescription": "Stakes ETH into Lido and wraps it to receive wstETH on behalf of the user.",
+            "methodVariables": [
+              {
+                "name": "stakeETHAndWrap",
+                "type": "payableAmount(ether)"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "name": "outputReference",
+                "type": "uint256"
+              }
+            ]
+          },
+          {
+            "methodName": "swap",
+            "methodDescription": "Executes a basic swap across the vault based on the input data.",
+            "methodVariables": [
+              {
+                "name": "swap",
+                "type": "payableAmount(ether)"
+              },
+              {
+                "name": "singleSwap",
+                "type": "tuple"
+              },
+              {
+                "name": "poolId",
+                "type": "bytes32"
+              },
+              {
+                "name": "kind",
+                "type": "uint8"
+              },
+              {
+                "name": "assetIn",
+                "type": "address"
+              },
+              {
+                "name": "assetOut",
+                "type": "address"
+              },
+              {
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "name": "userData",
+                "type": "bytes"
+              },
+              {
+                "name": "funds",
+                "type": "tuple"
+              },
+              {
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "name": "fromInternalBalance",
+                "type": "bool"
+              },
+              {
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "name": "toInternalBalance",
+                "type": "bool"
+              },
+              {
+                "name": "limit",
+                "type": "int256"
+              },
+              {
+                "name": "deadline",
+                "type": "uint256"
+              },
+              {
+                "name": "value",
+                "type": "uint256"
+              },
+              {
+                "name": "outputReferences",
+                "type": "tuple[]"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0x4678731DC41142A902a114aC5B2F77b63f4a259D",
+        "title": "BatchRelayer",
+        "description": " Relayers are composed of two contracts: This contract, which acts as a single point of entry into the system through a multicall function. A library contract, which defines the allowed behaviour of the relayer. The relayer entrypoint can then repeatedly delegatecall into the library's code to perform actions. We can then run combinations of the library contract's functions in the context of the relayer entrypoint, without having to expose all these functions on the entrypoint contract itself. The multicall function is then a single point of entry for all actions, so we can easily prevent reentrancy. This design gives much stronger reentrancy guarantees, as otherwise a malicious contract could reenter the relayer through another function (which must allow reentrancy for multicall logic), and that would potentially allow them to manipulate global state, resulting in loss of funds in some cases: e.g., sweeping any leftover ETH that should have been refunded to the user. NOTE: Only the entrypoint contract should be allowlisted by Balancer governance as a relayer, so that the Vault will reject calls from outside the context of the entrypoint: e.g., if a user mistakenly called directly into the library contract.",
+        "readMethods": [
+          {
+            "methodName": "getLibrary",
+            "methodDescription": "Returns the Batch Relayer Library contract that is referenced for this relayer.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getVault",
+            "methodDescription": "Returns the Balancer Vault address",
+            "methodVariables": [
+  
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "multicall",
+            "methodDescription": "Places a multicall based on the data that would be generated based on the BatchRelayerLibrary, user's address, and interactions desired.",
+            "methodVariables": [
+              {
+                "name": "multicall",
+                "type": "payableAmount(ether)"
+              },
+              {
+                "name": "data",
+                "type": "bytes[]"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "0xDEd7Fef7D8eCdcB74F22f0169e1A9EC696e6695d",
+        "title": "L2LayerZeroBridgeForwarder",
+        "description": "Forwards calls from LayerZero's system to a custom hook whenever a veBAL balance is updated for a given user in a L2 chain. The delegation contract can be set so that e.g. Child Chain Gauges are updated automatically whenever there is a veBAL balance update.",
+        "readMethods": [
+          {
+            "methodName": "getActionId",
+            "methodDescription": "Returns the action id in bytes 32 format, when passing a selector",
+            "methodVariables": [
+              {
+                "name": "selector",
+                "type": "bytes4"
+              }
+            ]
+          },
+          {
+            "methodName": "getAuthorizr",
+            "methodDescription": "Returns the Authorizer contract address",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getDelegationImplementation",
+            "methodDescription": "Returns the a delegation implementation contract address, in this case the zero address.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "getVault",
+            "methodDescription": "Returns the Balancer Vault address",
+            "methodVariables": [
+  
+            ]
+          }
+        ],
+        "writeMethods": [
+          {
+            "methodName": "onVeBalBridged",
+            "methodDescription": "Minimal hook interface to be called whenever the veBAL balance of a user is updated in a L2 chain.",
+            "methodVariables": [
+              {
+                "name": "user",
+                "type": "address"
+              }
+            ]
+          },
+          {
+            "methodName": "onVeBalSupplyUpdate",
+            "methodDescription": "Minimal hook interface to be called whenever the veBAL balance of a user is updated in a L2 chain.",
+            "methodVariables": [
+  
+            ]
+          },
+          {
+            "methodName": "setDelegation",
+            "methodDescription": "Minimal hook interface to be called whenever the veBAL balance of a user is updated in a L2 chain.",
+            "methodVariables": [
+              {
+                "name": "delegation",
+                "type": "address"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+  
