@@ -149,6 +149,8 @@ enum AmpUpdate_orderBy {
   poolId__sqrtBeta
   poolId__strategyType
   poolId__swapEnabled
+  poolId__swapEnabledCurationSignal
+  poolId__swapEnabledInternal
   poolId__swapFee
   poolId__swapsCount
   poolId__symbol
@@ -158,6 +160,7 @@ enum AmpUpdate_orderBy {
   poolId__tauBetaY
   poolId__totalAumFeeCollectedInBPT
   poolId__totalLiquidity
+  poolId__totalLiquiditySansBPT
   poolId__totalProtocolFee
   poolId__totalProtocolFeePaidInBPT
   poolId__totalShares
@@ -655,6 +658,7 @@ scalar Bytes
 enum Chain {
   Arbitrum
   Avalanche
+  Base
   Gnosis
   Optimism
   Polygon
@@ -799,6 +803,8 @@ enum CircuitBreaker_orderBy {
   pool__sqrtBeta
   pool__strategyType
   pool__swapEnabled
+  pool__swapEnabledCurationSignal
+  pool__swapEnabledInternal
   pool__swapFee
   pool__swapsCount
   pool__symbol
@@ -808,6 +814,7 @@ enum CircuitBreaker_orderBy {
   pool__tauBetaY
   pool__totalAumFeeCollectedInBPT
   pool__totalLiquidity
+  pool__totalLiquiditySansBPT
   pool__totalProtocolFee
   pool__totalProtocolFeePaidInBPT
   pool__totalShares
@@ -1428,6 +1435,8 @@ interface GqlPoolBase {
   owner: Bytes
   staking: GqlPoolStaking
   symbol: String!
+  type: String!
+  version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
 
@@ -1519,7 +1528,9 @@ type GqlPoolElement implements GqlPoolBase {
   staking: GqlPoolStaking
   symbol: String!
   tokens: [GqlPoolToken!]!
+  type: String!
   unitSeconds: BigInt!
+  version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
 
@@ -1539,6 +1550,7 @@ input GqlPoolFilter {
   categoryNotIn: [GqlPoolFilterCategory!]
   chainIn: [GqlChain!]
   chainNotIn: [GqlChain!]
+  createTime: GqlPoolTimePeriod
   filterIn: [String!]
   filterNotIn: [String!]
   idIn: [String!]
@@ -1594,6 +1606,7 @@ type GqlPoolGyro implements GqlPoolBase {
   symbol: String!
   tokens: [GqlPoolTokenUnion!]!
   type: String!
+  version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
 
@@ -1653,7 +1666,9 @@ type GqlPoolLinear implements GqlPoolBase {
   staking: GqlPoolStaking
   symbol: String!
   tokens: [GqlPoolToken!]!
+  type: String!
   upperTarget: BigInt!
+  version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
   wrappedIndex: Int!
 }
@@ -1728,6 +1743,8 @@ type GqlPoolLiquidityBootstrapping implements GqlPoolBase {
   staking: GqlPoolStaking
   symbol: String!
   tokens: [GqlPoolTokenUnion!]!
+  type: String!
+  version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
 
@@ -1748,6 +1765,8 @@ type GqlPoolMetaStable implements GqlPoolBase {
   staking: GqlPoolStaking
   symbol: String!
   tokens: [GqlPoolToken!]!
+  type: String!
+  version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
 
@@ -1771,6 +1790,7 @@ type GqlPoolMinimal {
 
 enum GqlPoolMinimalType {
   ELEMENT
+  FX
   GYRO
   GYRO3
   GYROE
@@ -1824,6 +1844,8 @@ type GqlPoolPhantomStable implements GqlPoolBase {
   staking: GqlPoolStaking
   symbol: String!
   tokens: [GqlPoolTokenUnion!]!
+  type: String!
+  version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
 
@@ -1885,6 +1907,8 @@ type GqlPoolStable implements GqlPoolBase {
   staking: GqlPoolStaking
   symbol: String!
   tokens: [GqlPoolToken!]!
+  type: String!
+  version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
 
@@ -1920,6 +1944,7 @@ type GqlPoolStakingGauge {
   rewards: [GqlPoolStakingGaugeReward!]!
   status: GqlPoolStakingGaugeStatus!
   version: Int!
+  workingSupply: String!
 }
 
 type GqlPoolStakingGaugeReward {
@@ -1989,6 +2014,11 @@ input GqlPoolSwapFilter {
   poolIdIn: [String!]
   tokenInIn: [String!]
   tokenOutIn: [String!]
+}
+
+input GqlPoolTimePeriod {
+  gt: Int
+  lt: Int
 }
 
 type GqlPoolToken implements GqlPoolTokenBase {
@@ -2108,6 +2138,8 @@ type GqlPoolWeighted implements GqlPoolBase {
   staking: GqlPoolStaking
   symbol: String!
   tokens: [GqlPoolTokenUnion!]!
+  type: String!
+  version: Int!
   withdrawConfig: GqlPoolWithdrawConfig!
 }
 
@@ -2284,6 +2316,7 @@ type GqlTokenCandlestickChartDataItem {
 }
 
 enum GqlTokenChartDataRange {
+  NINETY_DAY
   SEVEN_DAY
   THIRTY_DAY
 }
@@ -2394,9 +2427,15 @@ input GqlUserSwapVolumeFilter {
   tokenOutIn: [String!]
 }
 
+type GqlVeBalUserData {
+  balance: AmountHumanReadable!
+  rank: Int
+}
+
 type GqlVotingGauge {
   addedTimestamp: Int
   address: Bytes!
+  childGaugeAddress: Bytes
   isKilled: Boolean!
   relativeWeightCap: String
 }
@@ -2548,6 +2587,8 @@ enum GradualWeightUpdate_orderBy {
   poolId__sqrtBeta
   poolId__strategyType
   poolId__swapEnabled
+  poolId__swapEnabledCurationSignal
+  poolId__swapEnabledInternal
   poolId__swapFee
   poolId__swapsCount
   poolId__symbol
@@ -2557,6 +2598,7 @@ enum GradualWeightUpdate_orderBy {
   poolId__tauBetaY
   poolId__totalAumFeeCollectedInBPT
   poolId__totalLiquidity
+  poolId__totalLiquiditySansBPT
   poolId__totalProtocolFee
   poolId__totalProtocolFeePaidInBPT
   poolId__totalShares
@@ -2753,6 +2795,8 @@ enum JoinExit_orderBy {
   pool__sqrtBeta
   pool__strategyType
   pool__swapEnabled
+  pool__swapEnabledCurationSignal
+  pool__swapEnabledInternal
   pool__swapFee
   pool__swapsCount
   pool__symbol
@@ -2762,6 +2806,7 @@ enum JoinExit_orderBy {
   pool__tauBetaY
   pool__totalAumFeeCollectedInBPT
   pool__totalLiquidity
+  pool__totalLiquiditySansBPT
   pool__totalProtocolFee
   pool__totalProtocolFeePaidInBPT
   pool__totalShares
@@ -2914,6 +2959,8 @@ enum LatestPrice_orderBy {
   poolId__sqrtBeta
   poolId__strategyType
   poolId__swapEnabled
+  poolId__swapEnabledCurationSignal
+  poolId__swapEnabledInternal
   poolId__swapFee
   poolId__swapsCount
   poolId__symbol
@@ -2923,6 +2970,7 @@ enum LatestPrice_orderBy {
   poolId__tauBetaY
   poolId__totalAumFeeCollectedInBPT
   poolId__totalLiquidity
+  poolId__totalLiquiditySansBPT
   poolId__totalProtocolFee
   poolId__totalProtocolFeePaidInBPT
   poolId__totalShares
@@ -3648,6 +3696,13 @@ type Pool {
   address: Bytes!
   alpha: BigDecimal
   amp: BigInt
+  ampUpdates(
+    first: Int = 100
+    orderBy: AmpUpdate_orderBy
+    orderDirection: OrderDirection
+    skip: Int = 0
+    where: AmpUpdate_filter
+  ): [AmpUpdate!]
   baseToken: Bytes
   beta: BigDecimal
   c: BigDecimal
@@ -3699,6 +3754,7 @@ type Pool {
   lambda: BigDecimal
   lastJoinExitAmp: BigInt
   lastPostJoinExitInvariant: BigDecimal
+  latestAmpUpdate: AmpUpdate
   lowerTarget: BigDecimal
   mainIndex: Int
   managementAumFee: BigDecimal
@@ -3751,7 +3807,21 @@ type Pool {
   sqrtAlpha: BigDecimal
   sqrtBeta: BigDecimal
   strategyType: Int!
+
+  """
+  Indicates if a pool can be swapped against. Combines multiple sources, including offchain curation
+  """
   swapEnabled: Boolean!
+
+  """
+  External indication from an offchain permissioned actor
+  """
+  swapEnabledCurationSignal: Boolean
+
+  """
+  The native swapEnabled boolean. internal to the pool. Only applies to Gyro, LBPs and InvestmentPools
+  """
+  swapEnabledInternal: Boolean
   swapFee: BigDecimal!
   swaps(
     first: Int = 100
@@ -3776,6 +3846,7 @@ type Pool {
   tokensList: [Bytes!]!
   totalAumFeeCollectedInBPT: BigDecimal
   totalLiquidity: BigDecimal!
+  totalLiquiditySansBPT: BigDecimal
   totalProtocolFee: BigDecimal
   totalProtocolFeePaidInBPT: BigDecimal
   totalShares: BigDecimal!
@@ -3887,6 +3958,8 @@ enum PoolContract_orderBy {
   pool__sqrtBeta
   pool__strategyType
   pool__swapEnabled
+  pool__swapEnabledCurationSignal
+  pool__swapEnabledInternal
   pool__swapFee
   pool__swapsCount
   pool__symbol
@@ -3896,6 +3969,7 @@ enum PoolContract_orderBy {
   pool__tauBetaY
   pool__totalAumFeeCollectedInBPT
   pool__totalLiquidity
+  pool__totalLiquiditySansBPT
   pool__totalProtocolFee
   pool__totalProtocolFeePaidInBPT
   pool__totalShares
@@ -4047,6 +4121,8 @@ enum PoolHistoricalLiquidity_orderBy {
   poolId__sqrtBeta
   poolId__strategyType
   poolId__swapEnabled
+  poolId__swapEnabledCurationSignal
+  poolId__swapEnabledInternal
   poolId__swapFee
   poolId__swapsCount
   poolId__symbol
@@ -4056,6 +4132,7 @@ enum PoolHistoricalLiquidity_orderBy {
   poolId__tauBetaY
   poolId__totalAumFeeCollectedInBPT
   poolId__totalLiquidity
+  poolId__totalLiquiditySansBPT
   poolId__totalProtocolFee
   poolId__totalProtocolFeePaidInBPT
   poolId__totalShares
@@ -4195,6 +4272,8 @@ enum PoolShare_orderBy {
   poolId__sqrtBeta
   poolId__strategyType
   poolId__swapEnabled
+  poolId__swapEnabledCurationSignal
+  poolId__swapEnabledInternal
   poolId__swapFee
   poolId__swapsCount
   poolId__symbol
@@ -4204,6 +4283,7 @@ enum PoolShare_orderBy {
   poolId__tauBetaY
   poolId__totalAumFeeCollectedInBPT
   poolId__totalLiquidity
+  poolId__totalLiquiditySansBPT
   poolId__totalProtocolFee
   poolId__totalProtocolFeePaidInBPT
   poolId__totalShares
@@ -4391,6 +4471,8 @@ enum PoolSnapshot_orderBy {
   pool__sqrtBeta
   pool__strategyType
   pool__swapEnabled
+  pool__swapEnabledCurationSignal
+  pool__swapEnabledInternal
   pool__swapFee
   pool__swapsCount
   pool__symbol
@@ -4400,6 +4482,7 @@ enum PoolSnapshot_orderBy {
   pool__tauBetaY
   pool__totalAumFeeCollectedInBPT
   pool__totalLiquidity
+  pool__totalLiquiditySansBPT
   pool__totalProtocolFee
   pool__totalProtocolFeePaidInBPT
   pool__totalShares
@@ -4738,6 +4821,8 @@ enum PoolToken_orderBy {
   poolId__sqrtBeta
   poolId__strategyType
   poolId__swapEnabled
+  poolId__swapEnabledCurationSignal
+  poolId__swapEnabledInternal
   poolId__swapFee
   poolId__swapsCount
   poolId__symbol
@@ -4747,6 +4832,7 @@ enum PoolToken_orderBy {
   poolId__tauBetaY
   poolId__totalAumFeeCollectedInBPT
   poolId__totalLiquidity
+  poolId__totalLiquiditySansBPT
   poolId__totalProtocolFee
   poolId__totalProtocolFeePaidInBPT
   poolId__totalShares
@@ -4805,6 +4891,7 @@ input Pool_filter {
   alpha_not: BigDecimal
   alpha_not_in: [BigDecimal!]
   amp: BigInt
+  ampUpdates_: AmpUpdate_filter
   amp_gt: BigInt
   amp_gte: BigInt
   amp_in: [BigInt!]
@@ -4950,6 +5037,27 @@ input Pool_filter {
   lastPostJoinExitInvariant_lte: BigDecimal
   lastPostJoinExitInvariant_not: BigDecimal
   lastPostJoinExitInvariant_not_in: [BigDecimal!]
+  latestAmpUpdate: String
+  latestAmpUpdate_: AmpUpdate_filter
+  latestAmpUpdate_contains: String
+  latestAmpUpdate_contains_nocase: String
+  latestAmpUpdate_ends_with: String
+  latestAmpUpdate_ends_with_nocase: String
+  latestAmpUpdate_gt: String
+  latestAmpUpdate_gte: String
+  latestAmpUpdate_in: [String!]
+  latestAmpUpdate_lt: String
+  latestAmpUpdate_lte: String
+  latestAmpUpdate_not: String
+  latestAmpUpdate_not_contains: String
+  latestAmpUpdate_not_contains_nocase: String
+  latestAmpUpdate_not_ends_with: String
+  latestAmpUpdate_not_ends_with_nocase: String
+  latestAmpUpdate_not_in: [String!]
+  latestAmpUpdate_not_starts_with: String
+  latestAmpUpdate_not_starts_with_nocase: String
+  latestAmpUpdate_starts_with: String
+  latestAmpUpdate_starts_with_nocase: String
   lowerTarget: BigDecimal
   lowerTarget_gt: BigDecimal
   lowerTarget_gte: BigDecimal
@@ -5187,6 +5295,14 @@ input Pool_filter {
   strategyType_not: Int
   strategyType_not_in: [Int!]
   swapEnabled: Boolean
+  swapEnabledCurationSignal: Boolean
+  swapEnabledCurationSignal_in: [Boolean!]
+  swapEnabledCurationSignal_not: Boolean
+  swapEnabledCurationSignal_not_in: [Boolean!]
+  swapEnabledInternal: Boolean
+  swapEnabledInternal_in: [Boolean!]
+  swapEnabledInternal_not: Boolean
+  swapEnabledInternal_not_in: [Boolean!]
   swapEnabled_in: [Boolean!]
   swapEnabled_not: Boolean
   swapEnabled_not_in: [Boolean!]
@@ -5275,6 +5391,14 @@ input Pool_filter {
   totalAumFeeCollectedInBPT_not: BigDecimal
   totalAumFeeCollectedInBPT_not_in: [BigDecimal!]
   totalLiquidity: BigDecimal
+  totalLiquiditySansBPT: BigDecimal
+  totalLiquiditySansBPT_gt: BigDecimal
+  totalLiquiditySansBPT_gte: BigDecimal
+  totalLiquiditySansBPT_in: [BigDecimal!]
+  totalLiquiditySansBPT_lt: BigDecimal
+  totalLiquiditySansBPT_lte: BigDecimal
+  totalLiquiditySansBPT_not: BigDecimal
+  totalLiquiditySansBPT_not_in: [BigDecimal!]
   totalLiquidity_gt: BigDecimal
   totalLiquidity_gte: BigDecimal
   totalLiquidity_in: [BigDecimal!]
@@ -5424,6 +5548,7 @@ enum Pool_orderBy {
   address
   alpha
   amp
+  ampUpdates
   baseToken
   beta
   c
@@ -5445,6 +5570,13 @@ enum Pool_orderBy {
   lambda
   lastJoinExitAmp
   lastPostJoinExitInvariant
+  latestAmpUpdate
+  latestAmpUpdate__endAmp
+  latestAmpUpdate__endTimestamp
+  latestAmpUpdate__id
+  latestAmpUpdate__scheduledTimestamp
+  latestAmpUpdate__startAmp
+  latestAmpUpdate__startTimestamp
   lowerTarget
   mainIndex
   managementAumFee
@@ -5483,6 +5615,8 @@ enum Pool_orderBy {
   sqrtBeta
   strategyType
   swapEnabled
+  swapEnabledCurationSignal
+  swapEnabledInternal
   swapFee
   swaps
   swapsCount
@@ -5495,6 +5629,7 @@ enum Pool_orderBy {
   tokensList
   totalAumFeeCollectedInBPT
   totalLiquidity
+  totalLiquiditySansBPT
   totalProtocolFee
   totalProtocolFeePaidInBPT
   totalShares
@@ -5681,6 +5816,8 @@ enum PriceRateProvider_orderBy {
   poolId__sqrtBeta
   poolId__strategyType
   poolId__swapEnabled
+  poolId__swapEnabledCurationSignal
+  poolId__swapEnabledInternal
   poolId__swapFee
   poolId__swapsCount
   poolId__symbol
@@ -5690,6 +5827,7 @@ enum PriceRateProvider_orderBy {
   poolId__tauBetaY
   poolId__totalAumFeeCollectedInBPT
   poolId__totalLiquidity
+  poolId__totalLiquiditySansBPT
   poolId__totalProtocolFee
   poolId__totalProtocolFeePaidInBPT
   poolId__totalShares
@@ -6920,6 +7058,7 @@ type Query {
     where: User_filter
   ): [User!]!
   veBalGetTotalSupply: AmountHumanReadable!
+  veBalGetUser: GqlVeBalUserData!
   veBalGetUserBalance: AmountHumanReadable!
   veBalGetVotingList: [GqlVotingPool!]!
   votingEscrow(
@@ -8639,6 +8778,8 @@ enum SwapFeeUpdate_orderBy {
   pool__sqrtBeta
   pool__strategyType
   pool__swapEnabled
+  pool__swapEnabledCurationSignal
+  pool__swapEnabledInternal
   pool__swapFee
   pool__swapsCount
   pool__symbol
@@ -8648,6 +8789,7 @@ enum SwapFeeUpdate_orderBy {
   pool__tauBetaY
   pool__totalAumFeeCollectedInBPT
   pool__totalLiquidity
+  pool__totalLiquiditySansBPT
   pool__totalProtocolFee
   pool__totalProtocolFeePaidInBPT
   pool__totalShares
@@ -8883,6 +9025,8 @@ enum Swap_orderBy {
   poolId__sqrtBeta
   poolId__strategyType
   poolId__swapEnabled
+  poolId__swapEnabledCurationSignal
+  poolId__swapEnabledInternal
   poolId__swapFee
   poolId__swapsCount
   poolId__symbol
@@ -8892,6 +9036,7 @@ enum Swap_orderBy {
   poolId__tauBetaY
   poolId__totalAumFeeCollectedInBPT
   poolId__totalLiquidity
+  poolId__totalLiquiditySansBPT
   poolId__totalProtocolFee
   poolId__totalProtocolFeePaidInBPT
   poolId__totalShares
@@ -9086,6 +9231,8 @@ enum TokenPrice_orderBy {
   poolId__sqrtBeta
   poolId__strategyType
   poolId__swapEnabled
+  poolId__swapEnabledCurationSignal
+  poolId__swapEnabledInternal
   poolId__swapFee
   poolId__swapsCount
   poolId__symbol
@@ -9095,6 +9242,7 @@ enum TokenPrice_orderBy {
   poolId__tauBetaY
   poolId__totalAumFeeCollectedInBPT
   poolId__totalLiquidity
+  poolId__totalLiquiditySansBPT
   poolId__totalProtocolFee
   poolId__totalProtocolFeePaidInBPT
   poolId__totalShares
@@ -9492,6 +9640,8 @@ enum Token_orderBy {
   pool__sqrtBeta
   pool__strategyType
   pool__swapEnabled
+  pool__swapEnabledCurationSignal
+  pool__swapEnabledInternal
   pool__swapFee
   pool__swapsCount
   pool__symbol
@@ -9501,6 +9651,7 @@ enum Token_orderBy {
   pool__tauBetaY
   pool__totalAumFeeCollectedInBPT
   pool__totalLiquidity
+  pool__totalLiquiditySansBPT
   pool__totalProtocolFee
   pool__totalProtocolFeePaidInBPT
   pool__totalShares
