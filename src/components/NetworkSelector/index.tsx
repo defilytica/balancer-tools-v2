@@ -72,6 +72,7 @@ export default function NetworkSelector() {
         PolygonNetworkInfo,
         ArbitrumNetworkInfo,
         PolygonZkEVMNetworkInfo,
+        GnosisNetworkInfo,
         OptimismNetworkInfo,
         AvalancheNetworkInfo,
         BaseNetworkInfo
