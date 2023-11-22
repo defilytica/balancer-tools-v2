@@ -271,9 +271,10 @@ function Dashboard() {
                                            element={<SmartContractPermissions/>}/>
                                     <Route path={networkPrefix(activeNetwork) + 'balancer/permissions'}
                                            element={<SmartContractPermissions/>}/>
+                                    <Route path={'balancer/incentiveSimulator'} element={<BribeSimulator/>}/>
                                     <Route path={networkPrefix(activeNetwork) + 'incentiveSimulator'}
                                            element={<BribeSimulator/>}/>
-                                    <Route path={'balancer/incentiveSimulator'} element={<ContractDetailedView />}/>
+
                                     <Route path={networkPrefix(activeNetwork) + 'balancer/balancerContracts/:id'}
                                            element={<ContractDetailedView/>}/>
                                     <Route path={'balancer/balancerContracts/:id'} element={<ContractDetailedView />}/>

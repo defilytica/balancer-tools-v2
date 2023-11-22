@@ -318,7 +318,7 @@ export default function BribeSimulator() {
                 container
                 columns={{ xs: 4, sm: 8, md: 12 }}
                 sx={{
-                  justifyContent: { md: "space-between", xs: "center" },
+                  justifyContent: { md: "flex-start", xs: "center" },
                   alignContent: "center",
                 }}
             >
@@ -352,7 +352,7 @@ export default function BribeSimulator() {
                     MetricIcon={AutoAwesomeIcon}
                 />
               </Box>
-              <Box ml={1}>
+              {/* <Box ml={1}>
                 {hhIncentives ? (
                     <MetricsCard
                         mainMetric={
@@ -366,7 +366,7 @@ export default function BribeSimulator() {
                 ) : (
                     <CircularProgress />
                 )}
-              </Box>
+              </Box> */}
             </Grid>
           </Grid>
 
