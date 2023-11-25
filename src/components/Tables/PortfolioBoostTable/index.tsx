@@ -30,6 +30,7 @@ import GaugeComposition from "../../GaugeComposition";
 import ClearIcon from '@mui/icons-material/Clear';
 import OpLogo from "../../../assets/svg/optimism.svg";
 import zkevmLogo from "../../../assets/svg/zkevm.svg";
+import BaseLogo from "../../../assets/svg/base.svg"
 
 
 
@@ -270,6 +271,7 @@ export default function PortfolioBoostTable({gaugeDatas, userVeBALAdjusted}: {
         137: PolygonLogo,
         100: GnosisLogo,
         1101: zkevmLogo,
+        8453: BaseLogo,
         42161: ArbitrumLogo
     };
 
