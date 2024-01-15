@@ -124,6 +124,59 @@ export function generateTokenPaymentPayload(inputs: PaymentInput[]) {
     };
 }
 
+export interface SetRecipientListInput {
+    injectorAddress: string;
+    injectorOwner: string;
+    gaugeAddress: string;
+    amountsPerPeriod: number;
+    maxPeriods: number
+}
+
+export function generateSetRecipientListPayload(inputs: SetRecipientListInput[]) {
+    const transactions = inputs.map(input => ({
+        version: "1.0",
+        chainId: "1",
+        createdAt: Date.now(),
+        meta: {
+            name: "Transactions Batch",
+            description: "Set Recipient List",
+            txBuilderVersion: "1.16.3",
+            createdFromSafeAddress: input.injectorOwner,
+            createdFromOwnerAddress: "",
+            checksum: ""  // This would be a computed checksum, for now left as an empty string.
+        },
+        to: input.injectorAddress,
+        value: "0",
+        data: null,
+        contractMethod: {
+            inputs: [
+                {
+                  name: "gaugeAddresses",
+                  type: "address[]",
+                  internalType: "address[]"
+                },
+                {
+                  name: "amountsPerPeriod",
+                  type: "uint256[]",
+                  internalType: "uint256[]"
+                },
+                { name: "maxPeriods", type: "uint8[]", internalType: "uint8[]" }
+              ],
+              name: "setRecipientList",
+              payable: false
+        },
+        contractInputsValues: {
+            gaugeAddresses: "[" + input.gaugeAddress + "]",
+            amountsPerPeriod: "[" + (input.amountsPerPeriod * 10e18).toString() + "]",
+            maxPeriods: "[" + input.maxPeriods.toString() + "]"
+          }
+    }));
+
+    return {
+        transactions
+    };
+}
+
 export function generateHumanReadableForEnableGauge(inputs: EnableGaugeInput[]): string {
     const gaugesList = inputs.map(input => `gauge(address):${input.gauge}\ngaugeType(string): ${input.gaugeType}`).join("\n");
 
@@ -139,5 +192,3 @@ export function generateHumanReadableTokenTransfer(payment: PaymentInput) {
 
     return `The Balancer DAO multisig 0x10A19e7eE7d7F8a52822f6817de8ea18204F2e4f will interact with ${payment.token} ${tokenAddress} by writing transfer passing the ${payment.to} as recipient and amount as ${payment.value} ${payment.token} ${value}.`;
 }
-
-

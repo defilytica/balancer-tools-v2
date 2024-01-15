@@ -98,6 +98,10 @@ function PayloadBuilder() {
                 return generateHumanReadableTokenTransfer(payment);
             }).join('\n');
                 break;
+            case 'setRecipientList':
+                    payload = generateSetRecipientListPayload(gauges.map(g => ({ target: g.id })));
+                    text = '';  // As you've not provided a generateHumanReadableForKillGauge function.
+                    break;
             default:
                 return;
         }
@@ -150,6 +154,7 @@ function PayloadBuilder() {
                         <MenuItem value="enable">Create Enable Gauge Payload</MenuItem>
                         <MenuItem value="kill">Create Kill Gauge Payload</MenuItem>
                         <MenuItem value="tokenPayment">Token Payment</MenuItem>
+                        <MenuItem value="setRecipientList">Set Gauge Injector Recipient List</MenuItem>
                     </Select>
                 </FormControl>
                 <div style={{ marginBottom: '20px' }}>
