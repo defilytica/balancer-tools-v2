@@ -1,14 +1,13 @@
 import {Card, CardContent, CardMedia, Grid, Link, Typography} from '@mui/material';
 import { styled } from '@mui/system';
-import PaladinLogo from '../../../assets/svg/warden.svg';
+import PaladinLogo from '../../../assets/svg/paladin.svg';
 import OrbBg from '../../../assets/png/orbz.png';
 
 const StyledCard = styled(Card)(({ theme }) => ({
     position: 'relative',
-    maxWidth: 400,
-    border: '1px solid grey',
-    padding: theme.spacing(1),
-
+    maxWidth: 500,
+    padding: theme.spacing(2),
+    boxShadow: "rgb(51, 65, 85) 0px 0px 0px 0.5px",
     pointerEvents: 'auto',
 }));
 
@@ -28,12 +27,15 @@ const Description = styled(Typography)(({ theme }) => ({
 }));
 
 const LogoImage = styled('img')({
-    height: '50px',
-    objectFit: 'contain',
+    height: '60px',
+    width: 'auto',
     alignSelf: 'flex-end',
-    backgroundImage: `url(${OrbBg})`,
+    background: `url(${OrbBg}) no-repeat center center`,
     backgroundSize: 'cover',
+    overflow: 'hidden',
+    border: 'none',
 });
+
 
 const LogoContainer = styled(Grid)({
     display: 'flex',
@@ -46,7 +48,7 @@ const PaladinQuestsCard = () => {
             <ContentContainer container>
                 <Grid item xs={9}>
                     <Title variant="h5">Paladin Quests</Title>
-                    <Description variant="body1">
+                    <Description variant="body2">
                         Explore a range of quests on Paladin for voting incentives
                     </Description>
                 </Grid>
@@ -57,7 +59,7 @@ const PaladinQuestsCard = () => {
 
             </ContentContainer>
             <Link
-                href="https://app.warden.vote/quest/"
+                href="https://quest.paladin.vote/#/bal"
                 underline="none"
                 target="_blank"
                 rel="noopener noreferrer"

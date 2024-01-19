@@ -160,7 +160,7 @@ const headCells: readonly HeadCell[] = [
         label: 'HH: $/veBAL',
         isMobileVisible: true,
     },
-    {
+    /*{
         id: 'paladinRewards',
         numeric: true,
         disablePadding: false,
@@ -173,7 +173,7 @@ const headCells: readonly HeadCell[] = [
         disablePadding: false,
         label: 'Paladin: Open Votes',
         isMobileVisible: true,
-    },
+    },*/
     {
         id: 'userVotes',
         numeric: true,
@@ -424,12 +424,12 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
                                             <TableCell align="right">
                                                 {formatDollarAmount(Number(row.votingIncentives ? row.votingIncentives : 0),  3)}
                                             </TableCell>
-                                            <TableCell align="right">
+                                            {/*<TableCell align="right">
                                                 {formatDollarAmount(Number(row.paladinRewards ? row.paladinRewards : 0),  3)}
                                             </TableCell>
                                             <TableCell align="right">
                                                 {formatNumber(Number(row.paladinLeftVotes ? row.paladinLeftVotes : 0),  0)}
-                                            </TableCell>
+                                            </TableCell>*/}
                                             <TableCell align="right">
                                                 {row.userVotes || allocations.find(alloc => alloc.gaugeAddress === row.gaugeAddress) ? (
                                                     formatNumber(Number(row.userVotes), 3)

@@ -16,3 +16,33 @@ export interface PaladinQuest {
     currentState: number
     blacklist?: string[]
 }
+
+export interface PaladinQuestsV2 {
+    id: number;
+    boardId: number;
+    board: string;
+    gauge: string;
+    rewardToken: string;
+    duration: number;
+    start: number;
+    permissions: Permissions;
+    closeScenario: CloseScenario;
+    rpw: string;
+    minRPV: string;
+    maxRPV: string;
+    minObjective: string;
+    maxObjective: string;
+    permissionsList: string[];
+}
+
+export enum Permissions {
+    Normal,
+    Blacklist,
+    Whitelist,
+}
+
+export enum CloseScenario {
+    Withdraw,
+    Rollover,
+    Distribute,
+}

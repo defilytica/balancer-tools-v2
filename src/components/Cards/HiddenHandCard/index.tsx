@@ -5,10 +5,9 @@ import OrbBg from '../../../assets/png/orbz.png';
 
 const StyledCard = styled(Card)(({ theme }) => ({
     position: 'relative',
-    maxWidth: 400,
-    border: '1px solid grey',
-    padding: theme.spacing(1),
-
+    maxWidth: 500,
+    padding: theme.spacing(2),
+    boxShadow: "rgb(51, 65, 85) 0px 0px 0px 0.5px",
     pointerEvents: 'auto',
 }));
 
@@ -17,6 +16,7 @@ const ContentContainer = styled(Grid)(({ theme }) => ({
     alignItems: 'flex-start',
     justifyContent: 'space-between', // Add this line to distribute items evenly along the horizontal axis
     marginBottom: theme.spacing(2),
+
 }));
 
 const Title = styled(Typography)(({ theme }) => ({
@@ -28,11 +28,13 @@ const Description = styled(Typography)(({ theme }) => ({
 }));
 
 const LogoImage = styled('img')({
-    height: '80px',
-    objectFit: 'contain',
+    height: '60px',
+    width: 'auto',
     alignSelf: 'flex-end',
-    backgroundImage: `url(${OrbBg})`,
+    background: `url(${OrbBg}) no-repeat center center`,
     backgroundSize: 'cover',
+    overflow: 'hidden',
+    border: 'none',
 });
 
 const LogoContainer = styled(Grid)({
@@ -46,7 +48,7 @@ const HiddenHandCard = () => {
             <ContentContainer container>
                 <Grid item xs={9}>
                     <Title variant="h5">HiddenHand</Title>
-                    <Description variant="body1">
+                    <Description variant="body2">
                         Explore a range of voting incentives available
                     </Description>
                 </Grid>
