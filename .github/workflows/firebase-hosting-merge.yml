@@ -55,3 +55,4 @@ jobs:
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEFILYTICA_TOOLS }}'
           channelId: live
           projectId: defilytica-tools
+          firebaseToolsVersion: 12.7.0

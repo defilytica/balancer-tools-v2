@@ -41,7 +41,7 @@
     "echarts-for-react": "^3.0.2",
     "ethereum-multicall": "^2.21.0",
     "ethers": "^5.7.2",
-    "firebase-tools": "^11.21.0",
+    "firebase-tools": "^12.7.0",
     "graphql-tag": "^2.12.6",
     "identicon.js": "^2.3.3",
     "jsbi": "^4.3.0",
