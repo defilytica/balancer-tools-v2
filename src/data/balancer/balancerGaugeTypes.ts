@@ -13,4 +13,5 @@ export interface GaugeAllocation {
     paladinValuePerVote: number,
     paladinRewardInUSD: number,
     paladinLeftVotes: number,
+    previousUserPercentage?: number,
 }

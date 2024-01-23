@@ -244,7 +244,14 @@ export default function VeBALVoter() {
         const paladinQuest = paladinIncentives?.quests?.find(el => el.gauge.toLowerCase() === allocElement.gaugeAddress.toLowerCase());
         if (matchingHiddenHandData) {
             const currentVoteValue = fullyDecoratedGauges.find(gauge => gauge.address === allocElement.gaugeAddress)?.voteCount ?? 0;
-            const newVoteValue = currentVoteValue + userVeBAL * inputPercentage / 100;
+            // Determine the user's current vote allocation based on the previous percentage
+            const currentUserVoteAllocation = userVeBAL * (allocElement.previousUserPercentage ?? 0) / 100;
+
+            // Calculate the user's new vote allocation based on the new input percentage
+            const newUserVoteAllocation = userVeBAL * inputPercentage / 100;
+
+            // Adjust the newVoteValue based on the difference between the new and current allocations
+            const newVoteValue = currentVoteValue - currentUserVoteAllocation + newUserVoteAllocation;
 
             const updatedGauge = fullyDecoratedGauges.find(gauge => gauge.address === allocElement.gaugeAddress);
             if (updatedGauge) {
@@ -292,9 +299,8 @@ export default function VeBALVoter() {
 
     const calculateAverageValuePerVote = (gauges: BalancerStakingGauges[]) => {
         const totalHiddenHandRewards = gauges.reduce((sum, gauge) => sum + (gauge.totalRewards || 0), 0);
-        const totalPaladinRewards = gauges.reduce((sum, gauge) => sum + (gauge.paladinRewards?.totalRewards || 0), 0);
         const totalVotes = gauges.reduce((sum, gauge) => sum + (gauge.paladinRewards ? gauge.voteCount : 0), 0);
-        return (totalHiddenHandRewards + totalPaladinRewards) / totalVotes;
+        return (totalHiddenHandRewards) / totalVotes;
     };
 
 
@@ -475,6 +481,7 @@ export default function VeBALVoter() {
                     paladinValuePerVote: 0,
                     paladinRewardInUSD: 0,
                     paladinLeftVotes: leftVotes,
+                    previousUserPercentage: vote.userVotingPower ? vote.userVotingPower : 0,
                 };
             });
             setAllocations([...newAllocations]);
@@ -537,6 +544,7 @@ export default function VeBALVoter() {
                 paladinValuePerVote: (matchingGauge && matchingGauge.paladinRewards) ? matchingGauge.paladinRewards.valuePerVote : 0,
                 paladinRewardInUSD: paladinRewardInUSD,
                 paladinLeftVotes: 0,
+                previousUserPercentage: vote.userVotingPower ? vote.userVotingPower : 0,
             };
         });
         setAllocations([...newAllocations]);
