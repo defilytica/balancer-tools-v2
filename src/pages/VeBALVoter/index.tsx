@@ -503,29 +503,40 @@ export default function VeBALVoter() {
         const signer = await provider.getSigner();
         const erc20 = new ethers.Contract(veBALVoteAddress, VeBalVoteMany, signer);
 
+        // Sort allocations: entries that changed to 0 first, then others
+        const sortedAllocations = [...allocations].sort((a, b) => {
+            if (a.percentage === 0 && b.percentage !== 0) {
+                return -1;
+            } else if (a.percentage !== 0 && b.percentage === 0) {
+                return 1;
+            }
+            return 0;
+        });
+
         const addresses = Array(8)
             .fill("0x0000000000000000000000000000000000000000")
             .map((_, index) =>
-                index < allocations.length
-                    ? allocations[index].gaugeAddress.slice(2, 42)
+                index < sortedAllocations.length
+                    ? sortedAllocations[index].gaugeAddress.slice(2, 42)
                     : "0x0000000000000000000000000000000000000000"
             );
 
         const weights = Array(8)
             .fill(0)
             .map((_, index) =>
-                index < allocations.length ? allocations[index].percentage * 100 : 0
+                index < sortedAllocations.length ? sortedAllocations[index].percentage * 100 : 0
             );
 
         try {
             const tx = await erc20.vote_for_many_gauge_weights(addresses, weights);
             console.log("Transaction sent: ", tx.hash);
         } catch (error: any) {
-            console.log(error.reason)
+            console.log("error", error)
             setError(error.reason)
             setAlertOpen(true)
         }
     }
+
 
     // Reset voting state
     const resetVotes = () => {
