@@ -210,6 +210,37 @@ export const VeBalGetVotingGauges = gql`
     }
   }
 `;
+export const GetTokenPrice = gql`
+  query GetTokenPrice($address: String!, $chain: GqlChain!) {
+    tokenGetPriceChartData(
+      address: $address
+      chain: $chain
+      range: NINETY_DAY
+    ) {
+      id
+      price
+      timestamp
+    }
+  }
+`;
+export const TokenGetCurrentPrices = gql`
+  query TokenGetCurrentPrices($chains: [GqlChain!]) {
+    tokenGetCurrentPrices(chains: $chains) {
+      address
+      chain
+      price
+    }
+  }
+`;
+export const GetDynamicTokenPrices = gql`
+  query GetDynamicTokenPrices($addresses: [String!]!) {
+    tokenGetTokensDynamicData(addresses: $addresses) {
+      price
+      tokenAddress
+      priceChange24h
+    }
+  }
+`;
 export const GetUserVotes = gql`
   query GetUserVotes($userId: ID!) {
     user(id: $userId) {

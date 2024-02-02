@@ -232,3 +232,14 @@ export interface SimplePoolData {
     symbol: string;
     tokens: SimplePoolTokenData[];
 }
+
+export interface TokenPriceInfo {
+    price: number;
+    priceChange24h: number;
+    priceChangePercentage24h: number;
+}
+
+
+export interface TokenPrices {
+    [tokenAddress: string]: TokenPriceInfo;
+}

@@ -39,6 +39,7 @@ import useDecorateL2Gauges from "../../data/balancer/useDeocrateL2Gauges";
 import PaladinQuestsCard from "../../components/Cards/PaladinQuestsCard";
 import PoolCurrencyLogo from "../../components/PoolCurrencyLogo";
 import Switch from "@mui/material/Switch";
+import useGetSimpleTokenPrices from "../../data/balancer-api-v3/useGetSimpleTokenPrices";
 
 // TODO: put somewhere else
 //  Helper functions to parse data types to Llama model
@@ -102,7 +103,8 @@ export default function BribeSimulator() {
   const [customPoolValue, setCustomPoolValue] = useState<number>(0); // New state to hold the custom poolValue
   const [hidePoolSelect, setHidePoolSelect] = useState<boolean>(false); // New state to hide the "Select a Pool" component
 
-  const coinData = useCoinGeckoSimpleTokenPrices([balAddress], true);
+  //const coinData = useCoinGeckoSimpleTokenPrices([balAddress], true);
+  const coinData = useGetSimpleTokenPrices([balAddress], '1');
   //Load gauge and Staking information
 
 
@@ -213,7 +215,7 @@ export default function BribeSimulator() {
       if (selectedGauge) {
         setGaugeRelativeWeight(selectedGauge.gaugeRelativeWeight);
         setAllocatedVotes(parseFloat(selectedGauge.gaugeVotes.toFixed(2)));
-        const balPrice = coinData ? coinData[balAddress].usd : 0;
+        const balPrice = coinData ? coinData.data[balAddress].price : 0;
         setTargetAPR(parseFloat(((selectedGauge.gaugeRelativeWeight * weeklyEmissions * balPrice * 52) / pricePerBPT / (Number(selectedGauge.workingSupply) / 1e18) * 0.4).toFixed(2)));
         console.log(selectedGauge.gaugeRelativeWeight)
       }
@@ -322,13 +324,13 @@ export default function BribeSimulator() {
                   alignContent: "center",
                 }}
             >
-              {coinData && coinData[balAddress] && coinData[balAddress].usd ? (
+              {coinData && coinData.data[balAddress] && coinData.data[balAddress].price ? (
                   <Box mr={1}>
                     <CoinCard
                         tokenAddress={balAddress}
                         tokenName="BAL"
-                        tokenPrice={coinData[balAddress].usd}
-                        tokenPriceChange={coinData[balAddress].usd_24h_change}
+                        tokenPrice={coinData.data[balAddress].price}
+                        tokenPriceChange={coinData.data[balAddress].priceChangePercentage24h}
                     />
                   </Box>
               ) : (
@@ -448,7 +450,7 @@ export default function BribeSimulator() {
                             }
                             <TableCell>{formatDollarAmount(selectedPool.tvlUSD)}</TableCell>
                             <TableCell>{formatNumber(allocatedVotes)}</TableCell>
-                            <TableCell>{formatNumber(parseFloat(((selectedGauge.gaugeRelativeWeight * weeklyEmissions * (coinData ? coinData[balAddress].usd : 0) * 52) / pricePerBPT / (Number(selectedGauge.workingSupply) / 1e18) * 0.4).toFixed(2)))}</TableCell>
+                            <TableCell>{formatNumber(parseFloat(((selectedGauge.gaugeRelativeWeight * weeklyEmissions * (coinData ? coinData.data[balAddress].price : 0) * 52) / pricePerBPT / (Number(selectedGauge.workingSupply) / 1e18) * 0.4).toFixed(2)))}</TableCell>
                           </TableRow>
                         </TableBody>
                       </Table>

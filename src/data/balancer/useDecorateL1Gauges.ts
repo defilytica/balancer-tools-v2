@@ -19,14 +19,14 @@ const useDecorateL1Gauges = (stakingGaugeData: BalancerStakingGauges[] | undefin
         if (gaugeData && gaugeData.length > 0) {
             const multicalls = [];
 
-            const providerUrl = 'https://eth.llamarpc.com';
+            const providerUrl = 'https://virginia.rpc.blxrbdn.com';
             const multicall = new Multicall({
                 ethersProvider: new ethers.providers.JsonRpcProvider(providerUrl),
                 tryAggregate: true
             });
 
             const multicallRoots = new Multicall({
-                ethersProvider: new ethers.providers.JsonRpcProvider('https://eth.llamarpc.com'),
+                ethersProvider: new ethers.providers.JsonRpcProvider('https://virginia.rpc.blxrbdn.com'),
                 tryAggregate: true
             });
             //Obtain mainnet gauge working and total supplies

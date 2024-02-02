@@ -8,8 +8,13 @@ import useGetBalancerV3StakingGauges from "../../data/balancer-api-v3/useGetBala
 
 export default function GaugeMapper(){
     const gaugeData = useGetBalancerV3StakingGauges();
+    console.log("gaugeData", gaugeData)
     const l1GaugeData = useDecorateL1Gauges(gaugeData);
-    const decoratedGaugeData = useDecorateL2Gauges(l1GaugeData);
+    console.log("l1GaugeData", l1GaugeData)
+    const deduplicatedGaugeData = Array.from(new Map(l1GaugeData.map(item => [item.address, item])).values());
+    console.log("deduplicatedGaugeData", deduplicatedGaugeData)
+    const decoratedGaugeData = useDecorateL2Gauges(deduplicatedGaugeData);
+    console.log("decoratedGaugeData", decoratedGaugeData)
 
     return(
         <Box
