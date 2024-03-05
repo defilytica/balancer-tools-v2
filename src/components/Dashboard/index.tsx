@@ -27,7 +27,7 @@ import Authorizations from '../../pages/Authorizations';
 import {ConnectButton, darkTheme, lightTheme, RainbowKitProvider} from "@rainbow-me/rainbowkit";
 import {WagmiConfig} from "wagmi";
 import {chains, wagmiConfig} from "../../wagmi/wagmiConfig";
-import {alpha} from "@mui/material";
+import {alpha, Container} from "@mui/material";
 import GaugeMapper from "../../pages/GaugeMapper";
 import BribeSimulator from "../../pages/BribeSimulator";
 import GovernanceMap from '../../pages/GovernanceMap';
@@ -284,7 +284,28 @@ function Dashboard() {
 
                                     {/* Router v6: no query searches possible anymore. Provide all possible paths */}
                                 </Routes>
+
                             </MainContent>
+
+                        </Box>
+                        <Box
+                            component="footer"
+                            sx={{
+                                py: 2,
+                                position: 'fixed', // Fix position to bottom
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                backgroundColor: 'background.paper',
+                                textAlign: 'center',
+                                zIndex: 1100,
+                            }}
+                        >
+                            <Container maxWidth="lg">
+                                <Typography variant="body2" color="textSecondary" align="center">
+                                    Disclaimer: The information provided herein is for informational purposes only and is not financial advice.
+                                </Typography>
+                            </Container>
                         </Box>
                     </ThemeProvider>
                 </ColorModeContext.Provider>
