@@ -88,6 +88,7 @@ export const ArbitrumNetworkInfo: NetworkInfo = {
     route: 'arbitrum',
     name: 'Arbitrum',
     startTimeStamp: 1619874000,
+    appUri: 'https://app.balancer.fi/#/arbitrum/',
     clientUri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-arbitrum-v2',
     decentralicedClientUri: '',
     alchemyRPCUrl: ALCHEMY_URL_ARBITRUM,
