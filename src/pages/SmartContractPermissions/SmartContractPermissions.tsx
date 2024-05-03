@@ -159,9 +159,12 @@ export default function SmartContractPermissions() {
                                     </List>
                                 </AccordionDetails>
                             </Accordion>
+
                         ))}
                     </div>
+                    <Grid><Box mt={8}></Box></Grid>
                 </Grid>
+
             </Grid>
                 :
                 <CircularProgress />

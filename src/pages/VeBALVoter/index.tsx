@@ -899,7 +899,9 @@ export default function VeBALVoter() {
                                     onAddAllocation={handleAddAllocation}/>
                                 : <CircularProgress/>}
                         </Grid>
+
                     </Grid>
+                    <Grid><Box mt={6}></Box></Grid>
                     <Dialog open={open} onClose={handleDialogClose}>
                         <DialogTitle>Confirm Transaction</DialogTitle>
                         <DialogContent>

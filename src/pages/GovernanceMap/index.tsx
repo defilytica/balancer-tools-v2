@@ -22,6 +22,7 @@ import {
     AvalancheNetworkInfo, BaseNetworkInfo, OptimismNetworkInfo
 } from "../../constants/networks";
 import {useEffect, useState} from "react";
+import * as React from "react";
 
 export default function GovernanceMap() {
 
@@ -140,6 +141,7 @@ export default function GovernanceMap() {
           </Grid>
           <Grid item mt={2} xs={11}>
             <ContractOverviewTable contracts={smartContractData.contracts} />
+              <Grid><Box mt={8}></Box></Grid>
           </Grid>
         </Grid>
       </Box>

@@ -5,6 +5,7 @@ import GovGaugeTable from "../../components/Tables/GovGaugeTable";
 import {Box} from "@mui/system";
 import {CircularProgress, Grid, Typography} from "@mui/material";
 import useGetBalancerV3StakingGauges from "../../data/balancer-api-v3/useGetBalancerV3StakingGauges";
+import * as React from "react";
 
 export default function GaugeMapper(){
     const gaugeData = useGetBalancerV3StakingGauges();
@@ -38,7 +39,11 @@ export default function GaugeMapper(){
                         <Box sx={{ maxWidth: '90%' }}>
                         <GovGaugeTable gaugeDatas={decoratedGaugeData} />
                         </Box>
+                        <Grid><Box mt={8}></Box></Grid>
                     </Grid>
+
+
+
                 </Grid>
             :
                 <CircularProgress />

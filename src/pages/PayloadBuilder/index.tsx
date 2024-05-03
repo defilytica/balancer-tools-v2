@@ -11,7 +11,7 @@ import {
     Typography,
     IconButton,
     Divider,
-    List, ListItem, ListItemSecondaryAction, TextareaAutosize
+    List, ListItem, ListItemSecondaryAction, TextareaAutosize, Grid
 } from '@mui/material';
 import { FileDownloadOutlined, FileCopyOutlined, AddCircleOutline, RemoveCircleOutline } from '@mui/icons-material';
 import {
@@ -22,6 +22,7 @@ import {
 } from "./helpers";
 import ReactJson from "react-json-view";
 import ListItemText from "@mui/material/ListItemText";
+import Box from "@mui/material/Box";
 
 function DeleteIcon() {
     return null;
@@ -300,6 +301,7 @@ function PayloadBuilder() {
                     </div>
                 )}
             </Paper>
+            <Grid><Box mt={8}></Box></Grid>
         </Container>
     );
 }

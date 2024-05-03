@@ -236,9 +236,12 @@ export default function ContractDetailedView() {
                                     </Card>
                                 ))}
                             </Grid>
+
                         </Grid>
+                        <Grid item ><Box mt={8}></Box></Grid>
                     </Grid>
                 </Grid>
+
             </Box> : null
     );
 }
