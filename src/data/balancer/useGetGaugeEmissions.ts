@@ -20,7 +20,7 @@ const useGetGaugeRelativeWeights = (stakingGaugeData: BalancerStakingGauges[]): 
     if (gaugeData && gaugeData.length > 0) {
       const multicalls = [];
 
-      const providerUrl = "https://eth.llamarpc.com";
+      const providerUrl = "https://ethereum-rpc.publicnode.com";
       const multicall = new Multicall({
         ethersProvider: new ethers.providers.JsonRpcProvider(providerUrl),
         tryAggregate: true,

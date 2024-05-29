@@ -17,7 +17,7 @@ const useDecorateGaugesWithVotes = (stakingGaugeData: BalancerStakingGauges[]): 
         if (gaugeData && gaugeData.length > 0) {
             //get gauge votes from voter contract
             const multicall = new Multicall({
-                ethersProvider: new ethers.providers.JsonRpcProvider('https://eth.llamarpc.com'),
+                ethersProvider: new ethers.providers.JsonRpcProvider('https://ethereum-rpc.publicnode.com'),
                 tryAggregate: true
             });
 
