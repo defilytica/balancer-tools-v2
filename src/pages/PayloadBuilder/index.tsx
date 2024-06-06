@@ -18,7 +18,8 @@ import {
     generateEnableGaugePayload,
     generateHumanReadableForEnableGauge, generateHumanReadableTokenTransfer,
     generateKillGaugePayload,
-    generateTokenPaymentPayload, PaymentInput
+    generateTokenPaymentPayload, PaymentInput, 
+    generateCCTPBridgePayload, CCTPBridgeInput, generateHumanReadableCCTPBridge
 } from "./helpers";
 import ReactJson from "react-json-view";
 import ListItemText from "@mui/material/ListItemText";
@@ -38,6 +39,7 @@ function PayloadBuilder() {
     const [destinationAddress, setDestinationAddress] = useState('');
     const [generatedPayload, setGeneratedPayload] = useState<null | any>(null);
     const [humanReadableText, setHumanReadableText] = useState<string | null>(null);
+    const [inputs, setInputs] = useState<CCTPBridgeInput[]>([{ value: 0, destinationDomain: "3", mintRecipient: '' }]);
 
     const [to, setTo] = useState<string>('');
     const [value, setValue] = useState<number | string>('');
@@ -53,6 +55,15 @@ function PayloadBuilder() {
         { label: 'Avalanche', value: 'Avalanche' },
         { label: 'Base', value: 'Base' },
 
+    ];
+
+    const DOMAIN_OPTIONS = [
+        { label: 'Ethereum', value: '0' },
+        { label: 'Avalanche', value: '1' },
+        { label: 'Optimism', value: '2' },
+        { label: 'Arbitrum', value: '3' },
+        { label: 'Base', value: '6' },
+        { label: 'Polygon PoS', value: '7' }
     ];
 
     const handleAddPayment = () => {
@@ -80,6 +91,22 @@ function PayloadBuilder() {
         }).join('\n');
     };
 
+    const handleInputChange = (index: number, field: string, value: string | number) => {
+        const updatedInputs = [...inputs];
+        (updatedInputs[index] as any)[field] = value;
+        setInputs(updatedInputs);
+    };
+
+    const addInput = () => {
+        setInputs([...inputs, { value: 0, destinationDomain: '0', mintRecipient: '' }]);
+    };
+
+    const handleRemoveInput = (index: number) => {
+        const updatedInputs = [...inputs];
+        updatedInputs.splice(index, 1);
+        setInputs(updatedInputs);
+    };
+
     const handleGenerateClick = () => {
         let payload;
         let text;
@@ -95,9 +122,13 @@ function PayloadBuilder() {
                 break;
             case 'tokenPayment':
                 payload = generateTokenPaymentPayload(payments)
-                text =  payments.map(payment => {
-                return generateHumanReadableTokenTransfer(payment);
-            }).join('\n');
+                text = payments.map(payment => {
+                    return generateHumanReadableTokenTransfer(payment);
+                }).join('\n');
+                break;
+            case 'CCTPBridge':
+                payload = generateCCTPBridgePayload(inputs);
+                text = generateHumanReadableCCTPBridge(inputs); // Call generateHumanReadableCCTPBridge with inputs
                 break;
             default:
                 return;
@@ -151,6 +182,7 @@ function PayloadBuilder() {
                         <MenuItem value="enable">Create Enable Gauge Payload</MenuItem>
                         <MenuItem value="kill">Create Kill Gauge Payload</MenuItem>
                         <MenuItem value="tokenPayment">Token Payment</MenuItem>
+                        <MenuItem value="CCTPBridge">CCTP Bridge</MenuItem>
                     </Select>
                 </FormControl>
                 <div style={{ marginBottom: '20px' }}>
@@ -268,6 +300,66 @@ function PayloadBuilder() {
                     </>
                 )}
 
+{option === 'CCTPBridge' && (
+                    <>
+                        {inputs.map((input, index) => (
+                            <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                                <FormControl variant="outlined" style={{ marginRight: '10px', width: '200px' }}>
+                                    <InputLabel>Token</InputLabel>
+                                    <Select
+                                        value="USDC"
+                                        label="Token"
+                                        disabled
+                                    >
+                                        <MenuItem value="USDC">USDC</MenuItem>
+                                    </Select>
+                                </FormControl>
+
+                                <TextField
+                                    label={`Amount #${index + 1}`}
+                                    variant="outlined"
+                                    value={input.value}
+                                    onChange={e => handleInputChange(index, 'value', Number(e.target.value))}
+                                    style={{ marginRight: '10px' }}
+                                />
+
+                                <FormControl variant="outlined" style={{ marginRight: '10px', width: '200px' }}>
+                                    <InputLabel>Destination Domain</InputLabel>
+                                    <Select
+                                        value={input.destinationDomain}
+                                        onChange={e => handleInputChange(index, 'destinationDomain', e.target.value)}
+                                        label="Destination Domain"
+                                    >
+                                        {DOMAIN_OPTIONS.map(option => (
+                                            <MenuItem key={option.value} value={option.value}>
+                                                {option.label}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+
+                                <TextField
+                                    label={`Mint Recipient #${index + 1}`}
+                                    variant="outlined"
+                                    value={input.mintRecipient}
+                                    onChange={e => handleInputChange(index, 'mintRecipient', e.target.value)}
+                                    style={{ marginRight: '10px', width: '420px' }} // Adjusted width here
+                                />
+
+                                <IconButton onClick={() => handleRemoveInput(index)}>
+                                    <RemoveCircleOutline />
+                                </IconButton>
+                            </div>
+                        ))}
+                        <Button
+                            variant="outlined"
+                            onClick={addInput}
+                            startIcon={<AddCircleOutline />}
+                        >
+                            Add Input
+                        </Button>
+                    </>
+                )}
 
                 <div style={{ marginTop: '20px' }}>
                     <Button variant="outlined" style={{ marginBottom: '10px' }} onClick={handleGenerateClick}>Generate Payload</Button>
@@ -276,17 +368,16 @@ function PayloadBuilder() {
 
                 {generatedPayload && (
                     <div style={{ marginTop: '20px' }}>
-                <Typography variant="h6" style={{ marginBottom: '10px' }}>Generated JSON Payload:</Typography>
-                <ReactJson theme={'solarized'} src={JSON.parse(generatedPayload)} />
-                 </div>
+                        <Typography variant="h6" style={{ marginBottom: '10px' }}>Generated JSON Payload:</Typography>
+                        <ReactJson theme={'solarized'} src={JSON.parse(generatedPayload)} />
+                    </div>
                 )}
 
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <Button variant="outlined" startIcon={<FileDownloadOutlined />} style={{ marginRight: '10px' }} onClick={handleDownloadClick}>Download Payload</Button>
-                    <Button variant="outlined" startIcon={<FileCopyOutlined />} onClick={() => copyJsonToClipboard()}>
+                    <Button variant="outlined" startIcon={<FileCopyOutlined />} onClick={copyJsonToClipboard}>
                         Copy to Clipboard
                     </Button>
-
                 </div>
 
                 {humanReadableText && (
