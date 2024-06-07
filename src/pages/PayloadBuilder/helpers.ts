@@ -140,4 +140,83 @@ export function generateHumanReadableTokenTransfer(payment: PaymentInput) {
     return `The Balancer DAO multisig 0x10A19e7eE7d7F8a52822f6817de8ea18204F2e4f will interact with ${payment.token} ${tokenAddress} by writing transfer passing the ${payment.to} as recipient and amount as ${payment.value} ${payment.token} ${value}.`;
 }
 
+export interface CCTPBridgeInput {
+    value: number;
+    destinationDomain: string;
+    mintRecipient: string;
+}
 
+export function generateCCTPBridgePayload(inputs: CCTPBridgeInput[]) {
+    const burnToken = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
+    const USDCMessenger = "0xBd3fa81B58Ba92a82136038B25aDec7066af3155";
+
+    const transactions = inputs.map(input => {
+        return [
+            {
+                to: burnToken,
+                value: "0",
+                data: null,
+                contractMethod: {
+                    inputs: [
+                        { name: "spender", type: "address", internalType: "address" },
+                        { name: "value", type: "uint256", internalType: "uint256" }
+                    ],
+                    name: "approve",
+                    payable: false
+                },
+                contractInputsValues: {
+                    spender: USDCMessenger,
+                    value: (input.value * (10 ** 6)).toString() // Assuming the token has 6 decimals
+                }
+            },
+            {
+                to: USDCMessenger,
+                value: "0",
+                data: null,
+                contractMethod: {
+                    inputs: [
+                        { name: "amount", type: "uint256", internalType: "uint256" },
+                        { name: "destinationDomain", type: "uint32", internalType: "uint32" },
+                        { name: "mintRecipient", type: "bytes32", internalType: "bytes32" },
+                        { name: "burnToken", type: "address", internalType: "address" }
+                    ],
+                    name: "depositForBurn",
+                    payable: false
+                },
+                contractInputsValues: {
+                    amount: (input.value * (10 ** 6)).toString(), // Assuming the token has 6 decimals
+                    destinationDomain: input.destinationDomain.toString(),
+                    mintRecipient: `0x000000000000000000000000${input.mintRecipient.slice(2)}`,
+                    burnToken: burnToken
+                }
+            }
+        ];
+    }).flat();
+
+    return {
+        version: "1.0",
+        chainId: "1",
+        createdAt: Date.now(),
+        meta: {
+            name: "Transactions Batch",
+            description: "",
+            txBuilderVersion: "1.16.5",
+            createdFromSafeAddress: "0xc38c5f97B34E175FFd35407fc91a937300E33860",
+            createdFromOwnerAddress: "",
+            checksum: "0x301f5a7132d04fe310a2eaaac8a7303393ed01c2ca5fbbca2c2a09b1de2755f4"
+        },
+        transactions
+    };
+}
+
+export function generateHumanReadableCCTPBridge(inputs: CCTPBridgeInput[]): string {
+    const burnToken = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
+    const USDCMessenger = "0xBd3fa81B58Ba92a82136038B25aDec7066af3155";
+    
+    const readableInputs = inputs.map(input => {
+        const value = (input.value * (10 ** 6)).toString(); // Assuming the token has 6 decimals
+        return `Approve ${USDCMessenger} to spend ${value} USDC\nthen calling depositForBurn passsing ${value} for the amount of USDC with destination domain ${input.destinationDomain} and mint recipient ${input.mintRecipient}. Destination domains can be confirmed here: https://developers.circle.com/stablecoins/docs/supported-domains`;
+    }).join("\n\n");
+
+    return `The Maxi Multisig 0xc38c5f97B34E175FFd35407fc91a937300E33860 will interact with the CCTP Bridge as follows:\n${readableInputs}`;
+}
