@@ -66,6 +66,15 @@ function PayloadBuilder() {
         { label: 'Polygon PoS', value: '7' }
     ];
 
+    const addressMapping: { [key: string]: string } = {
+        '0': '0xc38c5f97B34E175FFd35407fc91a937300E33860', // Ethereum
+        '1': '0x326A7778DB9B741Cb2acA0DE07b9402C7685dAc6', // Avalanche
+        '2': '0x09Df1626110803C7b3b07085Ef1E053494155089', // Optimism
+        '3': '0xc38c5f97B34E175FFd35407fc91a937300E33860', // Arbitrum
+        '6': '0x65226673F3D202E0f897C862590d7e1A992B2048', // Base
+        '7': '0xc38c5f97B34E175FFd35407fc91a937300E33860',  // Polygon
+    };
+
     const handleAddPayment = () => {
         if (typeof value === 'number') {
             setPayments([...payments, { to, value, token }]);
@@ -94,6 +103,9 @@ function PayloadBuilder() {
     const handleInputChange = (index: number, field: string, value: string | number) => {
         const updatedInputs = [...inputs];
         (updatedInputs[index] as any)[field] = value;
+        if (field === 'destinationDomain') {
+            (updatedInputs[index] as any).mintRecipient = addressMapping[value as string] || '';
+        }
         setInputs(updatedInputs);
     };
 
