@@ -12,7 +12,7 @@ export const healthClient = new ApolloClient({
 });
 
 export const blockClient = new ApolloClient({
-    uri: process.env.REACT_APP_BLOCKS_SUBGRAPH_URL,
+    uri: EthereumNetworkInfo.blockClientUri,
     cache: new InMemoryCache(),
     queryDeduplication: true,
     defaultOptions: {
@@ -111,7 +111,7 @@ export const arbitrumClient = new ApolloClient({
   })
 
   export const arbitrumBlockClient = new ApolloClient({
-    uri: 'https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-one-blocks',
+    uri: ArbitrumNetworkInfo.blockClientUri,
     cache: new InMemoryCache(),
     queryDeduplication: true,
     defaultOptions: {
@@ -154,7 +154,7 @@ export const arbitrumClient = new ApolloClient({
   })
 
   export const polygonBlockClient = new ApolloClient({
-    uri: 'https://api.thegraph.com/subgraphs/name/ianlapham/polygon-blocks',
+    uri: PolygonNetworkInfo.blockClientUri,
     cache: new InMemoryCache(),
     queryDeduplication: true,
     defaultOptions: {
@@ -240,7 +240,7 @@ export const polygonZKEVMBlockClient = new ApolloClient({
   })
 
   export const gnosisBlockClient = new ApolloClient({
-    uri: 'https://api.thegraph.com/subgraphs/name/x0swapsubgraph/xdai-blocks',
+    uri: GnosisNetworkInfo.blockClientUri,
     cache: new InMemoryCache(),
     queryDeduplication: true,
     defaultOptions: {
@@ -283,7 +283,7 @@ export const optimismClient = new ApolloClient({
 })
 
 export const optimismBlockClient = new ApolloClient({
-    uri: 'https://api.thegraph.com/subgraphs/name/beethovenxfi/optimism-blocks',
+    uri: OptimismNetworkInfo.blockClientUri,
     cache: new InMemoryCache(),
     queryDeduplication: true,
     defaultOptions: {
@@ -298,7 +298,7 @@ export const optimismBlockClient = new ApolloClient({
 })
 
 export const avalancheBlockClient = new ApolloClient({
-    uri: 'https://api.thegraph.com/subgraphs/name/iliaazhel/avalanche-blocks',
+    uri: AvalancheNetworkInfo.blockClientUri,
     cache: new InMemoryCache(),
     queryDeduplication: true,
     defaultOptions: {
