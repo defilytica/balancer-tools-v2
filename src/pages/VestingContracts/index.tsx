@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { ethers } from 'ethers';
+import React, {useEffect, useState} from 'react';
+import {ethers} from 'ethers';
 import {
-    Container,
+    Box, Card,
     FormControl,
-    InputLabel,
+    Grid,
+    InputLabel, Link,
     MenuItem,
+    Paper,
     Select,
     SelectChangeEvent,
-    Typography,
-    Box,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
     TableRow,
-    Paper,
+    Typography,
 } from '@mui/material';
 import ABI from '../../constants/abis/maxis-vester.json'
 import AuraCompounderABI from '../../constants/abis/auraCompounder.json'
@@ -24,6 +24,10 @@ import useGetSimpleTokenPrices from "../../data/balancer-api-v3/useGetSimpleToke
 import CoinCard from "../../components/Cards/CoinCard";
 import CircularProgress from "@mui/material/CircularProgress";
 import {ContractCallContext, ContractCallResults, Multicall} from "ethereum-multicall";
+import {getEtherscanLink} from "../../utils";
+import {ArbitrumNetworkInfo} from "../../constants/networks";
+import LaunchIcon from "@mui/icons-material/Launch";
+import VestingChart from "../../components/Echarts/VestingPositions/VestingPosition";
 
 const CONTRACTS_URL = 'https://raw.githubusercontent.com/BalancerMaxis/bal_addresses/main/extras/arbitrum.json';
 
@@ -40,7 +44,8 @@ export default function VestingContracts() {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const auraBAL = '0x616e8bfa43f920657b3497dbf40d6b1a02d4608d'.toLowerCase();
-    const auraBalPriceData = useGetSimpleTokenPrices([auraBAL], '1');
+    const AURA = '0xc0c293ce456ff0ed870add98a0828dd4d2903dbf'.toLowerCase()
+    const priceData = useGetSimpleTokenPrices([auraBAL, AURA], '1');
 
     useEffect(() => {
         const fetchContracts = async () => {
@@ -66,14 +71,14 @@ export default function VestingContracts() {
 
     const fetchNonce = async (contractAddress: string) => {
         try {
-            const providerUrl = 'https://1rpc.io/arb';
+            const providerUrl = 'https://arbitrum.rpc.subquery.network/public';
             const ethersProvider = new ethers.providers.JsonRpcProvider(providerUrl);
             const contract = new ethers.Contract(contractAddress, ABI, ethersProvider);
             const nonce = await contract.getVestingNonce();
             setNonce(nonce.toNumber());
         } catch (err) {
             console.error(err);
-            setError('Failed to fetch nonce. Ensure the contract address and ABI are correct.');
+            setError('Failed to fetch nonces. You have been rate-limited. Retry later.');
             setIsLoading(false);
         }
     };
@@ -86,9 +91,9 @@ export default function VestingContracts() {
 
     const fetchVestingPositionsAndAssets = async (contractAddress: string, nonceNumber: number) => {
         try {
-            const providerUrl = 'https://1rpc.io/arb';
+            const providerUrl = 'https://arbitrum-one.publicnode.com';
             const ethersProvider = new ethers.providers.JsonRpcProvider(providerUrl);
-            const multicall = new Multicall({ ethersProvider, tryAggregate: true });
+            const multicall = new Multicall({ethersProvider, tryAggregate: true});
 
             const auraContractAddress = '0x4ea9317d90b61fc28c418c247ad0ca8939bbb0e9';
             const auraContract = new ethers.Contract(auraContractAddress, AuraCompounderABI, ethersProvider);
@@ -99,7 +104,7 @@ export default function VestingContracts() {
                     reference: `vestingPosition-${i}`,
                     contractAddress: contractAddress,
                     abi: ABI,
-                    calls: [{ reference: `getVestingPosition`, methodName: 'getVestingPosition', methodParameters: [i] }],
+                    calls: [{reference: `getVestingPosition`, methodName: 'getVestingPosition', methodParameters: [i]}],
                 });
             }
 
@@ -120,7 +125,11 @@ export default function VestingContracts() {
                     reference: `convertToAssets-${i}`,
                     contractAddress: auraContractAddress,
                     abi: AuraCompounderABI,
-                    calls: [{ reference: `convertToAssets`, methodName: 'convertToAssets', methodParameters: [positionResult[0]] }],
+                    calls: [{
+                        reference: `convertToAssets`,
+                        methodName: 'convertToAssets',
+                        methodParameters: [positionResult[0]]
+                    }],
                 });
             }
 
@@ -143,77 +152,114 @@ export default function VestingContracts() {
     };
 
     return (
-        <Container>
-            <Typography variant="h4" component="h1" gutterBottom>
-                Vesting Contract Viewer
-            </Typography>
-            {error && (
-                <Box mt={2} mb={2}>
-                    <Typography color="error">{error}</Typography>
-                </Box>
-            )}
-            <Box m={{ xs: 0, sm: 1 }}>
-                {auraBalPriceData && auraBalPriceData.data[auraBAL] && auraBalPriceData.data[auraBAL].price ?
-                    <CoinCard
-                        tokenAddress={auraBAL}
-                        tokenName='auraBAL'
-                        tokenPrice={auraBalPriceData.data[auraBAL].price}
-                        tokenPriceChange={auraBalPriceData.data[auraBAL].priceChangePercentage24h}
-                    />
-                    : <CircularProgress />}
-            </Box>
-            <FormControl fullWidth>
-                <InputLabel id="contract-select-label">Select Contract</InputLabel>
-                <Select
-                    labelId="contract-select-label"
-                    value={selectedContract}
-                    label="Select Contract"
-                    onChange={handleChange}
-                >
-                    {Object.entries(contracts)
-                        .filter(([name]) => name !== 'factory')
-                        .map(([name, address]) => (
-                            <MenuItem key={address} value={address}>
-                                {name}
-                            </MenuItem>
-                        ))}
-                </Select>
-            </FormControl>
-            <Box mt={4}>
-                {isLoading ? (
-                    <CircularProgress />
-                ) : (
-                    vestingPositions.length > 0 && (
-                        <>
-                            <Typography variant="h6">Vesting Positions</Typography>
-                            <TableContainer component={Paper}>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Amount (stkAuraBAL)</TableCell>
-                                            <TableCell>Amount (auraBAL)</TableCell>
-                                            <TableCell>Worth ($)</TableCell>
-                                            <TableCell>Unlock Timestamp</TableCell>
-                                            <TableCell>Claimed?</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {vestingPositions.map((position, index) => (
-                                            <TableRow key={index}>
-                                                <TableCell>{ethers.utils.formatUnits(position.amount, 18)}</TableCell>
-                                                <TableCell>{formatAmount(Number(ethers.utils.formatUnits(assetPositions[index], 18)), 2)}</TableCell>
-                                                <TableCell>{formatDollarAmount(Number(ethers.utils.formatUnits(assetPositions[index], 18)) * auraBalPriceData.data[auraBAL].price, 2)}</TableCell>
-                                                <TableCell>{new Date(position.vestingEnds * 1000).toLocaleString()}</TableCell>
-                                                <TableCell>{position.claimed ? 'Yes' : 'No'}</TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        </>
-                    )
-                )}
-            </Box>
-        </Container>
+        <Box sx={{flexGrow: 2}}>
+            <Grid mt={2} container sx={{justifyContent: "center"}}>
+                <Grid mt={2} item xs={10}>
+                    <Box>
+                        <Typography variant="h5">Vesting Contract Viewer</Typography>
+                    </Box>
+                    {error && (
+                        <Box mt={2} mb={2}>
+                            <Typography color="error">{error}</Typography>
+                        </Box>
+                    )}
+                </Grid>
+                <Grid item mb={2} xs={10}>
+                    <Grid
+                        container
+                        columns={{xs: 4, sm: 8, md: 12}}
+                        sx={{justifyContent: {md: 'flex-start', xs: 'center'}, alignContent: 'center'}}
+                    >
+                    <Box m={{xs: 0, sm: 1}}>
+                        {priceData && priceData.data[auraBAL] && priceData.data[auraBAL].price ?
+                            <CoinCard
+                                tokenAddress={auraBAL}
+                                tokenName='auraBAL'
+                                tokenPrice={priceData.data[auraBAL].price}
+                                tokenPriceChange={priceData.data[auraBAL].priceChangePercentage24h}
+                            />
+                            : <CircularProgress/>}
+                    </Box>
+                    <Box m={{xs: 0, sm: 1}}>
+                        {priceData && priceData.data[AURA] && priceData.data[AURA].price ?
+                            <CoinCard
+                                tokenAddress={AURA}
+                                tokenName='AURA'
+                                tokenPrice={priceData.data[AURA].price}
+                                tokenPriceChange={priceData.data[AURA].priceChangePercentage24h}
+                            />
+                            : <CircularProgress/>}
+                    </Box>
+                    </Grid>
+                </Grid>
+                <Grid item xs={10}>
+                    <Box m={{xs: 0, sm: 1}}>
+                    <FormControl style={{minWidth: 200}}>
+                        <InputLabel id="contract-select-label">Select Vestor</InputLabel>
+                        <Select
+                            labelId="contract-select-label"
+                            value={selectedContract}
+                            label="Select Vester"
+                            onChange={handleChange}
+                        >
+                            {Object.entries(contracts)
+                                .filter(([name]) => name !== 'factory')
+                                .map(([name, address]) => (
+                                    <MenuItem key={address} value={address}>
+                                        {name}
+                                    </MenuItem>
+                                ))}
+                        </Select>
+                    </FormControl>
+                    </Box>
+                </Grid>
+                <Grid item mt={1} xs={10}>
+                    <Box mt={2} mb={6}>
+                        {isLoading ? (
+                            <CircularProgress/>
+                        ) : (
+                            vestingPositions.length > 0 && (
+                                <>
+                                    <Typography variant="h6">Vesting Positions Overview <Link target="_blank" href={getEtherscanLink(selectedContract, 'address', ArbitrumNetworkInfo)}><LaunchIcon sx={{height: '20px'}}/></Link>
+                                    </Typography>
+                                    <TableContainer component={Paper}>
+                                        <Table>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell>Amount (stkAuraBAL)</TableCell>
+                                                    <TableCell>Amount (auraBAL)</TableCell>
+                                                    <TableCell>Worth ($)</TableCell>
+                                                    <TableCell>Unlock Timestamp</TableCell>
+                                                    <TableCell>Claimed?</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {vestingPositions.map((position, index) => (
+                                                    <TableRow key={index}>
+                                                        <TableCell>{ethers.utils.formatUnits(position.amount, 18)}</TableCell>
+                                                        <TableCell>{formatAmount(Number(ethers.utils.formatUnits(assetPositions[index], 18)), 2)}</TableCell>
+                                                        <TableCell>{formatDollarAmount(Number(ethers.utils.formatUnits(assetPositions[index], 18)) * priceData.data[auraBAL].price, 2)}</TableCell>
+                                                        <TableCell>{new Date(position.vestingEnds * 1000).toLocaleString()}</TableCell>
+                                                        <TableCell>{position.claimed ? 'Yes' : 'No'}</TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                    <Box mt={1}>
+                                        <Typography variant="h6">Vesting Positions Over Time </Typography>
+                                        <Card>
+                                            <VestingChart vestingPositions={vestingPositions} />
+                                        </Card>
+                                    </Box>
+                                </>
+                            )
+                        )}
+                    </Box>
+                </Grid>
+
+            </Grid>
+            <Grid item mb={2}></Grid>
+        </Box>
     );
 }
