@@ -34,6 +34,7 @@ import GovernanceMap from '../../pages/GovernanceMap';
 import ContractDetailedView from "../../pages/ContractDetailedView";
 import SmartContractPermissions from "../../pages/SmartContractPermissions/SmartContractPermissions";
 import PayloadBuilder from "../../pages/PayloadBuilder";
+import VestingContracts from "../../pages/VestingContracts";
 
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
@@ -281,6 +282,8 @@ function Dashboard() {
                                     <Route path={'balancer/balancerContracts/:id'} element={<ContractDetailedView />}/>
                                     <Route path={'balancer/payloadBuilder'}
                                            element={<PayloadBuilder/>}/>
+                                    <Route path={networkPrefix(activeNetwork) + 'balancer/vesters'}
+                                           element={<VestingContracts/>}/>
 
                                     {/* Router v6: no query searches possible anymore. Provide all possible paths */}
                                 </Routes>
