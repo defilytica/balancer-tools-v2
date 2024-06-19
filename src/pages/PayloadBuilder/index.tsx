@@ -1,28 +1,31 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
-    Container,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    TextField,
     Button,
-    Paper,
-    Typography,
-    IconButton,
+    Container,
     Divider,
-    List, ListItem, ListItemSecondaryAction, TextareaAutosize, Grid
+    FormControl,
+    Grid,
+    IconButton,
+    InputLabel,
+    MenuItem,
+    Paper,
+    Select,
+    TextField,
+    Typography
 } from '@mui/material';
-import { FileDownloadOutlined, FileCopyOutlined, AddCircleOutline, RemoveCircleOutline } from '@mui/icons-material';
+import {AddCircleOutline, FileCopyOutlined, FileDownloadOutlined, RemoveCircleOutline} from '@mui/icons-material';
 import {
+    CCTPBridgeInput,
+    generateCCTPBridgePayload,
     generateEnableGaugePayload,
-    generateHumanReadableForEnableGauge, generateHumanReadableTokenTransfer,
+    generateHumanReadableCCTPBridge,
+    generateHumanReadableForEnableGauge,
+    generateHumanReadableTokenTransfer,
     generateKillGaugePayload,
-    generateTokenPaymentPayload, PaymentInput, 
-    generateCCTPBridgePayload, CCTPBridgeInput, generateHumanReadableCCTPBridge
+    generateTokenPaymentPayload,
+    PaymentInput
 } from "./helpers";
 import ReactJson from "react-json-view";
-import ListItemText from "@mui/material/ListItemText";
 import Box from "@mui/material/Box";
 
 function DeleteIcon() {
@@ -33,13 +36,13 @@ function PayloadBuilder() {
     const [option, setOption] = useState('');
     const [gaugeID, setGaugeID] = useState('');
     const [network, setNetwork] = useState('Ethereum');
-    const [gauges, setGauges] = useState<{ id: string; network: string }[]>([{ id: '', network: 'Ethereum' }]);
+    const [gauges, setGauges] = useState<{ id: string; network: string }[]>([{id: '', network: 'Ethereum'}]);
     const [usdcAmount, setUsdcAmount] = useState('');
     const [balAmount, setBalAmount] = useState('');
     const [destinationAddress, setDestinationAddress] = useState('');
     const [generatedPayload, setGeneratedPayload] = useState<null | any>(null);
     const [humanReadableText, setHumanReadableText] = useState<string | null>(null);
-    const [inputs, setInputs] = useState<CCTPBridgeInput[]>([{ value: 0, destinationDomain: "3", mintRecipient: '' }]);
+    const [inputs, setInputs] = useState<CCTPBridgeInput[]>([{value: 0, destinationDomain: "3", mintRecipient: ''}]);
 
     const [to, setTo] = useState<string>('');
     const [value, setValue] = useState<number | string>('');
@@ -47,23 +50,24 @@ function PayloadBuilder() {
     const [payments, setPayments] = useState<PaymentInput[]>([]);
 
     const NETWORK_OPTIONS = [
-        { label: 'Ethereum', value: 'Ethereum' },
-        { label: 'Arbitrum', value: 'Arbitrum' },
-        { label: 'Polygon', value: 'Polygon' },
-        { label: 'Polygon ZKEVM', value: 'PolygonZkEvm' },
-        { label: 'Optimism', value: 'Optimism' },
-        { label: 'Avalanche', value: 'Avalanche' },
-        { label: 'Base', value: 'Base' },
+        {label: 'Ethereum', value: 'Ethereum'},
+        {label: 'Arbitrum', value: 'Arbitrum'},
+        {label: 'Polygon', value: 'Polygon'},
+        {label: 'Polygon ZKEVM', value: 'PolygonZkEvm'},
+        {label: 'Optimism', value: 'Optimism'},
+        {label: 'Avalanche', value: 'Avalanche'},
+        {label: 'Base', value: 'Base'},
+        {label: 'Base', value: 'Gnosis'},
 
     ];
 
     const DOMAIN_OPTIONS = [
-        { label: 'Ethereum', value: '0' },
-        { label: 'Avalanche', value: '1' },
-        { label: 'Optimism', value: '2' },
-        { label: 'Arbitrum', value: '3' },
-        { label: 'Base', value: '6' },
-        { label: 'Polygon PoS', value: '7' }
+        {label: 'Ethereum', value: '0'},
+        {label: 'Avalanche', value: '1'},
+        {label: 'Optimism', value: '2'},
+        {label: 'Arbitrum', value: '3'},
+        {label: 'Base', value: '6'},
+        {label: 'Polygon PoS', value: '7'}
     ];
 
     const addressMapping: { [key: string]: string } = {
@@ -77,7 +81,7 @@ function PayloadBuilder() {
 
     const handleAddPayment = () => {
         if (typeof value === 'number') {
-            setPayments([...payments, { to, value, token }]);
+            setPayments([...payments, {to, value, token}]);
             setTo('');
             setValue('');
             setToken('USDC');
@@ -110,7 +114,7 @@ function PayloadBuilder() {
     };
 
     const addInput = () => {
-        setInputs([...inputs, { value: 0, destinationDomain: '0', mintRecipient: '' }]);
+        setInputs([...inputs, {value: 0, destinationDomain: '0', mintRecipient: ''}]);
     };
 
     const handleRemoveInput = (index: number) => {
@@ -125,11 +129,11 @@ function PayloadBuilder() {
 
         switch (option) {
             case 'enable':
-                payload = generateEnableGaugePayload(gauges.map(g => ({ gauge: g.id, gaugeType: g.network })));
-                text = generateHumanReadableForEnableGauge(gauges.map(g => ({ gauge: g.id, gaugeType: g.network })));
+                payload = generateEnableGaugePayload(gauges.map(g => ({gauge: g.id, gaugeType: g.network})));
+                text = generateHumanReadableForEnableGauge(gauges.map(g => ({gauge: g.id, gaugeType: g.network})));
                 break;
             case 'kill':
-                payload = generateKillGaugePayload(gauges.map(g => ({ target: g.id })));
+                payload = generateKillGaugePayload(gauges.map(g => ({target: g.id})));
                 text = '';  // As you've not provided a generateHumanReadableForKillGauge function.
                 break;
             case 'tokenPayment':
@@ -152,7 +156,7 @@ function PayloadBuilder() {
 
     const handleDownloadClick = () => {
         const payloadString = JSON.stringify(JSON.parse(generatedPayload), null, 2);
-        const blob = new Blob([payloadString], { type: "application/json" });
+        const blob = new Blob([payloadString], {type: "application/json"});
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = "BIP-XXX.json";
@@ -180,10 +184,10 @@ function PayloadBuilder() {
 
     return (
         <Container>
-            <Typography variant="h5" style={{ marginBottom: '10px' }}>Balancer Maxi Payload Generator</Typography>
-            <Paper style={{ padding: '20px', marginTop: '20px' }}>
+            <Typography variant="h5" style={{marginBottom: '10px'}}>Balancer Maxi Payload Generator</Typography>
+            <Paper style={{padding: '20px', marginTop: '20px'}}>
                 {/* Option selector */}
-                <FormControl fullWidth variant="outlined" style={{ marginBottom: '30px' }}>
+                <FormControl fullWidth variant="outlined" style={{marginBottom: '30px'}}>
                     <InputLabel id="option-label">Option</InputLabel>
                     <Select
                         labelId="option-label"
@@ -197,14 +201,14 @@ function PayloadBuilder() {
                         <MenuItem value="CCTPBridge">CCTP Bridge</MenuItem>
                     </Select>
                 </FormControl>
-                <div style={{ marginBottom: '20px' }}>
-                <Divider />
+                <div style={{marginBottom: '20px'}}>
+                    <Divider/>
                 </div>
 
                 {(option === 'enable' || option === 'kill') && (
                     <>
                         {gauges.map((gauge, index) => (
-                            <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                            <div key={index} style={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
                                 <TextField
                                     fullWidth
                                     label={`Gauge ID #${index + 1}`}
@@ -215,10 +219,10 @@ function PayloadBuilder() {
                                         updatedGauges[index].id = e.target.value;
                                         setGauges(updatedGauges);
                                     }}
-                                    style={{ marginRight: '10px' }}
+                                    style={{marginRight: '10px'}}
                                 />
 
-                                <FormControl variant="outlined" style={{ marginRight: '10px', width: '200px' }}>
+                                <FormControl variant="outlined" style={{marginRight: '10px', width: '200px'}}>
                                     <InputLabel id={`network-label-${index}`}>Network</InputLabel>
                                     <Select
                                         labelId={`network-label-${index}`}
@@ -243,20 +247,21 @@ function PayloadBuilder() {
                                     updatedGauges.splice(index, 1);
                                     setGauges(updatedGauges);
                                 }}>
-                                    <RemoveCircleOutline />
+                                    <RemoveCircleOutline/>
                                 </IconButton>
                             </div>
                         ))}
-                        <Button variant="outlined" onClick={() => setGauges([...gauges, { id: '', network: 'Ethereum' }])} startIcon={<AddCircleOutline />}>
+                        <Button variant="outlined" onClick={() => setGauges([...gauges, {id: '', network: 'Ethereum'}])}
+                                startIcon={<AddCircleOutline/>}>
                             Add Gauge ID
                         </Button>
                     </>
                 )}
 
-                {option === 'tokenPayment'  && (
+                {option === 'tokenPayment' && (
                     <>
                         {payments.map((payment, index) => (
-                            <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                            <div key={index} style={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
                                 <TextField
                                     fullWidth
                                     label={`Recipient Address #${index + 1}`}
@@ -267,7 +272,7 @@ function PayloadBuilder() {
                                         updatedPayments[index].to = e.target.value;
                                         setPayments(updatedPayments);
                                     }}
-                                    style={{ marginRight: '10px' }}
+                                    style={{marginRight: '10px'}}
                                 />
 
                                 <TextField
@@ -279,10 +284,10 @@ function PayloadBuilder() {
                                         updatedPayments[index].value = Number(e.target.value);
                                         setPayments(updatedPayments);
                                     }}
-                                    style={{ marginRight: '10px' }}
+                                    style={{marginRight: '10px'}}
                                 />
 
-                                <FormControl variant="outlined" style={{ marginRight: '10px', width: '120px' }}>
+                                <FormControl variant="outlined" style={{marginRight: '10px', width: '120px'}}>
                                     <InputLabel>Token</InputLabel>
                                     <Select
                                         value={payment.token}
@@ -298,25 +303,25 @@ function PayloadBuilder() {
                                 </FormControl>
 
                                 <IconButton onClick={() => handleRemovePayment(index)}>
-                                    <RemoveCircleOutline />
+                                    <RemoveCircleOutline/>
                                 </IconButton>
                             </div>
                         ))}
                         <Button
                             variant="outlined"
-                            onClick={() => setPayments([...payments, { to: '', value: 0, token: 'USDC' }])}
-                            startIcon={<AddCircleOutline />}
+                            onClick={() => setPayments([...payments, {to: '', value: 0, token: 'USDC'}])}
+                            startIcon={<AddCircleOutline/>}
                         >
                             Add Payment
                         </Button>
                     </>
                 )}
 
-{option === 'CCTPBridge' && (
+                {option === 'CCTPBridge' && (
                     <>
                         {inputs.map((input, index) => (
-                            <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                                <FormControl variant="outlined" style={{ marginRight: '10px', width: '200px' }}>
+                            <div key={index} style={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
+                                <FormControl variant="outlined" style={{marginRight: '10px', width: '200px'}}>
                                     <InputLabel>Token</InputLabel>
                                     <Select
                                         value="USDC"
@@ -332,10 +337,10 @@ function PayloadBuilder() {
                                     variant="outlined"
                                     value={input.value}
                                     onChange={e => handleInputChange(index, 'value', Number(e.target.value))}
-                                    style={{ marginRight: '10px' }}
+                                    style={{marginRight: '10px'}}
                                 />
 
-                                <FormControl variant="outlined" style={{ marginRight: '10px', width: '200px' }}>
+                                <FormControl variant="outlined" style={{marginRight: '10px', width: '200px'}}>
                                     <InputLabel>Destination Domain</InputLabel>
                                     <Select
                                         value={input.destinationDomain}
@@ -355,50 +360,53 @@ function PayloadBuilder() {
                                     variant="outlined"
                                     value={input.mintRecipient}
                                     onChange={e => handleInputChange(index, 'mintRecipient', e.target.value)}
-                                    style={{ marginRight: '10px', width: '420px' }} // Adjusted width here
+                                    style={{marginRight: '10px', width: '420px'}} // Adjusted width here
                                 />
 
                                 <IconButton onClick={() => handleRemoveInput(index)}>
-                                    <RemoveCircleOutline />
+                                    <RemoveCircleOutline/>
                                 </IconButton>
                             </div>
                         ))}
                         <Button
                             variant="outlined"
                             onClick={addInput}
-                            startIcon={<AddCircleOutline />}
+                            startIcon={<AddCircleOutline/>}
                         >
                             Add Input
                         </Button>
                     </>
                 )}
 
-                <div style={{ marginTop: '20px' }}>
-                    <Button variant="outlined" style={{ marginBottom: '10px' }} onClick={handleGenerateClick}>Generate Payload</Button>
+                <div style={{marginTop: '20px'}}>
+                    <Button variant="outlined" style={{marginBottom: '10px'}} onClick={handleGenerateClick}>Generate
+                        Payload</Button>
                 </div>
-                <Divider />
+                <Divider/>
 
                 {generatedPayload && (
-                    <div style={{ marginTop: '20px' }}>
-                        <Typography variant="h6" style={{ marginBottom: '10px' }}>Generated JSON Payload:</Typography>
-                        <ReactJson theme={'solarized'} src={JSON.parse(generatedPayload)} />
+                    <div style={{marginTop: '20px'}}>
+                        <Typography variant="h6" style={{marginBottom: '10px'}}>Generated JSON Payload:</Typography>
+                        <ReactJson theme={'solarized'} src={JSON.parse(generatedPayload)}/>
                     </div>
                 )}
 
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <Button variant="outlined" startIcon={<FileDownloadOutlined />} style={{ marginRight: '10px' }} onClick={handleDownloadClick}>Download Payload</Button>
-                    <Button variant="outlined" startIcon={<FileCopyOutlined />} onClick={copyJsonToClipboard}>
+                <div style={{display: 'flex', alignItems: 'center'}}>
+                    <Button variant="outlined" startIcon={<FileDownloadOutlined/>} style={{marginRight: '10px'}}
+                            onClick={handleDownloadClick}>Download Payload</Button>
+                    <Button variant="outlined" startIcon={<FileCopyOutlined/>} onClick={copyJsonToClipboard}>
                         Copy to Clipboard
                     </Button>
                 </div>
 
                 {humanReadableText && (
-                    <div style={{ marginTop: '20px' }}>
+                    <div style={{marginTop: '20px'}}>
                         <Typography variant="h5">Human-readable Text</Typography>
-                        <Paper style={{ padding: '20px', marginBottom: '20px' }}>
+                        <Paper style={{padding: '20px', marginBottom: '20px'}}>
                             <Typography>{humanReadableText}</Typography>
                         </Paper>
-                        <Button variant="contained" color="primary" onClick={() => copyTextToClipboard(humanReadableText)}>
+                        <Button variant="contained" color="primary"
+                                onClick={() => copyTextToClipboard(humanReadableText)}>
                             Copy to Clipboard
                         </Button>
                     </div>

@@ -87,7 +87,7 @@ export function generateTokenPaymentPayload(inputs: PaymentInput[]) {
     const transactions = inputs.map(input => {
         const tokenAddress = input.token === 'USDC' ? "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" : "0xba100000625a3754423978a60c9317c58a424e3d";
         const decimals = input.token === 'USDC' ? 6 : 18;
-        const value = input.value * (10 ** decimals);
+        const value = BigInt(input.value) * BigInt(10 ** decimals);
 
         return {
             to: tokenAddress,
@@ -212,7 +212,7 @@ export function generateCCTPBridgePayload(inputs: CCTPBridgeInput[]) {
 export function generateHumanReadableCCTPBridge(inputs: CCTPBridgeInput[]): string {
     const burnToken = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
     const USDCMessenger = "0xBd3fa81B58Ba92a82136038B25aDec7066af3155";
-    
+
     const readableInputs = inputs.map(input => {
         const value = (input.value * (10 ** 6)).toString(); // Assuming the token has 6 decimals
         return `Approve ${USDCMessenger} to spend ${value} USDC\nthen calling depositForBurn passsing ${value} for the amount of USDC with destination domain ${input.destinationDomain} and mint recipient ${input.mintRecipient}. Destination domains can be confirmed here: https://developers.circle.com/stablecoins/docs/supported-domains`;
