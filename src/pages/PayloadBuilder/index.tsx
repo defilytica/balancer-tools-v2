@@ -57,7 +57,7 @@ function PayloadBuilder() {
         {label: 'Optimism', value: 'Optimism'},
         {label: 'Avalanche', value: 'Avalanche'},
         {label: 'Base', value: 'Base'},
-        {label: 'Base', value: 'Gnosis'},
+        {label: 'Gnosis', value: 'Gnosis'},
 
     ];
 
