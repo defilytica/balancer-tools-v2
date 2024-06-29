@@ -227,6 +227,7 @@ export interface AddRewardInput {
     distributorAddress: string;
     safeAddress: string;
     authorizerAdaptorEntrypoint: string;
+    chainId: string;
 }
 
 export function generateAddRewardPayload(inputs: AddRewardInput[]) {
@@ -250,7 +251,7 @@ export function generateAddRewardPayload(inputs: AddRewardInput[]) {
 
     return {
         version: "1.0",
-        chainId: "42161",
+        chainId:  inputs.length > 0 ? inputs[0].chainId : "",
         createdAt: Date.now(),
         meta: {
             name: "Transactions Batch",

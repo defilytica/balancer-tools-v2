@@ -58,6 +58,7 @@ function PayloadBuilder() {
     const [rewardAdds, setRewardAdds] = useState<AddRewardInput[]>([]);
     const [authorizerAdaptorEntrypoint, setEntrypoint] = useState<string>('0xf5dECDB1f3d1ee384908Fbe16D2F0348AE43a9eA');
     const [safeAddress, setSafeAddress] = useState<string>('0xc38c5f97B34E175FFd35407fc91a937300E33860');
+    const [chainId, setChainId] = useState<string>('1');
 
     const NETWORK_OPTIONS = [
         {label: 'Ethereum', chainId: '1', maxiSafe:'0xc38c5f97B34E175FFd35407fc91a937300E33860', entrypoint:'0xf5dECDB1f3d1ee384908Fbe16D2F0348AE43a9eA'},
@@ -139,16 +140,18 @@ function PayloadBuilder() {
           setNetwork(selectedNetwork);
           setEntrypoint(selectedOption.entrypoint);
           setSafeAddress(selectedOption.maxiSafe);
+          setChainId(selectedOption.chainId)
       }
     };
     const handleRewardAdds = () => {
       if (typeof targetGauge === 'string') {
-        setRewardAdds([...rewardAdds, {targetGauge, rewardToken, distributorAddress, safeAddress, authorizerAdaptorEntrypoint}]);
+        setRewardAdds([...rewardAdds, {targetGauge, rewardToken, distributorAddress, safeAddress, authorizerAdaptorEntrypoint, chainId}]);
         setTargetGauge('');
         setRewardToken('');
         setDistributorAddress('');
         setSafeAddress('');
         setEntrypoint('');
+        setChainId('');
       }
     }
 
@@ -502,6 +505,7 @@ function PayloadBuilder() {
                   ))}
                 </Select>
               </FormControl>
+              <Grid container spacing={2}>
               <Grid item xs={12} md={4}>
                 <TextField
                   label="Target Gauge"
@@ -534,6 +538,7 @@ function PayloadBuilder() {
                 >
                   Add Reward
                 </Button>
+              </Grid>
               </Grid>
               {rewardAdds.map((reward, index) => (
             <Paper key={index} style={{ padding: "10px", marginTop: "10px" }}>
