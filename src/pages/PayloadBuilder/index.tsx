@@ -56,8 +56,8 @@ function PayloadBuilder() {
     const [distributorAddress, setDistributorAddress] = useState<string>('');
     const [targetGauge, setTargetGauge] = useState<string>('');
     const [rewardAdds, setRewardAdds] = useState<AddRewardInput[]>([]);
-    const [authorizerAdaptorEntrypoint, setEntrypoint] = useState<string>('');
-    const [safeAddress, setSafeAddress] = useState<string>('');
+    const [authorizerAdaptorEntrypoint, setEntrypoint] = useState<string>('0xf5dECDB1f3d1ee384908Fbe16D2F0348AE43a9eA');
+    const [safeAddress, setSafeAddress] = useState<string>('0xc38c5f97B34E175FFd35407fc91a937300E33860');
 
     const NETWORK_OPTIONS = [
         {label: 'Ethereum', chainId: '1', maxiSafe:'0xc38c5f97B34E175FFd35407fc91a937300E33860', entrypoint:'0xf5dECDB1f3d1ee384908Fbe16D2F0348AE43a9eA'},
