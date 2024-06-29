@@ -143,17 +143,15 @@ function PayloadBuilder() {
           setChainId(selectedOption.chainId)
       }
     };
+    
     const handleRewardAdds = () => {
       if (typeof targetGauge === 'string') {
-        setRewardAdds([...rewardAdds, {targetGauge, rewardToken, distributorAddress, safeAddress, authorizerAdaptorEntrypoint, chainId}]);
-        setTargetGauge('');
-        setRewardToken('');
-        setDistributorAddress('');
-        setSafeAddress('');
-        setEntrypoint('');
-        setChainId('');
+          setRewardAdds([...rewardAdds, { targetGauge, rewardToken, distributorAddress, safeAddress, authorizerAdaptorEntrypoint, chainId }]);
+          setTargetGauge('');
+          setRewardToken('');
+          setDistributorAddress('');
       }
-    }
+  };
 
     const handleRemoveReward = (index: number) => {
       const newRewards = [...rewardAdds];
