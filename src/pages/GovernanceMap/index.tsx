@@ -9,6 +9,7 @@ import contractData_ZKEVM from "../../data/static/balancer-v2/governanceMap_ZKEV
 import contractData_AVAX from "../../data/static/balancer-v2/governanceMap_AVAX.json";
 import contractData_BASE from "../../data/static/balancer-v2/governanceMap_BASE.json";
 import contractData_OPTIMISM from "../../data/static/balancer-v2/governanceMap_OPTIMISM.json";
+import contractData_FRAXTAL from "../../data/static/balancer-v2/governanceMap_FRAXTAL.json";
 import ContractOverviewTable from "../../components/Tables/ContractOverviewTable";
 import BalancerV2ContractMap from "../../components/Echarts/BalancerV2ContractMap";
 import {isMobile} from "react-device-detect";
@@ -19,7 +20,7 @@ import {
     PolygonNetworkInfo,
     GnosisNetworkInfo,
     PolygonZkEVMNetworkInfo,
-    AvalancheNetworkInfo, BaseNetworkInfo, OptimismNetworkInfo
+    AvalancheNetworkInfo, BaseNetworkInfo, OptimismNetworkInfo, FraxtalNetworkInfo
 } from "../../constants/networks";
 import {useEffect, useState} from "react";
 import * as React from "react";
@@ -39,6 +40,7 @@ export default function GovernanceMap() {
                             activeNetwork === AvalancheNetworkInfo ? contractData_AVAX :
                                 activeNetwork === BaseNetworkInfo ? contractData_BASE :
                                     activeNetwork === OptimismNetworkInfo ? contractData_OPTIMISM :
+                                      activeNetwork === FraxtalNetworkInfo ? contractData_FRAXTAL :
                                         contractData_MAINNET;
 
         setSmartContractData(currentSmartContractData);

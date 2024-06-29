@@ -91,7 +91,7 @@ export const balancerContractMapData_POLYGON = [
     },
     {
         name: 'Pool Factories',
-        value: '0xe2fa4e1d17725e72dcdAfe943Ecf45dF4B9E285b',
+        value: '0xEAedc32a51c510d35ebC11088fD5fF2b47aACF2E',
         x: 1400,
         y: 200
     },

@@ -91,7 +91,7 @@ export const balancerContractMapData_GNOSIS = [
     },
     {
         name: 'Pool Factories',
-        value: '0x4bdCc2fb18AEb9e2d281b0278D946445070EAda7',
+        value: '0x47B489bf5836f83ABD928C316F8e39bC0587B020',
         x: 1400,
         y: 200
     },

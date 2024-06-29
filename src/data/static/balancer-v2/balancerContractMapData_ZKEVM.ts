@@ -91,7 +91,7 @@ export const balancerContractMapData_ZKEVM = [
     },
     {
         name: 'Pool Factories',
-        value: '0x956CCab09898C0AF2aCa5e6C229c3aD4E93d9288',
+        value: '0xf23b4DB826DbA14c0e857029dfF076b1c0264843',
         x: 1400,
         y: 200
     },
