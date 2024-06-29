@@ -91,7 +91,7 @@ export const balancerContractMapData_ARBITRUM = [
     },
     {
         name: 'Pool Factories',
-        value: '0xc7E5ED1054A24Ef31D827E6F86caA58B3Bc168d7',
+        value: '0x4bdCc2fb18AEb9e2d281b0278D946445070EAda7',
         x: 1400,
         y: 200
     },

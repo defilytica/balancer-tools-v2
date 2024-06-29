@@ -167,7 +167,7 @@ export const balancerContractMapData_MAINNET = [
     },
     {
         name: 'Pool Factories',
-        value: '0x897888115Ada5773E02aA29F775430BFB5F34c51',
+        value: '0x5B42eC6D40f7B7965BE5308c70e2603c0281C1E9',
         x: 1400,
         y: 200
     },

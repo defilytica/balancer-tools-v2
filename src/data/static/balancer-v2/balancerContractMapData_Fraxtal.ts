@@ -1,4 +1,4 @@
-export const balancerContractMapData_BASE = [
+export const balancerContractMapData_FRAXTAL = [
     {
         name: 'Vault',
         value: '0xBA12222222228d8Ba445958a75a0704d566BF2C8',
@@ -13,73 +13,73 @@ export const balancerContractMapData_BASE = [
     },
     {
         name: 'Protocol Fee Percentages Provider',
-        value: '0xDEd7Fef7D8eCdcB74F22f0169e1A9EC696e6695d',
+        value: '0xf23b4DB826DbA14c0e857029dfF076b1c0264843',
         x: 200,
         y: 400
     },
     {
         name: 'Protocol Fee Withdrawer',
-        value: '0xAcf05BE5134d64d150d153818F8C67EE36996650',
+        value: '0x85a80afee867aDf27B50BdB7b76DA70f1E853062',
         x: 400,
         y: 600
     },
     {
-        name: 'Mimic Smart Vault - DNE',
-        value: '0x65226673F3D202E0f897C862590d7e1A992B2048',
+        name: 'Mimic Smart Vault',
+        value: 'N/A',
         x: 600,
         y: 400
     },
     {
         name: 'Protocol Fee Multisig',
-        value: '0x65226673F3D202E0f897C862590d7e1A992B2048',
+        value: '0x9ff471F9f98F42E5151C7855fD1b5aa906b1AF7e',
         x: 800,
         y: 400
     },
     {
         name: 'DAO Multisig',
-        value: '0xC40DCFB13651e64C8551007aa57F9260827B6462',
+        value: '0x4f22C2784Cbd2B24a172566491Ee73fee1A63c2e',
         x: 800,
         y: 0
 
     },
     {
         name: 'Voting Escrow Delegation Proxy',
-        value: '0xD87F44Df0159DC78029AB9CA7D7e57E7249F5ACD',
+        value: '0xE3881627B8DeeBCCF9c23B291430a549Fc0bE5F7',
         x: 800,
         y: -400
 
     },
     {
         name: 'veBoost',
-        value: '0xE42FFA682A26EF8F25891db4882932711D42e467',
+        value: '0x1702067424096F07A60e62cceE3dE9420068492D',
         x: 600,
         y: -400
 
     },
     {
         name: 'Authorizer Adaptor Entry Point',
-        value: '0x9129E834e15eA19b6069e8f08a8EcFc13686B8dC',
+        value: '0xb9F8AB3ED3F3aCBa64Bc6cd2DcA74B7F38fD7B88',
         x: 200,
         y: -400
 
     },
     {
         name: 'Authorizer Adaptor',
-        value: '0x6CaD2ea22BFA7F4C14Aae92E47F510Cd5C509bc7',
+        value: '0x36caC20dd805d128c1a6Dd16eeA845C574b5A17C',
         x: 200,
         y: -200
 
     },
     {
         name: 'Authorizer',
-        value: '0x809B79b53F18E9bc08A961ED4678B901aC93213a',
+        value: '0xE39B5e3B6D74016b2F6A9673D7d7493B6DF549d5',
         x: 200,
         y: 0
 
     },
     {
         name: 'Authorizer with Adaptor Validation',
-        value: '0xA69E0Ccf150a29369D8Bbc0B3f510849dB7E8EEE',
+        value: '0x6817149cb753BF529565B4D023d7507eD2ff4Bc0',
         x: 200,
         y: 200
 
@@ -91,49 +91,49 @@ export const balancerContractMapData_BASE = [
     },
     {
         name: 'Pool Factories',
-        value: '0x956CCab09898C0AF2aCa5e6C229c3aD4E93d9288',
+        value: '0x4bdCc2fb18AEb9e2d281b0278D946445070EAda7',
         x: 1400,
         y: 200
     },
     {
         name: 'Balancer Maxi LM Multisig',
-        value: '0x65226673F3D202E0f897C862590d7e1A992B2048',
+        value: '0x9ff471F9f98F42E5151C7855fD1b5aa906b1AF7e',
         x: 1400,
         y: 400
     },
     {
         name: 'Root Gauges - Mainnet',
-        value: '0x4C7730DEFfb57EED2e60262f9DAd4f96B8A00138',
+        value: '0x18CC3C68A5e64b40c846Aa6E45312cbcBb94f71b',
         x: 1000,
         y: 0
     },
     {
         name: 'L2BalancerPseudoMinter',
-        value: '0x0c5538098EBe88175078972F514C9e101D325D4F',
+        value: '0x9805dcfD25e6De36bad8fe9D3Fe2c9b44B764102',
         x: 800,
         y: -200
     },
     {
         name: 'BAL Token',
-        value: '0x4158734D47Fc9692176B5085E0F52ee0Da5d47F1',
+        value: '0x2FC7447F6cF71f9aa9E7FF8814B37E55b268Ec91',
         x: 1000,
         y: -200
     },
     {
         name: 'Root Gauge Factory',
-        value: '0x8e3B64b3737097F283E965869e3503AA20F31E4D',
+        value: '0x18CC3C68A5e64b40c846Aa6E45312cbcBb94f71b',
         x: 1000,
         y: 200
     },
     {
         name: 'Child Chain Gauge',
-        value: '0x9f7E65887413a8497b87bA2058cE6E4Ef4B37013',
+        value: '0x34E040bC0342EbBfBC7a6306EB1B8E6579185c94',
         x: 1200,
         y: 0
     },
     {
         name: 'Child Chain Gauge Factory',
-        value: '0xb1a4FE1C6d25a0DDAb47431A92A723dd71d9021f',
+        value: '0xc3ccacE87f6d3A81724075ADcb5ddd85a8A1bB68',
         x: 1200,
         y: -400
     },
@@ -145,25 +145,25 @@ export const balancerContractMapData_BASE = [
     },
     {
         name: 'BatchRelayer',
-        value: '0x76f7204B62f554b79d444588EDac9dfA7032c71a',
+        value: '0xb541765F540447646A9545E0A4800A0Bacf9E13D',
         x: 1200,
         y: 800
     },
     {
         name: 'BatchRelayerLibrary',
-        value: '0xDF9B5B00Ef9bca66e9902Bd813dB14e4343Be025',
+        value: '0x662112B8CB18889e81459b92CA0f894a2ef2c1B8',
         x: 1400,
         y: 800
     },
     {
         name: 'Emergency subDAO Multisig',
-        value: '0x183C55A0dc7A7Da0f3581997e764D85Fd9E9f63a',
+        value: '0xC66d0Ba27b8309D27cCa70064dfb40b73DB6de9E',
         x: 1400,
         y: 0
     },
     {
         name: 'L2LayerZeroBridgeForwarder',
-        value: '0x8eA89804145c007e7D226001A96955ad53836087',
+        value: '0xa523f47A933D5020b23629dDf689695AA94612Dc',
         x: 400,
         y: -400
     },
@@ -175,7 +175,7 @@ export const balancerContractMapData_BASE = [
     },
 ]
 
-export const balancerContractDataLinks_BASE = [
+export const balancerContractDataLinks_FRAXTAL = [
     {
         source: 'Vault',
         target: 'Protocol Fee Collector'
@@ -212,21 +212,21 @@ export const balancerContractDataLinks_BASE = [
     },
     {
         source: 'Protocol Fee Withdrawer',
-        target: 'Protocol Fee Multisig',
+        target: 'Mimic Smart Vault',
         lineStyle: {
-            curveness: -0.4
+            curveness: -0.2
         }
     },
     {
-        source: 'Protocol Fee Multisig',
+        source: 'Mimic Smart Vault',
         target: 'Protocol Fee Withdrawer',
         lineStyle: {
-            curveness: 0.2,
+            curveness: -0.2,
             type: 'dotted'
         }
     },
     {
-        source: 'Protocol Fee Multisig',
+        source: 'Mimic Smart Vault',
         target: 'Mainnet Smart Vault',
     },
     {

@@ -29,6 +29,7 @@ export enum SupportedNetwork {
     AVALANCHE,
     OPTIMISM,
     BASE,
+    FRAXTAL,
 }
 
 export type NetworkInfo = {
@@ -248,6 +249,30 @@ export const BaseNetworkInfo: NetworkInfo = {
     blurb: 'Beta',
 }
 
+export const FraxtalNetworkInfo: NetworkInfo = {
+    id: SupportedNetwork.FRAXTAL,
+    chainId: '252',
+    v3NetworkID: 'FRAXTAL',
+    coingeckoId: 'fraxtal',
+    debankId: 'frax',
+    balAddress: '0x2FC7447F6cF71f9aa9E7FF8814B37E55b268Ec91',
+    feeCollectorThreshold: 5000,
+    route: 'fraxtal',
+    name: 'Fraxtal',
+    startTimeStamp: 1619874000,
+    appUri: 'https://app.balancer.fi/#/fraxtal',
+    clientUri: 'https://api.studio.thegraph.com/query/75376/balancer-fraxtal-v2/version/latest',
+    decentralicedClientUri: DECENTRALIZED_ENDPOINT + '/subgraphs/id/98cQDy6tufTJtshDCuhh9z2kWXsQWBHVh2bqnLHsGAeS',
+    blockClientUri: DECENTRALIZED_ENDPOINT + 'JBnWrv9pvBvSi2pUZzba3VweGBTde6s44QvsDABP47Gt',
+    alchemyRPCUrl: ALCHEMY_URL_ARBITRUM,
+    alchemyKey: ALCHEMY_KEY_ARBITRUM,
+    imageURL: ARBITRUM_LOGO_URL,
+    bgColor: '#0A294B',
+    primaryColor: '#0490ED',
+    secondaryColor: '#96BEDC',
+    blurb: 'L2',
+}
+
 export const SUPPORTED_NETWORK_VERSIONS: NetworkInfo[] = [
     EthereumNetworkInfo,
     ArbitrumNetworkInfo,
@@ -257,4 +282,5 @@ export const SUPPORTED_NETWORK_VERSIONS: NetworkInfo[] = [
     OptimismNetworkInfo,
     BaseNetworkInfo,
     AvalancheNetworkInfo,
+    FraxtalNetworkInfo,
 ]

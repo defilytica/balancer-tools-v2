@@ -91,7 +91,7 @@ export const balancerContractMapData_OPTIMISM = [
     },
     {
         name: 'Pool Factories',
-        value: '0x043A2daD730d585C44FB79D2614F295D2d625412',
+        value: '0x4bdCc2fb18AEb9e2d281b0278D946445070EAda7',
         x: 1400,
         y: 200
     },

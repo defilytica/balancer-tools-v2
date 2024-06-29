@@ -5,6 +5,7 @@ import {
     AvalancheNetworkInfo,
     BaseNetworkInfo,
     EthereumNetworkInfo,
+    FraxtalNetworkInfo,
     GnosisNetworkInfo,
     NetworkInfo,
     OptimismNetworkInfo,
@@ -75,7 +76,8 @@ export default function NetworkSelector() {
         GnosisNetworkInfo,
         OptimismNetworkInfo,
         AvalancheNetworkInfo,
-        BaseNetworkInfo
+        BaseNetworkInfo,
+        FraxtalNetworkInfo
     ];
 
     const handleNetworkChange = (evt: SelectChangeEvent) => {
@@ -112,7 +114,12 @@ export default function NetworkSelector() {
             update(BaseNetworkInfo)
             const newPath = updatePathForNetwork(BaseNetworkInfo, location.pathname, allNetworks)
             navigate(newPath)
+        } else if (chainId === FraxtalNetworkInfo.chainId) {
+            update(FraxtalNetworkInfo)
+            const newPath = updatePathForNetwork(FraxtalNetworkInfo, location.pathname, allNetworks)
+            navigate(newPath)
         }
+        
     };
 
     return (
@@ -261,6 +268,22 @@ export default function NetworkSelector() {
                         </Box>
                         <Box>
                             Base
+                        </Box>
+                    </Box>
+                </MenuItem>
+                <MenuItem value={FraxtalNetworkInfo.chainId} key="fraxtal">
+                    <Box display="flex" alignItems="center">
+                        <Box mr={0.5}>
+                            <Avatar
+                                sx={{
+                                    height: 20,
+                                    width: 20
+                                }}
+                                src={BaseLogo}
+                            />
+                        </Box>
+                        <Box>
+                            Fraxtal
                         </Box>
                     </Box>
                 </MenuItem>

@@ -91,7 +91,7 @@ export const balancerContractMapData_AVAX = [
     },
     {
         name: 'Pool Factories',
-        value: '0xE42FFA682A26EF8F25891db4882932711D42e467',
+        value: '0xb9F8AB3ED3F3aCBa64Bc6cd2DcA74B7F38fD7B88',
         x: 1400,
         y: 200
     },
