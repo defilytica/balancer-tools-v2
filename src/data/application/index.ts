@@ -3,9 +3,9 @@ import { healthClient } from './../../apollo/client';
 import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
 import {
-    ArbitrumNetworkInfo,
-    EthereumNetworkInfo,
-    GnosisNetworkInfo, OptimismNetworkInfo,
+    ArbitrumNetworkInfo, AvalancheNetworkInfo, BaseNetworkInfo,
+    EthereumNetworkInfo, FraxtalNetworkInfo,
+    GnosisNetworkInfo, ModeNetworkInfo, OptimismNetworkInfo,
     PolygonNetworkInfo,
     PolygonZkEVMNetworkInfo
 } from '../../constants/networks';
@@ -51,7 +51,7 @@ export function useFetchedSubgraphStatus(): {
 } {
     const [activeNetwork] = useActiveNetworkVersion();
 
-    const { loading, error, data } = useQuery<HealthResponse>(SUBGRAPH_HEALTH, {
+    const {loading, error, data} = useQuery<HealthResponse>(SUBGRAPH_HEALTH, {
         client: healthClient,
         fetchPolicy: 'network-only',
         variables: {
@@ -64,9 +64,15 @@ export function useFetchedSubgraphStatus(): {
                             ? 'ianlapham/polygon-blocks'
                             : activeNetwork === PolygonZkEVMNetworkInfo
                                 ? 'query/48427/bleu-polygon-zkevm-blocks/version/latest'
-                            : activeNetwork === OptimismNetworkInfo
-                                ? 'danielmkm/optimism-blocks'
-                                :'x0swapsubgraph/xdai-blocks'
+                                : activeNetwork === AvalancheNetworkInfo
+                                    ? 'lynnshaoyu/avalanche-blocks'
+                                    : activeNetwork === BaseNetworkInfo
+                                        ? 'query/48427/bleu-base-blocks/version/latest'
+                                        : activeNetwork === ModeNetworkInfo
+                                            ? 'query/48427/bleu-mode-blocks/version/latest'
+                                            : activeNetwork === FraxtalNetworkInfo
+                                                ? 'https://api.goldsky.com/api/public/project_clwhu1vopoigi01wmbn514m1z/subgraphs/fraxtal-blocks/1.0.0/gn'
+                                                : 'x0swapsubgraph/xdai-blocks'
         },
     });
 

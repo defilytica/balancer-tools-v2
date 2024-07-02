@@ -1,7 +1,7 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import {
     ArbitrumNetworkInfo, AvalancheNetworkInfo, BaseNetworkInfo,
-    EthereumNetworkInfo, GnosisNetworkInfo, OptimismNetworkInfo,
+    EthereumNetworkInfo, FraxtalNetworkInfo, GnosisNetworkInfo, ModeNetworkInfo, OptimismNetworkInfo,
     PolygonNetworkInfo,
     PolygonZkEVMNetworkInfo
 } from "../constants/networks";
@@ -55,7 +55,7 @@ export const client = new ApolloClient({
 });
 
 export const gaugeClient = new ApolloClient({
-    uri: 'https://api.studio.thegraph.com/query/75376/balancer-gauges/version/latest',
+    uri: EthereumNetworkInfo.gaugeClientUri,
     cache: new InMemoryCache({
         typePolicies: {
             Token: {
@@ -357,6 +357,92 @@ export const baseBlockClient = new ApolloClient({
 
 export const baseClient = new ApolloClient({
     uri: BaseNetworkInfo.clientUri,
+    cache: new InMemoryCache({
+        typePolicies: {
+            Token: {
+                // Singleton types that have no identifying field can use an empty
+                // array for their keyFields.
+                keyFields: false,
+            },
+            Pool: {
+                // Singleton types that have no identifying field can use an empty
+                // array for their keyFields.
+                keyFields: false,
+            },
+        },
+    }),
+    queryDeduplication: true,
+    defaultOptions: {
+        watchQuery: {
+            fetchPolicy: 'cache-first',
+        },
+        query: {
+            fetchPolicy: 'cache-first',
+            errorPolicy: 'all',
+        },
+    },
+})
+
+export const modeBlockClient = new ApolloClient({
+    uri: 'https://api.studio.thegraph.com/query/48427/bleu-mode-blocks/version/latest',
+    cache: new InMemoryCache(),
+    queryDeduplication: true,
+    defaultOptions: {
+        watchQuery: {
+            fetchPolicy: 'cache-first',
+        },
+        query: {
+            fetchPolicy: 'cache-first',
+            errorPolicy: 'all',
+        },
+    },
+})
+
+export const modeClient = new ApolloClient({
+    uri: ModeNetworkInfo.clientUri,
+    cache: new InMemoryCache({
+        typePolicies: {
+            Token: {
+                // Singleton types that have no identifying field can use an empty
+                // array for their keyFields.
+                keyFields: false,
+            },
+            Pool: {
+                // Singleton types that have no identifying field can use an empty
+                // array for their keyFields.
+                keyFields: false,
+            },
+        },
+    }),
+    queryDeduplication: true,
+    defaultOptions: {
+        watchQuery: {
+            fetchPolicy: 'cache-first',
+        },
+        query: {
+            fetchPolicy: 'cache-first',
+            errorPolicy: 'all',
+        },
+    },
+})
+
+export const fraxtalBlockClient = new ApolloClient({
+    uri: 'https://api.goldsky.com/api/public/project_clwhu1vopoigi01wmbn514m1z/subgraphs/fraxtal-blocks/1.0.0/gn',
+    cache: new InMemoryCache(),
+    queryDeduplication: true,
+    defaultOptions: {
+        watchQuery: {
+            fetchPolicy: 'cache-first',
+        },
+        query: {
+            fetchPolicy: 'cache-first',
+            errorPolicy: 'all',
+        },
+    },
+})
+
+export const fraxtalClient = new ApolloClient({
+    uri: FraxtalNetworkInfo.clientUri,
     cache: new InMemoryCache({
         typePolicies: {
             Token: {
