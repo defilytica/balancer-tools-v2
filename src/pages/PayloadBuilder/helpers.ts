@@ -220,3 +220,62 @@ export function generateHumanReadableCCTPBridge(inputs: CCTPBridgeInput[]): stri
 
     return `The Maxi Multisig 0xc38c5f97B34E175FFd35407fc91a937300E33860 will interact with the CCTP Bridge as follows:\n${readableInputs}`;
 }
+
+export interface AddRewardInput {
+    targetGauge: string;
+    rewardToken: string;
+    distributorAddress: string;
+    safeAddress: string;
+    authorizerAdaptorEntrypoint: string;
+    chainId: string;
+}
+
+export function generateAddRewardPayload(inputs: AddRewardInput[]) {
+    const transactions = inputs.map(input => ({
+        to: input.authorizerAdaptorEntrypoint,
+        value: "0",
+        data: null,
+        contractMethod: {
+            inputs: [
+                { internalType: "address", name: "target", type: "address" },
+                { internalType: "bytes", name: "data", type: "bytes" },
+            ],
+            name: "performAction",
+            payable: true,
+        },
+        contractInputsValues: {
+            target: input.targetGauge,
+            data: `0xe8de0d4d000000000000000000000000${input.rewardToken.slice(2)}000000000000000000000000${input.distributorAddress.slice(2)}`,
+        },
+    }));
+
+    return {
+        version: "1.0",
+        chainId:  inputs.length > 0 ? inputs[0].chainId : "",
+        createdAt: Date.now(),
+        meta: {
+            name: "Transactions Batch",
+            description: "",
+            txBuilderVersion: "1.16.5",
+            createdFromSafeAddress: inputs.length > 0 ? inputs[0].safeAddress : "",
+            createdFromOwnerAddress: "",
+            checksum: "0x90f4c82078ec24e1c5389807a2084a2e7a3c9904d86f418ef33e7b6a67722ee5",
+        },
+        transactions: [ ...transactions ], // Using array notation to handle multiple transactions
+    };
+}
+
+
+export function generateHumanReadableAddReward(inputs: AddRewardInput[]): string {
+    if (inputs.length === 0) {
+        return ''; // Handle case where inputs array is empty
+    }
+
+    const readableInputs = inputs.map(input => {
+        return `Add Reward:\nTarget (Gauge Address): ${input.targetGauge}\nTo (Authorizer Adaptor Entrypoint): ${input.authorizerAdaptorEntrypoint}\nReward Token: ${input.rewardToken}\nDistributor Address: ${input.distributorAddress}`;
+    }).join("\n\n");
+
+    const safeAddress = inputs[0].safeAddress || 'Unknown'; // Default value if safeAddress is undefined
+
+    return `The Maxi Multisig ${safeAddress} will interact with the following gauges:\n${readableInputs}`;
+}
