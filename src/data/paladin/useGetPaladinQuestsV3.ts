@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import {PaladinQuestResponse} from "./paladinTypesV3";
 
-const PALADIN_API = 'https://api.paladin.vote/quest/v3/gauges/bal'
+const PALADIN_API = 'https://api.paladin.vote/quest/v3/copilot/platform/bal'
 
 const useGetPaladinQuestsV3 = () => {
     const [data, setData] = useState<PaladinQuestResponse | null>(null);

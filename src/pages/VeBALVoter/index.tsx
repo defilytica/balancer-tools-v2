@@ -58,12 +58,12 @@ import AvaxLogo from '../../assets/svg/avalancheLogo.svg'
 import BaseLogo from '../../assets/svg/base.svg'
 import {veBALVoteAddress} from "../../constants";
 import SelfImprovementIcon from "@mui/icons-material/SelfImprovement";
-import {useGetPaladinQuests} from "../../data/paladin/useGetPaladinQuests";
 import PaladinQuestsCard from "../../components/Cards/PaladinQuestsCard";
 import VeBALVoterTipsCard from "../../components/Cards/VeBALVoterTipsCard";
 import Confetti from 'react-dom-confetti';
 import useGetBalancerV3StakingGauges from "../../data/balancer-api-v3/useGetBalancerV3StakingGauges";
 import CloseIcon from '@mui/icons-material/Close';
+import useGetPaladinQuestsV3 from "../../data/paladin/useGetPaladinQuestsV3";
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props,
@@ -131,8 +131,10 @@ export default function VeBALVoter() {
     const userLocks = useUserVeBALLocks();
     const userVeBAL = useGetUserVeBAL(address ? address.toLowerCase() : '');
     const hhIncentives = useGetHHVotingIncentives();
-    const paladinIncentives = useGetPaladinQuests();
+    //const paladinIncentives = useGetPaladinQuests();
     //console.log("paladinIncentives", paladinIncentives)
+    const paladinIncentives = useGetPaladinQuestsV3();
+    console.log("paladinIncentives", paladinIncentives)
 
     //States
     const [allocations, setAllocations] = useState<GaugeAllocation[]>([]);
@@ -241,7 +243,7 @@ export default function VeBALVoter() {
     const handlePercentageChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, allocElement: GaugeAllocation) => {
         const inputPercentage = Number(event.target.value);
         const matchingHiddenHandData = hhIncentives?.incentives?.data?.find(data => data.proposal.toLowerCase() === allocElement.gaugeAddress.toLowerCase());
-        const paladinQuest = paladinIncentives?.quests?.find(el => el.gauge.toLowerCase() === allocElement.gaugeAddress.toLowerCase());
+        const paladinQuest = paladinIncentives?.data?.quests?.find((el: { gauge: string; }) => el.gauge.toLowerCase() === allocElement.gaugeAddress.toLowerCase());
         if (matchingHiddenHandData) {
             const currentVoteValue = fullyDecoratedGauges.find(gauge => gauge.address === allocElement.gaugeAddress)?.voteCount ?? 0;
             // Determine the user's current vote allocation based on the previous percentage
@@ -332,8 +334,8 @@ export default function VeBALVoter() {
     }
 
     //Decorate Paladin quests
-    if (paladinIncentives && paladinIncentives.quests && decoratedVotingGauges && decoratedVotingGauges.length > 0) {
-        fullyDecoratedGauges = decorateGaugesWithPaladinQuests(fullyDecoratedGauges, paladinIncentives.quests)
+    if (paladinIncentives && paladinIncentives.data && paladinIncentives.data.quests && decoratedVotingGauges && decoratedVotingGauges.length > 0) {
+        fullyDecoratedGauges = decorateGaugesWithPaladinQuests(fullyDecoratedGauges, paladinIncentives.data.quests)
         averageValuePerVote = calculateAverageValuePerVote(fullyDecoratedGauges)
     }
 
