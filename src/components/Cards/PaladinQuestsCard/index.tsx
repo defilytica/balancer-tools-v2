@@ -8,6 +8,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
     maxWidth: 500,
     padding: theme.spacing(2),
     boxShadow: "rgb(51, 65, 85) 0px 0px 0px 0.5px",
+    border: '1px solid grey',
     pointerEvents: 'auto',
 }));
 
@@ -49,7 +50,7 @@ const PaladinQuestsCard = () => {
                 <Grid item xs={9}>
                     <Title variant="h5">Paladin Quests</Title>
                     <Description variant="body2">
-                        Explore a range of quests on Paladin for voting incentives
+                        Explore a range of quests available. Take note dynamic APRs. First come - first served
                     </Description>
                 </Grid>
 

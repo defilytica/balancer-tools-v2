@@ -8,6 +8,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
     maxWidth: 500,
     padding: theme.spacing(2),
     boxShadow: "rgb(51, 65, 85) 0px 0px 0px 0.5px",
+    border: '1px solid grey',
     pointerEvents: 'auto',
 }));
 
