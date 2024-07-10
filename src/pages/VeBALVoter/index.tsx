@@ -64,6 +64,7 @@ import VeBALVoterTipsCard from "../../components/Cards/VeBALVoterTipsCard";
 import Confetti from 'react-dom-confetti';
 import useGetBalancerV3StakingGauges from "../../data/balancer-api-v3/useGetBalancerV3StakingGauges";
 import CloseIcon from '@mui/icons-material/Close';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props,
@@ -77,7 +78,6 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 });
 
 function getCombinations<T>(array: T[], size: number): T[][] {
-    // base cases
     if (size > array.length) return [];
     if (size === array.length) return [array];
     if (size === 1) return array.map(value => [value]);
@@ -96,10 +96,9 @@ function getCombinations<T>(array: T[], size: number): T[][] {
 }
 
 function generateDistributions(totalVotes: number, numGauges: number): number[][] {
-    if (numGauges === 1) {
-        return [[totalVotes]];
-    }
-    const distributions = [];
+    if (numGauges === 1) return [[totalVotes]];
+
+    const distributions: number[][] = [];
     for (let i = 0; i <= totalVotes; i += 10) {
         const rest = totalVotes - i;
         const restDistributions = generateDistributions(rest, numGauges - 1);
@@ -108,6 +107,10 @@ function generateDistributions(totalVotes: number, numGauges: number): number[][
         }
     }
     return distributions;
+}
+
+function DeleteIcon() {
+    return null;
 }
 
 export default function VeBALVoter() {
@@ -242,15 +245,11 @@ export default function VeBALVoter() {
         const inputPercentage = Number(event.target.value);
         const matchingHiddenHandData = hhIncentives?.incentives?.data?.find(data => data.proposal.toLowerCase() === allocElement.gaugeAddress.toLowerCase());
         const paladinQuest = paladinIncentives?.quests?.find(el => el.gauge.toLowerCase() === allocElement.gaugeAddress.toLowerCase());
+
         if (matchingHiddenHandData) {
             const currentVoteValue = fullyDecoratedGauges.find(gauge => gauge.address === allocElement.gaugeAddress)?.voteCount ?? 0;
-            // Determine the user's current vote allocation based on the previous percentage
             const currentUserVoteAllocation = userVeBAL * (allocElement.previousUserPercentage ?? 0) / 100;
-
-            // Calculate the user's new vote allocation based on the new input percentage
             const newUserVoteAllocation = userVeBAL * inputPercentage / 100;
-
-            // Adjust the newVoteValue based on the difference between the new and current allocations
             const newVoteValue = currentVoteValue - currentUserVoteAllocation + newUserVoteAllocation;
 
             const updatedGauge = fullyDecoratedGauges.find(gauge => gauge.address === allocElement.gaugeAddress);
@@ -259,27 +258,18 @@ export default function VeBALVoter() {
                 updatedGauge.valuePerVote = matchingHiddenHandData.totalValue / newVoteValue;
             }
 
-            // Map updated gauge back to fullyDecoratedGauges
             fullyDecoratedGauges = fullyDecoratedGauges.map(gauge => {
-                if (gauge.address === allocElement.gaugeAddress && updatedGauge) {
-                    return updatedGauge;
-                }
+                if (gauge.address === allocElement.gaugeAddress && updatedGauge) return updatedGauge;
                 return gauge;
             });
-            if (isNaN(inputPercentage) || inputPercentage < 0 || inputPercentage > 100) {
-                // Invalid input, set percentage to 0
-                allocElement.percentage = 0;
-            } else {
-                // Valid input, update percentage
+
+            allocElement.percentage = isNaN(inputPercentage) || inputPercentage < 0 || inputPercentage > 100 ? 0 : inputPercentage;
+            allocElement.rewardInUSD = matchingHiddenHandData.totalValue / newVoteValue * userVeBAL * inputPercentage / 100;
+            allocElement.userValuePerVote = matchingHiddenHandData.totalValue / newVoteValue;
+
+            if (paladinQuest) {
                 allocElement.percentage = inputPercentage;
-                allocElement.rewardInUSD = matchingHiddenHandData.totalValue / newVoteValue * userVeBAL * inputPercentage / 100;
-                allocElement.userValuePerVote = matchingHiddenHandData.totalValue / newVoteValue
-            }
-            // Paladin quest logic:
-            if (paladinQuest && matchingHiddenHandData) {
-                allocElement.percentage = inputPercentage
-                //Calculate if the current percentage does fill the quest and use only that set for potential rewards
-                const leftVotes = Number(paladinQuest.objectiveVotes) / 1e18 - matchingHiddenHandData.voteCount - userVeBAL * inputPercentage / 100
+                const leftVotes = Number(paladinQuest.objectiveVotes) / 1e18 - matchingHiddenHandData.voteCount - userVeBAL * inputPercentage / 100;
                 if (leftVotes > 0) {
                     allocElement.paladinRewardInUSD = Number(paladinQuest.rewardPerVote) * userVeBAL * inputPercentage / 100;
                 }
@@ -288,7 +278,6 @@ export default function VeBALVoter() {
 
             setAllocations([...allocations]);
         } else {
-            // handle deprecated gauges
             allocElement.percentage = inputPercentage;
             allocElement.rewardInUSD = 0;
             allocElement.userValuePerVote = 0;
@@ -299,20 +288,16 @@ export default function VeBALVoter() {
 
     const calculateAverageValuePerVote = (gauges: BalancerStakingGauges[]) => {
         const totalHiddenHandRewards = gauges.reduce((sum, gauge) => sum + (gauge.totalRewards || 0), 0);
-        const totalVotes = gauges.reduce((sum, gauge) => sum + (gauge.paladinRewards ? gauge.voteCount : 0), 0);
-        return (totalHiddenHandRewards) / totalVotes;
+        //const totalVotes = gauges.reduce((sum, gauge) => sum + (gauge.paladinRewards ? gauge.voteCount : 0), 0);
+        const totalVotes = gauges.reduce((sum, gauge) => sum + gauge.voteCount, 0)
+        return totalHiddenHandRewards / totalVotes;
     };
 
-
-    //Load gauge and Staking information
     const gaugeData = useGetBalancerV3StakingGauges();
-    const decoratedVotingGauges = useDecorateGaugesWithVotes(gaugeData)
+    const decoratedVotingGauges = useDecorateGaugesWithVotes(gaugeData);
     const date = new Date(userLocks?.unlockTime ? userLocks?.unlockTime * 1000 : 0);
     const unlockDate = date.toLocaleDateString();
 
-    console.log("allocs", allocations)
-
-    // Update userVotingGauges when the address changes
     useEffect(() => {
         const updatedUserVotingGauges = decoratedVotingGauges.filter(
             (el) => el.userVotingPower ? el.userVotingPower > 0 : false
@@ -321,20 +306,15 @@ export default function VeBALVoter() {
     }, [address, JSON.stringify(decoratedVotingGauges)]);
 
     let fullyDecoratedGauges: BalancerStakingGauges[] = [];
-    let averageValuePerVote = 0
+    let averageValuePerVote = 0;
 
-    // TODO: improve logic, adjust hook?
-    if (hhIncentives && hhIncentives.incentives
-        && hhIncentives.incentives.data && decoratedVotingGauges
-        && decoratedVotingGauges.length > 0) {
-        fullyDecoratedGauges = decorateGaugesWithIncentives(decoratedVotingGauges, hhIncentives.incentives)
-
+    if (hhIncentives && hhIncentives.incentives && hhIncentives.incentives.data && decoratedVotingGauges && decoratedVotingGauges.length > 0) {
+        fullyDecoratedGauges = decorateGaugesWithIncentives(decoratedVotingGauges, hhIncentives.incentives);
     }
 
-    //Decorate Paladin quests
-    if (paladinIncentives && paladinIncentives.quests && decoratedVotingGauges && decoratedVotingGauges.length > 0) {
-        fullyDecoratedGauges = decorateGaugesWithPaladinQuests(fullyDecoratedGauges, paladinIncentives.quests)
-        averageValuePerVote = calculateAverageValuePerVote(fullyDecoratedGauges)
+    if (decoratedVotingGauges && decoratedVotingGauges.length > 0) {
+        //fullyDecoratedGauges = decorateGaugesWithPaladinQuests(fullyDecoratedGauges, paladinIncentives.quests);
+        averageValuePerVote = calculateAverageValuePerVote(fullyDecoratedGauges);
     }
 
     const calculateOptimalAllocations = () => {
@@ -365,22 +345,19 @@ export default function VeBALVoter() {
                     let allocations: GaugeAllocation[] = [];
                     for (let j = 0; j < distribution.length; j++) {
                         if (combination[j] && (combination[j]?.valuePerVote || combination[j]?.paladinRewards?.valuePerVote) && combination[j]?.address) {
-                            //calculate user dilution:
                             let newVotes = combination[j].voteCount + userVeBAL * distribution[j] / 100;
-                            let effectiveReward = combination[j].totalRewards / newVotes
-                            let paladinReward = 0
-                            let paladinLeftVotes = 0;
-                            paladinLeftVotes = combination[j].paladinRewards?.leftVotes ?? 0;
+                            let effectiveReward = combination[j].totalRewards / newVotes;
+                            let paladinReward = 0;
+                            let paladinLeftVotes = combination[j].paladinRewards?.leftVotes ?? 0;
                             if (newVotes < paladinLeftVotes) {
                                 paladinReward = combination[j].paladinRewards?.valuePerVote ?? 0;
                             }
 
                             let reward = distribution[j] * effectiveReward * userVeBAL / 100;
-                            let paladinQuestReward = distribution[j] * paladinReward * userVeBAL / 100
+                            let paladinQuestReward = distribution[j] * paladinReward * userVeBAL / 100;
                             totalReward += reward;
                             totalReward += paladinQuestReward;
 
-                            // Check against existingAllocations instead of allocations
                             let isNew = !existingAllocations.some(a => a.gaugeAddress.toLowerCase() === combination[j].address.toLowerCase());
                             let initialPercentage = isNew ? 0 : existingAllocations.find(a => a.gaugeAddress.toLowerCase() === combination[j].address.toLowerCase())!.percentage;
 
@@ -393,21 +370,20 @@ export default function VeBALVoter() {
                                 initialPercentage,
                                 paladinValuePerVote: paladinReward,
                                 paladinRewardInUSD: paladinQuestReward,
-                                paladinLeftVotes: paladinLeftVotes,
+                                paladinLeftVotes,
                             });
                         }
                     }
                     if (totalReward > bestTotalReward) {
                         bestTotalReward = totalReward;
                         let tempBestAllocations: GaugeAllocation[] = [...bestAllocations];
-                        let totalPercentage = 0; // This will hold the sum of percentages
+                        let totalPercentage = 0;
 
                         let addressToAllocation = new Map<string, GaugeAllocation>();
                         allocations.forEach(a => {
                             addressToAllocation.set(a.gaugeAddress.toLowerCase(), a);
                         });
 
-                        // Iterate over tempBestAllocations
                         for (let k = 0; k < tempBestAllocations.length; k++) {
                             const tempAllocation = tempBestAllocations[k];
                             if (addressToAllocation.has(tempAllocation.gaugeAddress.toLowerCase())) {
@@ -419,7 +395,6 @@ export default function VeBALVoter() {
 
                         let remainingPercentage = 100 - totalPercentage;
 
-                        // Append new allocations to the end of tempBestAllocations
                         allocations.forEach(allocation => {
                             if (!existingAllocations.some(ea => ea.gaugeAddress.toLowerCase() === allocation.gaugeAddress.toLowerCase()) &&
                                 !tempBestAllocations.some(ea => ea.gaugeAddress.toLowerCase() === allocation.gaugeAddress.toLowerCase()) &&
@@ -427,18 +402,15 @@ export default function VeBALVoter() {
                                 tempBestAllocations.length < maxAllocations) {
 
                                 remainingPercentage -= allocation.percentage;
-                                totalPercentage += allocation.percentage; // update total percentage
+                                totalPercentage += allocation.percentage;
                                 tempBestAllocations.push(allocation);
                             }
                         });
 
-                        if (totalPercentage <= 100) {  // Ensure we only update bestAllocations if the total percentage is valid
-                            console.log("totalPercentage", totalPercentage)
+                        if (totalPercentage <= 100) {
                             bestAllocations = tempBestAllocations;
                         }
                     }
-
-
                 }
             }
         }
@@ -449,26 +421,21 @@ export default function VeBALVoter() {
         setTimeout(() => setShowConfetti(false), 500);
     };
 
+    const prevAddress = useRef<string | undefined>(undefined);
 
-    const prevAddress = useRef<`0x${string}` | undefined>(undefined);
-
-    // Reset allocations array when the address changes
     useEffect(() => {
         if ((prevAddress.current !== address || prevAddress.current === undefined) && allocations.length > 0) {
             setAllocations([]);
             window.location.reload();
-            console.log("new address found, reloading component!")
         }
         prevAddress.current = address;
     }, [address, allocations]);
 
-    // Map out active user votes
     useEffect(() => {
-        //For the initial load we can take the currently active valuePerVote as a baseline as the user doesn't dilute its vote
         if (userVotingGauges.length > 0 && allocations.length === 0 && fullyDecoratedGauges.length > 0) {
             const newAllocations = userVotingGauges.map((vote) => {
                 const matchingGauge = fullyDecoratedGauges.find((gauge) => gauge.address === vote.address);
-                const leftVotes = matchingGauge ? (matchingGauge.paladinRewards ? matchingGauge.paladinRewards.leftVotes : 0) : 0
+                const leftVotes = matchingGauge ? (matchingGauge.paladinRewards ? matchingGauge.paladinRewards.leftVotes : 0) : 0;
                 const votePower = vote.userVotingPower ? vote.userVotingPower / 100 : 0;
                 const rewardInUSD = matchingGauge ? userVeBAL * votePower * matchingGauge.valuePerVote : 0;
                 return {
@@ -488,28 +455,20 @@ export default function VeBALVoter() {
         }
     }, [JSON.stringify(userVotingGauges), allocations, userVeBAL, address, fullyDecoratedGauges]);
 
-
-    //Total percentage validation hook -> controls vote button disable function
     useEffect(() => {
-        const newPercentage = allocations.reduce((sum, allocation) => sum + allocation.percentage, 0)
-        setTotalPercentage(newPercentage)
-    }, [allocations, address])
+        const newPercentage = allocations.reduce((sum, allocation) => sum + allocation.percentage, 0);
+        setTotalPercentage(newPercentage);
+    }, [allocations, address]);
 
-
-    // TODO: replace with wagmi hook!
     async function updateVotes(allocations: GaugeAllocation[]) {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         await provider.send("eth_requestAccounts", []);
         const signer = await provider.getSigner();
         const erc20 = new ethers.Contract(veBALVoteAddress, VeBalVoteMany, signer);
 
-        // Sort allocations: entries that changed to 0 first, then others
         const sortedAllocations = [...allocations].sort((a, b) => {
-            if (a.percentage === 0 && b.percentage !== 0) {
-                return -1;
-            } else if (a.percentage !== 0 && b.percentage === 0) {
-                return 1;
-            }
+            if (a.percentage === 0 && b.percentage !== 0) return -1;
+            if (a.percentage !== 0 && b.percentage === 0) return 1;
             return 0;
         });
 
@@ -531,19 +490,20 @@ export default function VeBALVoter() {
             const tx = await erc20.vote_for_many_gauge_weights(addresses, weights);
             console.log("Transaction sent: ", tx.hash);
         } catch (error: any) {
-            console.log("error", error)
-            setError(error.reason)
-            setAlertOpen(true)
+            setError(error.reason);
+            setAlertOpen(true);
         }
     }
 
-
-    // Reset voting state
     const resetVotes = () => {
         const newAllocations = userVotingGauges.map((vote) => {
             const matchingGauge = fullyDecoratedGauges.find((gauge) => gauge.address === vote.address);
-            const rewardInUSD = (matchingGauge && vote.userVotingPower) ? ((vote.userVotingPower / 100) * matchingGauge.valuePerVote * userVeBAL) : 0;
-            const paladinRewardInUSD = (matchingGauge && vote.userVotingPower && matchingGauge.paladinRewards) ? ((vote.userVotingPower / 100) * matchingGauge.paladinRewards.valuePerVote * userVeBAL) : 0;
+            const rewardInUSD = (matchingGauge && vote.userVotingPower)
+                ? ((vote.userVotingPower / 100) * matchingGauge.valuePerVote * userVeBAL)
+                : 0;
+            const paladinRewardInUSD = (matchingGauge && vote.userVotingPower && matchingGauge.paladinRewards)
+                ? ((vote.userVotingPower / 100) * matchingGauge.paladinRewards.valuePerVote * userVeBAL)
+                : 0;
 
             return {
                 gaugeAddress: vote.address,
@@ -559,7 +519,7 @@ export default function VeBALVoter() {
             };
         });
         setAllocations([...newAllocations]);
-    }
+    };
 
     return (
         !isConnected ?
@@ -606,7 +566,7 @@ export default function VeBALVoter() {
                                 </IconButton>
                             }
                         >
-                            The veBAL Multi-Voter tool currently disabled Paladin Quest functionality until Quests v2 are fully integrated. Make sure to check open quests for optimized rewards.
+                            Paladin Quests are still disabled. Make sure to check open quests and dynamic APRs on their UI for optimized rewards.
                         </Alert>
                     )}
                     <Grid
@@ -712,7 +672,7 @@ export default function VeBALVoter() {
                                 columns={{xs: 4, sm: 8, md: 12}}
                                 sx={{justifyContent: {md: 'flex-start', xs: 'center'}, alignContent: 'center'}}
                             >
-                                <Box mr={1} mt={1}>
+                                <Box sx={{ width: '100%', mt: 1, mr: 1  }}>
                                     <Card
                                         sx={{border: '1px solid grey'}}
                                     >
@@ -801,6 +761,20 @@ export default function VeBALVoter() {
                                                                     }
 
                                                                     <Typography>{alloc.isNew ? 'New' : 'Current'}</Typography>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    {alloc.isNew && (
+                                                                        <Button
+                                                                            variant="contained"
+                                                                            onClick={() => {
+                                                                                const updatedAllocations = allocations.filter((item) => item.gaugeAddress !== alloc.gaugeAddress);
+                                                                                setAllocations(updatedAllocations);
+                                                                            }}
+                                                                            endIcon={<RemoveCircleOutlineIcon />}
+                                                                        >
+                                                                            Remove
+                                                                        </Button>
+                                                                    )}
                                                                 </TableCell>
                                                             </TableRow>
                                                         );

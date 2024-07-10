@@ -18,23 +18,22 @@ import {visuallyHidden} from '@mui/utils';
 import PoolCurrencyLogo from '../../PoolCurrencyLogo';
 import TokensWhite from '../../../assets/svg/tokens_white.svg';
 import TokensBlack from '../../../assets/svg/tokens_black.svg';
-import {useTheme} from '@mui/material/styles'
-import ArbitrumLogo from '../../../assets/svg/arbitrum.svg'
-import EtherLogo from '../../../assets/svg/ethereum.svg'
-import PolygonLogo from '../../../assets/svg/polygon.svg'
-import GnosisLogo from '../../../assets/svg/gnosis.svg'
-import zkevmLogo from '../../../assets/svg/zkevm.svg'
-import OpLogo from '../../../assets/svg/optimism.svg'
-import AvaxLogo from '../../../assets/svg/avalancheLogo.svg'
-import BaseLogo from '../../../assets/svg/base.svg'
+import {useTheme} from '@mui/material/styles';
+import ArbitrumLogo from '../../../assets/svg/arbitrum.svg';
+import EtherLogo from '../../../assets/svg/ethereum.svg';
+import PolygonLogo from '../../../assets/svg/polygon.svg';
+import GnosisLogo from '../../../assets/svg/gnosis.svg';
+import zkevmLogo from '../../../assets/svg/zkevm.svg';
+import OpLogo from '../../../assets/svg/optimism.svg';
+import AvaxLogo from '../../../assets/svg/avalancheLogo.svg';
+import BaseLogo from '../../../assets/svg/base.svg';
 import {BalancerStakingGauges, SimplePoolData} from "../../../data/balancer/balancerTypes";
 import {formatDollarAmount, formatNumber} from "../../../utils/numbers";
 import GaugeComposition from "../../GaugeComposition";
 import ClearIcon from '@mui/icons-material/Clear';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import {GaugeAllocation} from "../../../data/balancer/balancerGaugeTypes";
-
-
+import {isMobile} from "react-device-detect";
 
 interface Data {
     gaugeAddress: string;
@@ -48,7 +47,6 @@ interface Data {
     paladinLeftVotes: number,
     totalRewards: number,
     userRewards: number,
-
 }
 
 function createData(
@@ -103,7 +101,6 @@ function getComparator<Key extends keyof any>(
         : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-
 function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
     const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
     stabilizedThis.sort((a, b) => {
@@ -137,7 +134,7 @@ const headCells: readonly HeadCell[] = [
         numeric: false,
         disablePadding: false,
         label: 'Composition',
-        isMobileVisible: false,
+        isMobileVisible: true,
     },
     {
         id: 'totalVotes',
@@ -190,14 +187,12 @@ interface EnhancedTableProps {
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-    const {order, orderBy, onRequestSort} =
-        props;
-    const createSortHandler =
-        (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
-            onRequestSort(event, property);
-        };
+    const {order, orderBy, onRequestSort} = props;
+    const createSortHandler = (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
+        onRequestSort(event, property);
+    };
 
-    const theme = useTheme()
+    const theme = useTheme();
 
     return (
         <TableHead>
@@ -243,7 +238,6 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(25);
 
-
     const seen = new Set();
 
     const filteredPoolDatas = gaugeDatas.filter((x) => {
@@ -269,21 +263,14 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
         )
         .sort((a, b) => b.totalRewards - a.totalRewards);
 
-
     const [rows, setRows] = useState<Data[]>(originalRows);
     const [searched, setSearched] = useState<string>("");
 
-    //Update the table if we reset or update the allocations set
-    useEffect(() =>{
-        setRows(originalRows)
-    }, [allocations])
+    useEffect(() => {
+        setRows(originalRows);
+    }, [allocations]);
 
-
-
-    const handleRequestSort = (
-        event: React.MouseEvent<unknown>,
-        property: keyof Data,
-    ) => {
+    const handleRequestSort = (event: React.MouseEvent<unknown>, property: keyof Data) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
@@ -302,10 +289,7 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
         setDense(event.target.checked);
     };
 
-
-    // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows =
-        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
     const requestSearch = (searchedVal: string) => {
         const filteredRows = originalRows.filter((row) => {
@@ -316,18 +300,15 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
             return hasPartialMatchInAddress || hasPartialMatchInSymbol || hasPartialMatchInTokens;
         });
         setRows(filteredRows);
-        setSearched(searchedVal)
+        setSearched(searchedVal);
     };
+
     const clearSearch = (): void => {
         setSearched("");
-        setRows(originalRows)
+        setRows(originalRows);
     };
 
-    interface NetworkLogoMap {
-        [networkNumber: string]: string;
-    }
-
-    const networkLogoMap: NetworkLogoMap = {
+    const networkLogoMap: { [networkNumber: string]: string } = {
         MAINNET: EtherLogo,
         OPTIMISM: OpLogo,
         POLYGON: PolygonLogo,
@@ -338,14 +319,11 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
         AVALANCHE: AvaxLogo,
     };
 
-
-    //Table generation
-
     return (
         <Box sx={{width: '100%'}}>
             <Paper
                 component="form"
-                sx={{ mb: '10px', p: '2px 4px', display: 'flex', alignItems: 'center', maxWidth: 500 }}
+                sx={{ mb: '10px', p: '2px 4px', display: 'flex', alignItems: 'center', maxWidth: 500, border: '1px solid grey' }}
             >
                 <InputBase
                     sx={{ ml: 1, flex: 1 }}
@@ -358,106 +336,80 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
                     {searched !== "" ? <ClearIcon /> : <SearchIcon />}
                 </IconButton>
             </Paper>
-            <Paper sx={{mb: 2, boxShadow: 3}}>
-
+            <Paper sx={{mb: 2, boxShadow: 3, border: '1px solid grey'}}>
                 <TableContainer>
-                    <Table
-                        aria-labelledby="tableTitle"
-                        size={dense ? 'small' : 'medium'}
-                    >
-                        <EnhancedTableHead
-                            order={order}
-                            orderBy={orderBy}
-                            onRequestSort={handleRequestSort}
-                        />
+                    <Table aria-labelledby="tableTitle" size={dense ? 'small' : 'medium'}>
+                        <EnhancedTableHead order={order} orderBy={orderBy} onRequestSort={handleRequestSort} />
                         <TableBody>
                             {stableSort(rows, getComparator(order, orderBy))
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row, index) => {
                                     const labelId = `enhanced-table-checkbox-${index}`;
-
                                     return (
-                                        <TableRow
-                                            hover
-                                            role="number"
-                                            tabIndex={-1}
-                                            key={row.gaugeAddress + Math.random() * 10}
-                                            sx={{cursor: 'pointer'}}
-                                        >
-                                            <TableCell sx={{maxWidth: '10px'}}>
-                                                <Avatar
-                                                    sx={{
-                                                        height: 20,
-                                                        width: 20
-                                                    }}
-                                                    src={networkLogoMap[row.network]}
-                                                />
-                                            </TableCell>
-                                            <TableCell
-                                                component="th"
-                                                id={labelId}
-                                                scope="row"
-                                                sx={{display: {xs: 'none', md: 'table-cell'}}}
-                                            >
-                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                    <Box mr={1}>
-                                                        <PoolCurrencyLogo
-                                                            tokens={row.poolData.tokens.map(token => ({address: token.address ? token.address.toLowerCase() : ''}))}
-                                                            size={'25px'}/>
-                                                    </Box>
-                                                    <Box>
-                                                        <GaugeComposition poolData={row.poolData} />
-                                                    </Box>
-                                                    {row.isKilled ?
-                                                        <Box ml={1}>
-                                                        <Typography variant={'caption'} color={"red"}>KILLED</Typography>
-                                                    </Box> : null}
-
-                                                </Box>
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                {formatNumber(Number(row.totalVotes ? row.totalVotes : 0),  3)}
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                {formatDollarAmount(Number(row.totalRewards ? row.totalRewards : 0),  3)}
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                {formatDollarAmount(Number(row.votingIncentives ? row.votingIncentives : 0),  3)}
-                                            </TableCell>
-                                            {/*<TableCell align="right">
-                                                {formatDollarAmount(Number(row.paladinRewards ? row.paladinRewards : 0),  3)}
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                {formatNumber(Number(row.paladinLeftVotes ? row.paladinLeftVotes : 0),  0)}
-                                            </TableCell>*/}
-                                            <TableCell align="right">
-                                                {row.userVotes || allocations.find(alloc => alloc.gaugeAddress === row.gaugeAddress) ? (
-                                                    formatNumber(Number(row.userVotes), 3)
-                                                ) : (
-                                                    <Button
-                                                        variant="contained"
-                                                        disabled={allocations.length > 7}
-                                                        onClick={() => {
-                                                            onAddAllocation(row.gaugeAddress);
-                                                            const updatedRows = rows.filter((rowItem) => rowItem.gaugeAddress !== row.gaugeAddress);
-                                                            setRows(updatedRows);
-                                                        }}
-                                                        endIcon={<AddCircleIcon
-                                                        />}>
-                                                        Add
-                                                    </Button>
-                                                )}
-                                            </TableCell>
+                                        <TableRow hover role="number" tabIndex={-1} key={row.gaugeAddress + Math.random() * 10} sx={{cursor: 'pointer'}}>
+                                            {headCells.map((headCell) => (
+                                                <TableCell
+                                                    key={headCell.id}
+                                                    align={headCell.numeric ? 'right' : 'left'}
+                                                    sx={{display: {xs: headCell.isMobileVisible ? 'table-cell' : 'none', md: 'table-cell'}}}
+                                                >
+                                                    {headCell.id === 'network' ? (
+                                                        <Avatar
+                                                            sx={{height: 20, width: 20}}
+                                                            src={networkLogoMap[row.network]}
+                                                        />
+                                                    ) : headCell.id === 'poolData' ? (
+                                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                            <Box mr={1}>
+                                                                <PoolCurrencyLogo
+                                                                    tokens={row.poolData.tokens.map(token => ({address: token.address ? token.address.toLowerCase() : ''}))}
+                                                                    size={'25px'}
+                                                                />
+                                                            </Box>
+                                                            {!isMobile ?
+                                                            <Box>
+                                                                <GaugeComposition poolData={row.poolData} />
+                                                            </Box> : null
+                                                            }
+                                                            {row.isKilled ? (
+                                                                <Box ml={1}>
+                                                                    <Typography variant={'caption'} color={"red"}>KILLED</Typography>
+                                                                </Box>
+                                                            ) : null}
+                                                        </Box>
+                                                    ) : headCell.id === 'userVotes' ? (
+                                                        row.userVotes || allocations.find(alloc => alloc.gaugeAddress === row.gaugeAddress) ? (
+                                                            formatNumber(Number(row.userVotes), 3)
+                                                        ) : (
+                                                            <Button
+                                                                variant="contained"
+                                                                disabled={allocations.length > 7}
+                                                                onClick={() => {
+                                                                    onAddAllocation(row.gaugeAddress);
+                                                                    const updatedRows = rows.filter((rowItem) => rowItem.gaugeAddress !== row.gaugeAddress);
+                                                                    setRows(updatedRows);
+                                                                }}
+                                                                endIcon={<AddCircleIcon />}
+                                                            >
+                                                                Add
+                                                            </Button>
+                                                        )
+                                                    ) : (
+                                                        <Typography>
+                                                            {headCell.id === 'totalVotes'
+                                                                ? formatNumber(Number(row[headCell.id]), 3)
+                                                                : formatDollarAmount(Number(row[headCell.id]), 3)
+                                                            }
+                                                        </Typography>
+                                                    )}
+                                                </TableCell>
+                                            ))}
                                         </TableRow>
                                     );
                                 })}
                             {emptyRows > 0 && (
-                                <TableRow
-                                    style={{
-                                        height: (dense ? 33 : 53) * emptyRows,
-                                    }}
-                                >
-                                    <TableCell colSpan={6}/>
+                                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                                    <TableCell colSpan={6} />
                                 </TableRow>
                             )}
                         </TableBody>
@@ -466,7 +418,7 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
                 <Box display="flex" alignItems="center" justifyContent={"space-between"}>
                     <Box m={1} display="flex" justifyContent={"flex-start"}>
                         <FormControlLabel
-                            control={<Switch checked={dense} onChange={handleChangeDense}/>}
+                            control={<Switch checked={dense} onChange={handleChangeDense} />}
                             label="Compact view"
                         />
                     </Box>
@@ -481,8 +433,6 @@ export default function VotingTable({gaugeDatas, userVeBal, allocations, onAddAl
                     />
                 </Box>
             </Paper>
-
         </Box>
     );
 }
-
