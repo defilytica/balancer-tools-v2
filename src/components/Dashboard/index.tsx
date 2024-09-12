@@ -35,6 +35,7 @@ import ContractDetailedView from "../../pages/ContractDetailedView";
 import SmartContractPermissions from "../../pages/SmartContractPermissions/SmartContractPermissions";
 import PayloadBuilder from "../../pages/PayloadBuilder";
 import VestingContracts from "../../pages/VestingContracts";
+import LandingPage from "../../pages/LandingPage";
 
 interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
@@ -253,7 +254,7 @@ function Dashboard() {
                             <MainContent open={open}>
                                 <DrawerHeader/>
                                 <Routes>
-                                    <Route path="/" element={<VeBAL/>}/>
+                                    <Route path="/" element={<LandingPage />} />
                                     <Route path={networkPrefix(activeNetwork) + 'priceImpact'}
                                            element={<PriceImpact/>}/>
                                     <Route path={'balancer/veBALBoost'} element={<VeBAL/>}/>
