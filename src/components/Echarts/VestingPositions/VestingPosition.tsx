@@ -4,7 +4,7 @@ import { ECharts } from 'echarts';
 import { ethers } from 'ethers';
 import { useTheme } from '@mui/material/styles'
 
-interface VestingPosition {
+export interface VestingPosition {
     amount: string;
     vestingEnds: number;
     claimed: boolean;

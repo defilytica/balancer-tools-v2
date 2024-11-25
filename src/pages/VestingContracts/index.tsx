@@ -28,6 +28,7 @@ import {getEtherscanLink} from "../../utils";
 import {ArbitrumNetworkInfo} from "../../constants/networks";
 import LaunchIcon from "@mui/icons-material/Launch";
 import VestingChart from "../../components/Echarts/VestingPositions/VestingPosition";
+import VestingPosition from "../../components/Echarts/VestingPositions/VestingPosition";
 
 const CONTRACTS_URL = 'https://raw.githubusercontent.com/BalancerMaxis/bal_addresses/main/extras/arbitrum.json';
 
@@ -110,39 +111,46 @@ export default function VestingContracts() {
 
             const vestingResults: ContractCallResults = await multicall.call(vestingCalls);
 
-            const positions = [];
-            const assetCalls: ContractCallContext[] = [];
+            // Create arrays to store positions and their corresponding indices
+            const positionsWithIndices: Array<{position: VestingPosition, index: number}> = [];
+
             for (let i = 0; i < nonceNumber; i++) {
                 const positionResult = vestingResults.results[`vestingPosition-${i}`].callsReturnContext[0].returnValues;
-                console.log(`Position ${i} result:`, positionResult); // Log raw data
-                positions.push({
-                    amount: positionResult[0],
-                    vestingEnds: ethers.BigNumber.from(positionResult[1]).toNumber(),
-                    claimed: positionResult[2],
-                });
-
-                assetCalls.push({
-                    reference: `convertToAssets-${i}`,
-                    contractAddress: auraContractAddress,
-                    abi: AuraCompounderABI,
-                    calls: [{
-                        reference: `convertToAssets`,
-                        methodName: 'convertToAssets',
-                        methodParameters: [positionResult[0]]
-                    }],
+                positionsWithIndices.push({
+                    position: {
+                        amount: positionResult[0],
+                        vestingEnds: ethers.BigNumber.from(positionResult[1]).toNumber(),
+                        claimed: positionResult[2]
+                    },
+                    index: i
                 });
             }
+
+            // Sort positions by vesting end time
+            positionsWithIndices.sort((a, b) => a.position.vestingEnds - b.position.vestingEnds);
+
+            // Create asset calls in the sorted order
+            const assetCalls: ContractCallContext[] = positionsWithIndices.map(({position}, index) => ({
+                reference: `convertToAssets-${index}`,
+                contractAddress: auraContractAddress,
+                abi: AuraCompounderABI,
+                calls: [{
+                    reference: `convertToAssets`,
+                    methodName: 'convertToAssets',
+                    methodParameters: [position.amount]
+                }],
+            }));
 
             const assetResults: ContractCallResults = await multicall.call(assetCalls);
-            const assets = [];
 
-            for (let i = 0; i < nonceNumber; i++) {
-                const assetResult = assetResults.results[`convertToAssets-${i}`].callsReturnContext[0].returnValues;
-                assets.push(assetResult[0]);
-            }
+            // Extract sorted positions and assets
+            const sortedPositions = positionsWithIndices.map(({position}) => position);
+            const sortedAssets = positionsWithIndices.map((_, index) =>
+                assetResults.results[`convertToAssets-${index}`].callsReturnContext[0].returnValues[0]
+            );
 
-            setVestingPositions(positions);
-            setAssetPositions(assets);
+            setVestingPositions(sortedPositions);
+            setAssetPositions(sortedAssets);
         } catch (err) {
             console.error(err);
             setError('Failed to fetch vesting positions and assets.');
