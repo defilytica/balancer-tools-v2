@@ -28,12 +28,17 @@ import {getEtherscanLink} from "../../utils";
 import {ArbitrumNetworkInfo} from "../../constants/networks";
 import LaunchIcon from "@mui/icons-material/Launch";
 import VestingChart from "../../components/Echarts/VestingPositions/VestingPosition";
-import VestingPosition from "../../components/Echarts/VestingPositions/VestingPosition";
 
 const CONTRACTS_URL = 'https://raw.githubusercontent.com/BalancerMaxis/bal_addresses/main/extras/arbitrum.json';
 
 interface ContractData {
     [key: string]: string;
+}
+
+interface VestingPositionData {
+    amount: ethers.BigNumber;
+    vestingEnds: number;
+    claimed: boolean;
 }
 
 export default function VestingContracts() {
@@ -112,7 +117,7 @@ export default function VestingContracts() {
             const vestingResults: ContractCallResults = await multicall.call(vestingCalls);
 
             // Create arrays to store positions and their corresponding indices
-            const positionsWithIndices: Array<{position: VestingPosition, index: number}> = [];
+            const positionsWithIndices: Array<{position: VestingPositionData, index: number}> = [];
 
             for (let i = 0; i < nonceNumber; i++) {
                 const positionResult = vestingResults.results[`vestingPosition-${i}`].callsReturnContext[0].returnValues;
