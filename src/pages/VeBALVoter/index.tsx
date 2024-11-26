@@ -480,10 +480,13 @@ export default function VeBALVoter() {
                     : "0x0000000000000000000000000000000000000000"
             );
 
+        // Fix: Round the weights to integers to avoid floating point precision issues
         const weights = Array(8)
             .fill(0)
             .map((_, index) =>
-                index < sortedAllocations.length ? sortedAllocations[index].percentage * 100 : 0
+                index < sortedAllocations.length
+                    ? Math.round(sortedAllocations[index].percentage * 100)
+                    : 0
             );
 
         try {
