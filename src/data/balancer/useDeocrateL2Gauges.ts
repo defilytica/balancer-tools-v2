@@ -25,7 +25,7 @@ const NETWORK_PROVIDERS: NetworkProviders = {
     OPTIMISM: 'https://optimism.publicnode.com',
     GNOSIS: 'https://rpc.gnosischain.com',
     POLYGON: 'https://polygon-bor.publicnode.com',
-    ARBITRUM: 'https://arbitrum.llamarpc.com',
+    ARBITRUM: 'https://endpoints.omniatech.io/v1/arbitrum/one/public',
     AVALANCHE: 'https://rpc.ankr.com/avalanche',
     BASE: 'https://base.publicnode.com',
     ZKEVM: 'https://zkevm-rpc.com'
