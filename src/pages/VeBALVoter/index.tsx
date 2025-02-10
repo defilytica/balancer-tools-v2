@@ -65,6 +65,7 @@ import Confetti from 'react-dom-confetti';
 import useGetBalancerV3StakingGauges from "../../data/balancer-api-v3/useGetBalancerV3StakingGauges";
 import CloseIcon from '@mui/icons-material/Close';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
+import VoteMarketCard from "../../components/Cards/VoteMarketCard";
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
     props,
@@ -95,22 +96,59 @@ function getCombinations<T>(array: T[], size: number): T[][] {
     return result;
 }
 
-function generateDistributions(totalVotes: number, numGauges: number): number[][] {
+interface OptimizationParams {
+    maxGauges: number;
+    maxAllocations: number;
+    stepSize: number;
+    minAllocation: number;
+}
+
+const DEFAULT_PARAMS: OptimizationParams = {
+    maxGauges: 10,      // Maximum number of gauges to consider
+    maxAllocations: 8,  // Maximum number of active allocations
+    stepSize: 5,        // Step size for percentage allocations
+    minAllocation: 5    // Minimum allocation percentage
+};
+
+function generateDistributions(
+    totalVotes: number,
+    numGauges: number,
+    stepSize: number = 10,
+    minAllocation: number = 0
+): number[][] {
+    if (numGauges <= 0) return [];
     if (numGauges === 1) return [[totalVotes]];
 
     const distributions: number[][] = [];
-    for (let i = 0; i <= totalVotes; i += 10) {
-        const rest = totalVotes - i;
-        const restDistributions = generateDistributions(rest, numGauges - 1);
-        for (let distribution of restDistributions) {
-            distributions.push([i, ...distribution]);
+
+    // Calculate the maximum value for the first gauge
+    const maxForFirst = totalVotes - (minAllocation * (numGauges - 1));
+
+    // Iterate through possible values for the first gauge
+    for (let i = minAllocation; i <= maxForFirst; i += stepSize) {
+        const remaining = totalVotes - i;
+
+        // Only continue if there's enough remaining for minimum allocations
+        if (remaining >= minAllocation * (numGauges - 1)) {
+            const subDistributions = generateDistributions(
+                remaining,
+                numGauges - 1,
+                stepSize,
+                minAllocation
+            );
+
+            for (const dist of subDistributions) {
+                distributions.push([i, ...dist]);
+            }
         }
     }
-    return distributions;
-}
 
-function DeleteIcon() {
-    return null;
+    // Filter out invalid distributions
+    return distributions.filter(dist =>
+        dist.length === numGauges &&
+        dist.every(v => v >= minAllocation) &&
+        Math.abs(dist.reduce((a, b) => a + b, 0) - totalVotes) < 0.01
+    );
 }
 
 export default function VeBALVoter() {
@@ -317,14 +355,29 @@ export default function VeBALVoter() {
         averageValuePerVote = calculateAverageValuePerVote(fullyDecoratedGauges);
     }
 
-    const calculateOptimalAllocations = () => {
-        const maxGauges = 10;
-        const maxAllocations = 8;
+    function calculateOptimalAllocations() {
+        const params = {
+            maxGauges: 10,      // Maximum number of gauges to consider
+            maxAllocations: 8,  // Maximum number of active allocations
+            stepSize: 10,       // Step size for percentage allocations
+            minAllocation: 5    // Minimum allocation percentage
+        };
 
-        let gauges = fullyDecoratedGauges.filter(g => g.valuePerVote !== null && g.valuePerVote !== undefined);
-        gauges.sort((a, b) => b.valuePerVote - a.valuePerVote);
-        gauges = gauges.slice(0, maxGauges);
-        let existingAllocations = allocations.filter(a => !a.isNew);
+        // Get existing allocations and their positions
+        const existingAllocations = allocations.filter(a => !a.isNew);
+        const existingAddresses = new Set(existingAllocations.map(a => a.gaugeAddress.toLowerCase()));
+
+        // Filter and sort gauges by potential value, excluding existing allocations
+        let candidateGauges = fullyDecoratedGauges
+            .filter(g => !g.isKilled &&
+                g.valuePerVote !== null &&
+                g.valuePerVote !== undefined &&
+                !existingAddresses.has(g.address.toLowerCase()))
+            .sort((a, b) => (b.valuePerVote + (b.paladinRewards?.valuePerVote || 0)) -
+                (a.valuePerVote + (a.paladinRewards?.valuePerVote || 0)));
+
+        // Take top N candidate gauges for optimization
+        candidateGauges = candidateGauges.slice(0, params.maxGauges - existingAllocations.length);
 
         let bestTotalReward = 0;
         let bestAllocations: GaugeAllocation[] = existingAllocations.map(ea => ({
@@ -334,92 +387,132 @@ export default function VeBALVoter() {
             userValuePerVote: 0,
             paladinRewardInUSD: 0,
             paladinValuePerVote: 0,
+            paladinLeftVotes: 0
         }));
 
-        for (let i = 1; i <= maxAllocations; i++) {
-            let combinations = getCombinations(gauges, i);
-            for (let combination of combinations) {
-                let distributions = generateDistributions(100, combination.length);
-                for (let distribution of distributions) {
+        // Helper function to calculate rewards
+        function calculateRewards(gauge: BalancerStakingGauges, percentage: number): {
+            hhReward: number;
+            paladinReward: number;
+            valuePerVote: number;
+            paladinValuePerVote: number;
+        } {
+            const newVotes = gauge.voteCount + (userVeBAL * percentage / 100);
+            const hhValuePerVote = gauge.totalRewards / newVotes;
+            let paladinValuePerVote = 0;
+            let paladinReward = 0;
+
+            if (gauge.paladinRewards) {
+                const leftVotes = Number(gauge.paladinRewards.leftVotes) / 1e18;
+                if (newVotes < leftVotes) {
+                    paladinValuePerVote = gauge.paladinRewards.valuePerVote;
+                    paladinReward = paladinValuePerVote * userVeBAL * percentage / 100;
+                }
+            }
+
+            const hhReward = hhValuePerVote * userVeBAL * percentage / 100;
+
+            return {
+                hhReward,
+                paladinReward,
+                valuePerVote: hhValuePerVote,
+                paladinValuePerVote
+            };
+        }
+
+        // Generate all valid combinations of new gauges
+        const maxNewGauges = params.maxAllocations - existingAllocations.length;
+        for (let numNewGauges = 0; numNewGauges <= maxNewGauges; numNewGauges++) {
+            const combinations = getCombinations(candidateGauges, numNewGauges);
+
+            for (const newGaugeCombination of combinations) {
+                // Combine existing and new gauges while preserving order
+                const combinedGauges = [...existingAllocations.map(a =>
+                    fullyDecoratedGauges.find(g => g.address.toLowerCase() === a.gaugeAddress.toLowerCase())
+                ).filter(Boolean), ...newGaugeCombination];
+
+                // Generate percentage distributions
+                const distributions = generateDistributions(
+                    100,
+                    combinedGauges.length,
+                    params.stepSize,
+                    params.minAllocation
+                );
+
+                for (const distribution of distributions) {
                     let totalReward = 0;
-                    let allocations: GaugeAllocation[] = [];
-                    for (let j = 0; j < distribution.length; j++) {
-                        if (combination[j] && (combination[j]?.valuePerVote || combination[j]?.paladinRewards?.valuePerVote) && combination[j]?.address) {
-                            let newVotes = combination[j].voteCount + userVeBAL * distribution[j] / 100;
-                            let effectiveReward = combination[j].totalRewards / newVotes;
-                            let paladinReward = 0;
-                            let paladinLeftVotes = combination[j].paladinRewards?.leftVotes ?? 0;
-                            if (newVotes < paladinLeftVotes) {
-                                paladinReward = combination[j].paladinRewards?.valuePerVote ?? 0;
-                            }
+                    let tempAllocations: GaugeAllocation[] = [];
+                    let isValidDistribution = true;
 
-                            let reward = distribution[j] * effectiveReward * userVeBAL / 100;
-                            let paladinQuestReward = distribution[j] * paladinReward * userVeBAL / 100;
-                            totalReward += reward;
-                            totalReward += paladinQuestReward;
+                    for (let j = 0; j < combinedGauges.length; j++) {
+                        const gauge = combinedGauges[j];
+                        const percentage = distribution[j];
 
-                            let isNew = !existingAllocations.some(a => a.gaugeAddress.toLowerCase() === combination[j].address.toLowerCase());
-                            let initialPercentage = isNew ? 0 : existingAllocations.find(a => a.gaugeAddress.toLowerCase() === combination[j].address.toLowerCase())!.percentage;
-
-                            allocations.push({
-                                gaugeAddress: combination[j].address,
-                                percentage: distribution[j],
-                                rewardInUSD: reward,
-                                userValuePerVote: effectiveReward,
-                                isNew,
-                                initialPercentage,
-                                paladinValuePerVote: paladinReward,
-                                paladinRewardInUSD: paladinQuestReward,
-                                paladinLeftVotes,
-                            });
+                        if (!gauge || !gauge.address) {
+                            isValidDistribution = false;
+                            break;
                         }
+
+                        const {
+                            hhReward,
+                            paladinReward,
+                            valuePerVote,
+                            paladinValuePerVote
+                        } = calculateRewards(gauge, percentage);
+
+                        totalReward += hhReward + paladinReward;
+
+                        const isExisting = j < existingAllocations.length;
+
+                        tempAllocations.push({
+                            gaugeAddress: gauge.address,
+                            percentage,
+                            rewardInUSD: hhReward,
+                            userValuePerVote: valuePerVote,
+                            isNew: !isExisting,
+                            initialPercentage: isExisting ? existingAllocations[j].percentage : 0,
+                            paladinValuePerVote,
+                            paladinRewardInUSD: paladinReward,
+                            paladinLeftVotes: gauge.paladinRewards?.leftVotes ?? 0
+                        });
                     }
+
+                    if (!isValidDistribution) continue;
+
+                    // Update best allocations if we found a better total reward
                     if (totalReward > bestTotalReward) {
                         bestTotalReward = totalReward;
-                        let tempBestAllocations: GaugeAllocation[] = [...bestAllocations];
-                        let totalPercentage = 0;
 
-                        let addressToAllocation = new Map<string, GaugeAllocation>();
-                        allocations.forEach(a => {
-                            addressToAllocation.set(a.gaugeAddress.toLowerCase(), a);
+                        // Preserve existing allocation positions
+                        bestAllocations = existingAllocations.map((existing, index) => {
+                            const matchingTemp = tempAllocations[index];
+                            return {
+                                ...existing,
+                                percentage: matchingTemp.percentage,
+                                rewardInUSD: matchingTemp.rewardInUSD,
+                                userValuePerVote: matchingTemp.userValuePerVote,
+                                paladinRewardInUSD: matchingTemp.paladinRewardInUSD,
+                                paladinValuePerVote: matchingTemp.paladinValuePerVote,
+                                paladinLeftVotes: matchingTemp.paladinLeftVotes
+                            };
                         });
 
-                        for (let k = 0; k < tempBestAllocations.length; k++) {
-                            const tempAllocation = tempBestAllocations[k];
-                            if (addressToAllocation.has(tempAllocation.gaugeAddress.toLowerCase())) {
-                                const foundAllocation = addressToAllocation.get(tempAllocation.gaugeAddress.toLowerCase())!;
-                                totalPercentage += foundAllocation.percentage;
-                                tempBestAllocations[k] = foundAllocation;
-                            }
-                        }
-
-                        let remainingPercentage = 100 - totalPercentage;
-
-                        allocations.forEach(allocation => {
-                            if (!existingAllocations.some(ea => ea.gaugeAddress.toLowerCase() === allocation.gaugeAddress.toLowerCase()) &&
-                                !tempBestAllocations.some(ea => ea.gaugeAddress.toLowerCase() === allocation.gaugeAddress.toLowerCase()) &&
-                                allocation.percentage <= remainingPercentage &&
-                                tempBestAllocations.length < maxAllocations) {
-
-                                remainingPercentage -= allocation.percentage;
-                                totalPercentage += allocation.percentage;
-                                tempBestAllocations.push(allocation);
-                            }
-                        });
-
-                        if (totalPercentage <= 100) {
-                            bestAllocations = tempBestAllocations;
-                        }
+                        // Add new allocations after existing ones
+                        const newAllocations = tempAllocations.slice(existingAllocations.length);
+                        bestAllocations.push(...newAllocations);
                     }
                 }
             }
         }
 
+        // Ensure we don't exceed maxAllocations while preserving order
+        bestAllocations = bestAllocations.slice(0, params.maxAllocations);
+
         setAllocations(bestAllocations);
         setLoadOptimize(false);
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 500);
-    };
+    }
 
     const prevAddress = useRef<string | undefined>(undefined);
 
@@ -577,10 +670,14 @@ export default function VeBALVoter() {
                         spacing={2}
                         sx={{justifyContent: 'center'}}
                     >
-
                         <Grid item mt={1} xs={11} md={9}>
                             <Typography variant={'h5'}>
                                 veBAL Multi-Voter Tool
+                            </Typography>
+                        </Grid>
+                        <Grid item mt={1} xs={11} md={9}>
+                            <Typography variant={'h6'}>
+                                Voting Markets
                             </Typography>
                         </Grid>
                         <Grid item mt={1} xs={11} md={9}>
@@ -589,14 +686,23 @@ export default function VeBALVoter() {
                                 columns={{xs: 4, sm: 8, md: 12}}
                                 sx={{justifyContent: {md: 'space-between', xs: 'center'}, alignContent: 'center'}}
                             >
-                                <Box mr={1} mt={1}>
+                                <Box   maxWidth="350px">
                                     <HiddenHandCard/>
                                 </Box>
-                                <Box mr={1} mt={1}>
+                                <Box   maxWidth="350px">
                                     <PaladinQuestsCard/>
+                                </Box>
+                                <Box   maxWidth="350px">
+                                    <VoteMarketCard/>
                                 </Box>
                             </Grid>
                         </Grid>
+                        <Grid item mt={1} xs={11} md={9}>
+                            <Typography variant={'h6'}>
+                                Connected Wallet Stats
+                            </Typography>
+                        </Grid>
+
                         {isConnected ?
                             <Grid item xs={11} md={9}>
                                 <Grid
