@@ -21,7 +21,6 @@ import {
 export const { chains, publicClient } = configureChains(
     [mainnet, polygon, polygonZkEvm, arbitrum, gnosis, optimism],
     [
-        alchemyProvider({ apiKey: ALCHEMY_KEY }),
         publicProvider()
     ]
 );

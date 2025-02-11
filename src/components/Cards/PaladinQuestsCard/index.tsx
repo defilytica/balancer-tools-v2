@@ -50,7 +50,7 @@ const PaladinQuestsCard = () => {
                 <Grid item xs={9}>
                     <Title variant="h5">Paladin Quests</Title>
                     <Description variant="body2">
-                        Explore a range of quests available. Take note dynamic APRs. First come - first served
+                        Explore quests with dynamic reward APRs.
                     </Description>
                 </Grid>
 
@@ -64,7 +64,7 @@ const PaladinQuestsCard = () => {
                 underline="none"
                 target="_blank"
                 rel="noopener noreferrer"
-            >Go to Paladin quests to learn more</Link>
+            >Learn more</Link>
         </StyledCard>
     );
 };
