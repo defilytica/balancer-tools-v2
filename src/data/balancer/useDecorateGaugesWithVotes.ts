@@ -5,6 +5,7 @@ import {ethers} from "ethers";
 import veBALVoteMany from "../../constants/abis/veBALVoteMany.json"
 import {veBALVoteAddress} from "../../constants";
 import {useAccount} from "wagmi";
+import {DRPC_KEY} from "./constants";
 
 const useDecorateGaugesWithVotes = (stakingGaugeData: BalancerStakingGauges[]): BalancerStakingGauges[] => {
 
@@ -17,7 +18,7 @@ const useDecorateGaugesWithVotes = (stakingGaugeData: BalancerStakingGauges[]): 
         if (gaugeData && gaugeData.length > 0) {
             //get gauge votes from voter contract
             const multicall = new Multicall({
-                ethersProvider: new ethers.providers.JsonRpcProvider('https://ethereum-rpc.publicnode.com'),
+                ethersProvider: new ethers.providers.JsonRpcProvider('https://lb.drpc.org/ogrpc?network=ethereum&dkey=' + DRPC_KEY),
                 tryAggregate: true
             });
 

@@ -28,6 +28,7 @@ import {getEtherscanLink} from "../../utils";
 import {ArbitrumNetworkInfo} from "../../constants/networks";
 import LaunchIcon from "@mui/icons-material/Launch";
 import VestingChart from "../../components/Echarts/VestingPositions/VestingPosition";
+import {DRPC_KEY} from "../../data/balancer/constants";
 
 const CONTRACTS_URL = 'https://raw.githubusercontent.com/BalancerMaxis/bal_addresses/main/extras/arbitrum.json';
 
@@ -77,7 +78,7 @@ export default function VestingContracts() {
 
     const fetchNonce = async (contractAddress: string) => {
         try {
-            const providerUrl = 'https://arbitrum.rpc.subquery.network/public';
+            const providerUrl = 'https://lb.drpc.org/ogrpc?network=arbitrum&dkey=' + DRPC_KEY;
             const ethersProvider = new ethers.providers.JsonRpcProvider(providerUrl);
             const contract = new ethers.Contract(contractAddress, ABI, ethersProvider);
             const nonce = await contract.getVestingNonce();

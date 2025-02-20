@@ -7,6 +7,7 @@ import {useEffect, useState} from "react";
 import {Multicall} from 'ethereum-multicall';
 import {EthereumNetworkInfo} from "../../constants/networks";
 import {useAccount} from 'wagmi';
+import {DRPC_KEY} from "./constants";
 
 const useDecorateL1Gauges = (stakingGaugeData: BalancerStakingGauges[] | undefined): BalancerStakingGauges[] => {
 
@@ -19,14 +20,14 @@ const useDecorateL1Gauges = (stakingGaugeData: BalancerStakingGauges[] | undefin
         if (gaugeData && gaugeData.length > 0) {
             const multicalls = [];
 
-            const providerUrl = 'https://ethereum.blockpi.network/v1/rpc/public';
+            const providerUrl = 'https://lb.drpc.org/ogrpc?network=ethereum&dkey=' + DRPC_KEY;
             const multicall = new Multicall({
                 ethersProvider: new ethers.providers.JsonRpcProvider(providerUrl),
                 tryAggregate: true
             });
 
             const multicallRoots = new Multicall({
-                ethersProvider: new ethers.providers.JsonRpcProvider('https://eth.llamarpc.com'),
+                ethersProvider: new ethers.providers.JsonRpcProvider('https://lb.drpc.org/ogrpc?network=ethereum&dkey=' + DRPC_KEY),
                 tryAggregate: true
             });
             //Obtain mainnet gauge working and total supplies

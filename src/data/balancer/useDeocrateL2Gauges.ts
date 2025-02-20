@@ -10,6 +10,7 @@ import {
 } from "../../constants/networks";
 import {ContractCallResults, Multicall} from 'ethereum-multicall';
 import {useAccount} from 'wagmi';
+import {DRPC_KEY} from "./constants";
 
 interface NetworkProviders {
     OPTIMISM: string;
@@ -22,13 +23,13 @@ interface NetworkProviders {
 }
 
 const NETWORK_PROVIDERS: NetworkProviders = {
-    OPTIMISM: 'https://optimism.publicnode.com',
-    GNOSIS: 'https://rpc.gnosischain.com',
-    POLYGON: 'https://polygon-bor.publicnode.com',
-    ARBITRUM: 'https://1rpc.io/arb',
-    AVALANCHE: 'https://rpc.ankr.com/avalanche',
-    BASE: 'https://base.publicnode.com',
-    ZKEVM: 'https://zkevm-rpc.com'
+    OPTIMISM: 'https://lb.drpc.org/ogrpc?network=optimism&dkey=' + DRPC_KEY,
+    GNOSIS: 'https://lb.drpc.org/ogrpc?network=gnosis&dkey=' + DRPC_KEY,
+    POLYGON: 'https://lb.drpc.org/ogrpc?network=polygon&dkey='+ DRPC_KEY,
+    ARBITRUM: 'https://lb.drpc.org/ogrpc?network=arbitrum&dkey='+ DRPC_KEY,
+    AVALANCHE: 'https://lb.drpc.org/ogrpc?network=avalanche&dkey='+ DRPC_KEY,
+    BASE: 'https://lb.drpc.org/ogrpc?network=base&dkey='+ DRPC_KEY,
+    ZKEVM: 'https://lb.drpc.org/ogrpc?network=polygon-zkevm&dkey=' + DRPC_KEY
 
 };
 

@@ -105,11 +105,11 @@ export function useBalancerPools(first = 250, startunixTime = startTimestamp, en
                     first: first,
                 },
                 context: {
-                    uri: clientUri? clientUri : activeNetwork.clientUri,
+                    uri: clientUri? clientUri : activeNetwork.decentralicedClientUri,
                 }
             });
         }
-    }, [block24, first, clientUri, activeNetwork.clientUri]);
+    }, [block24, first, clientUri, activeNetwork.decentralicedClientUri]);
 
     useEffect(() => {
         //V2: repopulate formatted token data with CoinGecko data
