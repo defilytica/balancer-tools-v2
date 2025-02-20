@@ -6,9 +6,9 @@ import {
 } from '@rainbow-me/rainbowkit';
 import { configureChains, createConfig } from 'wagmi';
 import { mainnet, polygon, optimism, arbitrum, gnosis, polygonZkEvm } from 'wagmi/chains';
-import { alchemyProvider } from 'wagmi/providers/alchemy';
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import { publicProvider } from 'wagmi/providers/public';
-import {ALCHEMY_KEY} from "../data/balancer/constants";
+import {ALCHEMY_KEY, DRPC_KEY} from "../data/balancer/constants";
 import {
     argentWallet,
     ledgerWallet,
@@ -21,7 +21,15 @@ import {
 export const { chains, publicClient } = configureChains(
     [mainnet, polygon, polygonZkEvm, arbitrum, gnosis, optimism],
     [
-        publicProvider()
+        jsonRpcProvider({
+            rpc: (chain) => {
+                if (chain.id === mainnet.id) {
+                    return { http: 'https://lb.drpc.org/ogrpc?network=ethereum&dkey=' + DRPC_KEY };
+                }
+                return null;
+            },
+        }),
+        publicProvider() // Fallback for other chains
     ]
 );
 
