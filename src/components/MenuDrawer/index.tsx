@@ -98,13 +98,13 @@ const MenuDrawer = ({
                     <ListItemText primary={'veBAL Boost'} />
                 </ListItemButton>
 
-                <ListItemButton key={'veBAL Multi-Voter'} component={NavLink} to={'/balancer/veBALMultiVoter'}>
+                <ListItemButton key={'veBAL'} component="a" href="https://balancer.fi/vebal" target="_blank" rel="noopener noreferrer">
                     <ListItemIcon>
                         <LinkIcon />
                     </ListItemIcon>
-                    <ListItemText primary={'veBAL Multi-Voter'} />
+                    <ListItemText primary={'veBAL'} />
                 </ListItemButton>
-                <ListItemButton key={'Incentive Simulator'} component={NavLink} to={'/balancer/incentiveSimulator'}>
+                <ListItemButton key={'Incentive Simulator'} component="a" href="https://balancer.defilytica.com/#/incentiveSimulator" target="_blank" rel="noopener noreferrer">
                     <ListItemIcon>
                         <HowToVoteIcon />
                     </ListItemIcon>
@@ -137,7 +137,7 @@ const MenuDrawer = ({
                             </ListItemIcon>
                             <ListItemText primary={'Permissions'} />
                         </ListItemButton>
-                        <ListItemButton key={'Payload Builder'} component={NavLink} to={'balancer/payloadBuilder'}>
+                        <ListItemButton key={'Payload Builder'} component="a" href="https://balancer.defilytica.tools/payload-builder" target="_blank" rel="noopener noreferrer">
                             <ListItemIcon>
                                 <PostAddIcon />
                             </ListItemIcon>

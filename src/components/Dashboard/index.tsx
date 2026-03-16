@@ -21,7 +21,6 @@ import {networkPrefix} from '../../utils/networkPrefix'
 import {isMobile} from 'react-device-detect';
 import PriceImpact from '../../pages/PriceImpact';
 import VeBAL from '../../pages/VeBAL';
-import VeBALVoter from '../../pages/VeBALVoter';
 import ImpermanentLoss from '../../pages/ImpermanentLoss';
 import Authorizations from '../../pages/Authorizations';
 import {ConnectButton, darkTheme, lightTheme, RainbowKitProvider} from "@rainbow-me/rainbowkit";
@@ -29,11 +28,9 @@ import {WagmiConfig} from "wagmi";
 import {chains, wagmiConfig} from "../../wagmi/wagmiConfig";
 import {alpha, Container} from "@mui/material";
 import GaugeMapper from "../../pages/GaugeMapper";
-import BribeSimulator from "../../pages/BribeSimulator";
 import GovernanceMap from '../../pages/GovernanceMap';
 import ContractDetailedView from "../../pages/ContractDetailedView";
 import SmartContractPermissions from "../../pages/SmartContractPermissions/SmartContractPermissions";
-import PayloadBuilder from "../../pages/PayloadBuilder";
 import VestingContracts from "../../pages/VestingContracts";
 import LandingPage from "../../pages/LandingPage";
 
@@ -259,7 +256,6 @@ function Dashboard() {
                                            element={<PriceImpact/>}/>
                                     <Route path={'balancer/veBALBoost'} element={<VeBAL/>}/>
                                     <Route path={networkPrefix(activeNetwork) + 'balancer/veBALBoost'} element={<VeBAL/>}/>
-                                    <Route path={'balancer/veBALMultiVoter'} element={<VeBALVoter/>}/>
                                     <Route path={networkPrefix(activeNetwork) + 'impermanentLoss'}
                                            element={<ImpermanentLoss/>}/>
                                     <Route path={networkPrefix(activeNetwork) + 'authorizations'}
@@ -274,15 +270,9 @@ function Dashboard() {
                                            element={<SmartContractPermissions/>}/>
                                     <Route path={networkPrefix(activeNetwork) + 'balancer/permissions'}
                                            element={<SmartContractPermissions/>}/>
-                                    <Route path={'balancer/incentiveSimulator'} element={<BribeSimulator/>}/>
-                                    <Route path={networkPrefix(activeNetwork) + 'incentiveSimulator'}
-                                           element={<BribeSimulator/>}/>
-
                                     <Route path={networkPrefix(activeNetwork) + 'balancer/balancerContracts/:id'}
                                            element={<ContractDetailedView/>}/>
                                     <Route path={'balancer/balancerContracts/:id'} element={<ContractDetailedView />}/>
-                                    <Route path={'balancer/payloadBuilder'}
-                                           element={<PayloadBuilder/>}/>
                                     <Route path={networkPrefix(activeNetwork) + 'balancer/vesters'}
                                            element={<VestingContracts/>}/>
 
